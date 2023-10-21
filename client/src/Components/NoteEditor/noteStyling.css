@@ -1,0 +1,19 @@
+:root {
+  --defBlack: #1a1a1a;
+  --defGray: #f8f8f8;
+  --defGreen: #00a82d;
+  --defHBlack: #404040;
+  --light: #b8b8b8;
+  --ligherdark: #f2f2f2;
+}
+
+.note-container {
+  background-color: red;
+  flex-grow: 1;
+}
+
+.newNoteStyles {
+  background-color: #00a82d;
+  width: 100%;
+  height: 100%;
+}

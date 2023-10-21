@@ -1,0 +1,71 @@
+:root {
+  --defBlack: #1a1a1a;
+  --defGray: #f8f8f8;
+  --defGreen: #00a82d;
+  --defHBlack: #404040;
+  --light: #b8b8b8;
+  --ligherdark: #f2f2f2;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.sidebarStyles {
+  height: 100%;
+  width: 100%;
+}
+
+.sidebarDiv1 {
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.sidebarDiv2 {
+  padding: 8px;
+}
+
+.headerDiv2 > h4 {
+  color: var(--light);
+}
+
+.headerDiv3 > h5 {
+  color: var(--defHBlack);
+}
+
+.headerDiv1 {
+  height: 70%;
+  padding-left: 16px;
+}
+
+.headerDiv2 {
+  height: 20%;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+}
+
+.headerDiv3 {
+  height: 20%;
+  background-color: var(--ligherdark);
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  border: 2px solid #efefef;
+}
+
+.sidebarDiv1 > svg {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  color: var(--defHBlack);
+  cursor: pointer;
+}
+
+.sidebarDiv1 > svg:hover {
+  color: var(--defBlack);
+}

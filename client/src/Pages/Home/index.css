@@ -14,10 +14,16 @@ body {
   overflow-y: hidden;
   overflow-x: hidden;
   font-family: "Lato";
+  display: flex;
 }
 
 #navbar-container {
   width: 20%;
   height: 100%;
-  background-color: red;
+}
+
+#sidebar-container {
+  width: 20%;
+  height: 100%;
+  background-color: var(--defGray);
 }
