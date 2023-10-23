@@ -1,6 +1,4 @@
 interface InitialState {
-  sidebarVisible: boolean;
-  newNoteVisible: boolean;
   [key: string]: string | number | boolean;
 }
 
@@ -43,7 +41,9 @@ class GlobalStore {
 
 const intialState = {
   sidebarVisible: false,
-  newNoteVisible: false,
+  noteEditorVisible: false,
+  todoListVisible: false,
+  url: "/",
 };
 
 export default new GlobalStore();

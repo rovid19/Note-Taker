@@ -10,27 +10,27 @@ export const navbarNavigationLogic = (): void => {
 
   toggleSidebar(allNotesLi);
   toggleNoteEditor(newNoteLi);
-  addEventListenerForEachNavItem(todoListLi);
 };
 
 export const sidebarNavigationLogic = (): void => {
   const closeSidebarSvg = document.querySelector(".sidebarSvg") as HTMLElement;
 
   closeSidebarSvg.addEventListener("click", () =>
-    toggleSidebar(closeSidebarSvg)
+    //ovo je zapravo toggleSidebar funckija jer ne zelim poduplati event listener
+    globalStore.set("sidebarVisible", !globalStore.state.sidebarVisible)
   );
 };
 
 export const isSidebarVisible = (): void => {
   const sidebarVisible = globalStore.state.sidebarVisible;
+  const noteEditorVisible = globalStore.state.noteEditorVisible;
+  let noteEditorDiv = {} as HTMLElement;
+
+  if (noteEditorVisible)
+    noteEditorDiv = document.getElementById("note-container") as HTMLElement;
 
   if (sidebarVisible) {
-    let div = document.createElement("div");
-    div.id = "sidebar-container";
-    document.body.appendChild(div);
-    document
-      .getElementById("sidebar-container")
-      ?.appendChild(generateSidebar());
+    createSidebar(noteEditorVisible, noteEditorDiv);
     sidebarNavigationLogic();
   } else {
     document.getElementById("sidebar-container")?.remove();
@@ -38,15 +38,13 @@ export const isSidebarVisible = (): void => {
 };
 
 export const isNoteEditorVisible = (): void => {
-  const noteEditorVisible = globalStore.state.newNoteVisible;
+  const noteEditorVisible = globalStore.state.noteEditorVisible;
 
   if (noteEditorVisible) {
-    console.log("da");
-    let div = document.createElement("div");
-    div.id = "note-container";
-    document.body.appendChild(div);
-    document.getElementById("note-container")?.appendChild(generateNewNote());
+    history.pushState(null, "", "/notes");
+    createNoteEditor();
   } else {
+    history.pushState(null, "", "/");
     document.getElementById("note-container")?.remove();
   }
 };
@@ -56,15 +54,26 @@ export const toggleSidebar = (liItem: HTMLElement): void =>
     globalStore.set("sidebarVisible", !globalStore.state.sidebarVisible);
   });
 
-const addEventListenerForEachNavItem = (li: HTMLElement): void => {
-  li.addEventListener("click", (): void => {
-    globalStore.set("sidebarVisible", true);
-    console.log(globalStore.state.sidebarVisible);
+const toggleNoteEditor = (liItem: HTMLElement): void => {
+  liItem.addEventListener("click", (): void => {
+    globalStore.set("noteEditorVisible", !globalStore.state.noteEditorVisible);
   });
 };
 
-const toggleNoteEditor = (liItem: HTMLElement): void =>
-  liItem.addEventListener("click", (): void => {
-    console.log(globalStore.state.newNoteVisible);
-    globalStore.set("newNoteVisible", !globalStore.state.newNoteVisible);
-  });
+const createNoteEditor = (): void => {
+  let div = document.createElement("div");
+  div.id = "note-container";
+  document.body.appendChild(div);
+  document.getElementById("note-container")?.appendChild(generateNewNote());
+};
+
+const createSidebar = (
+  noteEditorVisible: string | number | boolean,
+  noteEditorDiv: HTMLElement
+): void => {
+  let div = document.createElement("div");
+  div.id = "sidebar-container";
+  if (noteEditorVisible) document.body.insertBefore(div, noteEditorDiv);
+  else document.body.appendChild(div);
+  document.getElementById("sidebar-container")?.appendChild(generateSidebar());
+};
