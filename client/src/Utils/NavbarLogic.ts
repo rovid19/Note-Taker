@@ -1,6 +1,8 @@
 import globalStore from "../Stores/GlobalStore";
 import { generateSidebar } from "../Components/Sidebar/Sidebar";
 import { generateNewNote } from "../Components/NoteEditor/NoteEditor";
+import noteService from "../Services/NoteService";
+import { fullDate } from "./Date";
 
 export const navbarNavigationLogic = (): void => {
   const newNoteLi = document.querySelector(".nbcInnerDiv1Con2") as HTMLElement;
@@ -42,12 +44,18 @@ export const isNoteEditorVisible = (): void => {
 
   if (noteEditorVisible) {
     history.pushState(null, "", "/notes");
+    //
+    noteService.createNewNote(fullDate);
+    history.pushState(null, "", `/notes/${globalStore.get("newNoteId")}`);
+    //
     createNoteEditor();
   } else {
     history.pushState(null, "", "/");
     document.getElementById("note-container")?.remove();
   }
 };
+
+export const isNewNoteOrExistingNote = (): void => {};
 
 export const toggleSidebar = (liItem: HTMLElement): void =>
   liItem.addEventListener("click", (): void => {
@@ -65,6 +73,34 @@ const createNoteEditor = (): void => {
   div.id = "note-container";
   document.body.appendChild(div);
   document.getElementById("note-container")?.appendChild(generateNewNote());
+
+  noteEditorEventListeners();
+};
+
+const noteEditorEventListeners = (): void => {
+  const noteTitleElement = document.querySelector(
+    ".newNoteInput"
+  ) as HTMLElement;
+  const noteTextElement = document.querySelector(
+    ".newNoteInputText"
+  ) as HTMLElement;
+  let oldNoteTitle = globalStore.get("noteTitle");
+
+  gatherNoteIdFromUrl();
+  noteTitleElement.addEventListener("input", (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const value = target.value;
+    globalStore.set("noteTitle", value);
+  });
+
+  noteTextElement.addEventListener("click", (): void => {
+    const newNoteTitle = globalStore.get("noteTitle") as string;
+    const noteId = globalStore.get("noteId") as string;
+    if (oldNoteTitle !== newNoteTitle) {
+      noteService.saveNewNoteTitle(newNoteTitle, noteId);
+      oldNoteTitle = newNoteTitle;
+    }
+  });
 };
 
 const createSidebar = (
@@ -76,4 +112,10 @@ const createSidebar = (
   if (noteEditorVisible) document.body.insertBefore(div, noteEditorDiv);
   else document.body.appendChild(div);
   document.getElementById("sidebar-container")?.appendChild(generateSidebar());
+};
+
+const gatherNoteIdFromUrl = () => {
+  const url = window.location.pathname;
+  const noteIdfromUrl = url.slice(7, url.length);
+  globalStore.set("noteId", noteIdfromUrl);
 };

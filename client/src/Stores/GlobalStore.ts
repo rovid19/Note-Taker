@@ -44,6 +44,8 @@ const intialState = {
   noteEditorVisible: false,
   todoListVisible: false,
   url: "/",
+  noteId: "",
+  noteTitle: "",
 };
 
 export default new GlobalStore();

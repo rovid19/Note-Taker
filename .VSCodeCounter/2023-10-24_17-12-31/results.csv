@@ -1,0 +1,22 @@
+"filename", "language", "JSON with Comments", "TypeScript", "CSS", "JSON", "HTML", "XML", "comment", "blank", "total"
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\index.html", "HTML", 0, 0, 0, 0, 18, 0, 0, 1, 19
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\package-lock.json", "JSON", 0, 0, 0, 967, 0, 0, 0, 1, 968
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\package.json", "JSON", 0, 0, 0, 19, 0, 0, 0, 1, 20
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\public\vite.svg", "XML", 0, 0, 0, 0, 0, 1, 0, 0, 1
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Navbar\Navbar.ts", "TypeScript", 0, 63, 0, 0, 0, 0, 1, 11, 75
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Navbar\navbarStyles.css", "CSS", 0, 0, 177, 0, 0, 0, 0, 27, 204
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\NoteEditor.ts", "TypeScript", 0, 23, 0, 0, 0, 0, 0, 5, 28
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\noteStyling.css", "CSS", 0, 0, 60, 0, 0, 0, 0, 9, 69
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\Sidebar.ts", "TypeScript", 0, 29, 0, 0, 0, 0, 0, 7, 36
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\sidebarStyling.css", "CSS", 0, 0, 55, 0, 0, 0, 0, 11, 66
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Pages\Home\index.css", "CSS", 0, 0, 26, 0, 0, 0, 0, 4, 30
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Pages\Home\index.ts", "TypeScript", 0, 11, 0, 0, 0, 0, 0, 4, 15
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\BaseService.ts", "TypeScript", 0, 50, 0, 0, 0, 0, 0, 9, 59
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\NoteService.ts", "TypeScript", 0, 12, 0, 0, 0, 0, 0, 3, 15
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\GlobalStore.ts", "TypeScript", 0, 41, 0, 0, 0, 0, 0, 11, 52
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\NotesStore.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\Date.ts", "TypeScript", 0, 10, 0, 0, 0, 0, 0, 5, 15
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\NavbarLogic.ts", "TypeScript", 0, 79, 0, 0, 0, 0, 3, 18, 100
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\Router.ts", "TypeScript", 0, 34, 0, 0, 0, 0, 0, 6, 40
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\tsconfig.json", "JSON with Comments", 19, 0, 0, 0, 0, 0, 2, 3, 24
+"Total", "-", 19, 352, 318, 986, 18, 1, 6, 137, 1837
