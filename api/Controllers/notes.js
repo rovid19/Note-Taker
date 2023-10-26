@@ -29,3 +29,23 @@ export const saveNewNoteTitle = async (req, res) => {
     throw e;
   }
 };
+
+export const fetchAllUserNotes = async (req, res) => {
+  try {
+    const allNotes = await Note.find();
+    res.json(allNotes);
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const deleteNote = async (req, res) => {
+  const { noteId } = req.body;
+
+  try {
+    const deleteNote = await Note.deleteOne(noteId);
+    res.json("ok");
+  } catch (e) {
+    throw e;
+  }
+};

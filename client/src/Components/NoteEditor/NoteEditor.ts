@@ -1,4 +1,7 @@
+import noteService from "../../Services/NoteService";
+import globalStore from "../../Stores/GlobalStore";
 import { fullDate } from "../../Utils/Date";
+import { getUserNotesLength } from "../Sidebar/Sidebar";
 
 export const generateNewNote = (): HTMLElement => {
   if (!document.querySelector("noteStyling")) {
@@ -55,5 +58,15 @@ class Note {
 export const defaultNote = new Note("New Note", fullDate, "");
 
 const textareaMarkup = defaultNote.noteText
-  ? `<textarea class="newNoteInputText"placeholder="Start your note here> ${defaultNote.noteText} </textarea>`
+  ? `<textarea class="newNoteInputText"> ${defaultNote.noteText} </textarea>`
   : `<textarea class="newNoteInputText" placeholder="Start your note here"> </textarea>`;
+
+export const deleteNote = async () => {
+  const noteId = globalStore.get("deleteNote") as number;
+  if (noteId !== -1) {
+    await noteService.deleteNote(noteId);
+    await noteService.fetchAllUserNotes();
+    getUserNotesLength();
+    globalStore.set("deleteNote", -1);
+  }
+};

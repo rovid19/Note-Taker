@@ -17,6 +17,14 @@ class NoteService extends Base {
     });
     defaultNote.setNoteTitle(newNoteTitle);
   }
+  async fetchAllUserNotes() {
+    const allNotes = await this.get("/fetch-user-notes", {});
+    globalStore.set("userNotes", allNotes);
+  }
+
+  async deleteNote(noteId: number) {
+    await this.delete("/delete-note", { noteId });
+  }
 }
 
 export default new NoteService();

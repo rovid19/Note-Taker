@@ -1,5 +1,14 @@
 interface InitialState {
-  [key: string]: string | number | boolean;
+  sidebarVisible: boolean;
+  noteEditorVisible: boolean;
+  todoListVisible: boolean;
+  url: string;
+  noteId: string;
+  noteTitle: string;
+  userNotes: string[];
+  deleteNote: number | null;
+  notesLength: number;
+  [key: string]: any;
 }
 
 type Listener = (key: string, value: string | number | boolean) => void;
@@ -46,6 +55,9 @@ const intialState = {
   url: "/",
   noteId: "",
   noteTitle: "",
+  userNotes: [],
+  notesLength: 0,
+  deleteNote: null,
 };
 
 export default new GlobalStore();

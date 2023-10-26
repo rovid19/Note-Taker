@@ -1,5 +1,9 @@
 import globalStore from "../Stores/GlobalStore";
-import { generateSidebar } from "../Components/Sidebar/Sidebar";
+import {
+  generateSidebar,
+  getUserNotesLength,
+  mapOverAllNotes,
+} from "../Components/Sidebar/Sidebar";
 import { generateNewNote } from "../Components/NoteEditor/NoteEditor";
 import noteService from "../Services/NoteService";
 import { fullDate } from "./Date";
@@ -23,7 +27,7 @@ export const sidebarNavigationLogic = (): void => {
   );
 };
 
-export const isSidebarVisible = (): void => {
+export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
   const noteEditorVisible = globalStore.state.noteEditorVisible;
   let noteEditorDiv = {} as HTMLElement;
@@ -32,7 +36,10 @@ export const isSidebarVisible = (): void => {
     noteEditorDiv = document.getElementById("note-container") as HTMLElement;
 
   if (sidebarVisible) {
+    await noteService.fetchAllUserNotes();
     createSidebar(noteEditorVisible, noteEditorDiv);
+    getUserNotesLength();
+    mapOverAllNotes();
     sidebarNavigationLogic();
   } else {
     document.getElementById("sidebar-container")?.remove();
