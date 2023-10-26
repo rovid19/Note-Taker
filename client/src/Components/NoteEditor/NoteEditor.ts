@@ -1,7 +1,7 @@
 import noteService from "../../Services/NoteService";
 import globalStore from "../../Stores/GlobalStore";
 import { fullDate } from "../../Utils/Date";
-import { getUserNotesLength } from "../Sidebar/Sidebar";
+import { getUserNotesLength } from "../Sidebar/SidebarLogic";
 
 export const generateNewNote = (): HTMLElement => {
   if (!document.querySelector("noteStyling")) {
