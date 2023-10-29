@@ -37,3 +37,12 @@ export const checkForUrlChange = (): void => {
   } else if (url === "/todo-list") routerList.todoList.navigateToTodoList();
   else routerList.noteEditor.navigateToNoteEditor();
 };
+
+export const navigateTo = (pathname: string): void => {
+  history.pushState(null, "", pathname);
+};
+
+export const extractIdFromUrl = (): string => {
+  const url = window.location.href;
+  return url;
+};

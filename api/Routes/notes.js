@@ -1,8 +1,10 @@
 import express from "express";
 import {
+  autoSaveNote,
   createNewNote,
   deleteNote,
   fetchAllUserNotes,
+  fetchExistingNote,
   saveNewNoteTitle,
 } from "../Controllers/notes.js";
 
@@ -15,5 +17,9 @@ router.put("/save-note-title", saveNewNoteTitle);
 router.get("/fetch-user-notes", fetchAllUserNotes);
 
 router.delete("/delete-note", deleteNote);
+
+router.get("/get-specific-note", fetchExistingNote);
+
+router.put("/auto-save-note", autoSaveNote);
 
 export default router;

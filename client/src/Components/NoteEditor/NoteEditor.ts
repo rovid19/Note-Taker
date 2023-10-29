@@ -1,7 +1,5 @@
-import noteService from "../../Services/NoteService";
-import globalStore from "../../Stores/GlobalStore";
 import { fullDate } from "../../Utils/Date";
-import { getUserNotesLength } from "../Sidebar/SidebarLogic";
+import { noteTextInput } from "./NoteEditorLogic";
 
 export const generateNewNote = (): HTMLElement => {
   if (!document.querySelector("noteStyling")) {
@@ -22,7 +20,7 @@ export const generateNewNote = (): HTMLElement => {
 </div>
   <div class="newNoteDiv2">
     <input class="newNoteInput" placeholder="${defaultNote.noteTitle}"/>
-    ${textareaMarkup}
+    <textarea  class="newNoteInputText" placeholder="Start your note here"> </textarea>
   </div>
   `;
 
@@ -31,13 +29,26 @@ export const generateNewNote = (): HTMLElement => {
 
 class Note {
   noteTitle: string;
+  fetchedNoteTitle: string;
   dateCreated: string;
   noteText: string;
+  fetchedNoteText: string;
+  id: string;
 
-  constructor(noteTitle: string, dateCreated: string, noteText: string) {
+  constructor(
+    noteTitle: string,
+    fetchedNoteTitle: string,
+    dateCreated: string,
+    noteText: string,
+    fetchedNoteText: string,
+    id: string
+  ) {
     (this.noteTitle = noteTitle),
+      (this.fetchedNoteTitle = fetchedNoteTitle),
       (this.dateCreated = dateCreated),
       (this.noteText = noteText);
+    this.fetchedNoteText = fetchedNoteText;
+    this.id = id;
   }
 
   setNoteTitle(noteTitle: string) {
@@ -48,25 +59,28 @@ class Note {
     this.noteText = noteText;
   }
 
-  setExistingNote(noteTitle: string, dateCreated: string, noteText: string) {
+  setNote(
+    noteTitle: string,
+    fetchedNoteTitle: string,
+    dateCreated: string,
+    noteText: string,
+    fetchedNoteText: string,
+    id: string
+  ) {
     this.noteTitle = noteTitle;
-    this.dateCreated = dateCreated;
+    (this.fetchedNoteTitle = fetchedNoteTitle),
+      (this.dateCreated = dateCreated);
     this.noteText = noteText;
+    this.fetchedNoteText = fetchedNoteText;
+    this.id = id;
   }
 }
 
-export const defaultNote = new Note("New Note", fullDate, "");
-
-const textareaMarkup = defaultNote.noteText
-  ? `<textarea class="newNoteInputText"> ${defaultNote.noteText} </textarea>`
-  : `<textarea class="newNoteInputText" placeholder="Start your note here"> </textarea>`;
-
-export const deleteNote = async () => {
-  const noteId = globalStore.get("deleteNote") as number;
-  if (noteId !== -1) {
-    await noteService.deleteNote(noteId);
-    await noteService.fetchAllUserNotes();
-    getUserNotesLength();
-    globalStore.set("deleteNote", -1);
-  }
-};
+export const defaultNote = new Note(
+  "New Note",
+  "New Note",
+  fullDate,
+  "",
+  "",
+  ""
+);

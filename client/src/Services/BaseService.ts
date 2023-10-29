@@ -46,7 +46,9 @@ class Base {
 
   async delete(endpoint: string, clientData: clientData) {
     try {
-      const response = await axios.delete(this.baseUrl + endpoint, clientData);
+      const response = await axios.delete(this.baseUrl + endpoint, {
+        data: clientData,
+      });
       return response.data;
     } catch (e) {
       console.error(e);

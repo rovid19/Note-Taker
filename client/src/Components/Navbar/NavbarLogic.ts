@@ -1,6 +1,6 @@
 import globalStore from "../../Stores/GlobalStore";
-import { toggleSidebar } from "../Sidebar/SidebarLogic";
-import { toggleNoteEditor } from "../NoteEditor/NoteEditorLogic";
+import { fullDate } from "../../Utils/Date";
+import { defaultNote } from "../NoteEditor/NoteEditor";
 
 export const navbarNavigationLogic = (): void => {
   const newNoteLi = document.querySelector(".nbcInnerDiv1Con2") as HTMLElement;
@@ -10,4 +10,16 @@ export const navbarNavigationLogic = (): void => {
 
   toggleSidebar(allNotesLi);
   toggleNoteEditor(newNoteLi);
+};
+
+const toggleSidebar = (liItem: HTMLElement): void =>
+  liItem.addEventListener("click", (): void => {
+    globalStore.set("sidebarVisible", !globalStore.state.sidebarVisible);
+  });
+
+const toggleNoteEditor = (liItem: HTMLElement): void => {
+  liItem.addEventListener("click", (): void => {
+    globalStore.set("noteEditorVisible", !globalStore.state.noteEditorVisible);
+    defaultNote.setNote("New Note", fullDate, "");
+  });
 };

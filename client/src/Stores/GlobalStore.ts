@@ -8,10 +8,11 @@ interface InitialState {
   userNotes: string[];
   deleteNote: number | null;
   notesLength: number;
+  existingNote: boolean;
   [key: string]: any;
 }
 
-type Listener = (key: string, value: string | number | boolean) => void;
+type Listener = (key: any, value: any) => void;
 
 class GlobalStore {
   state: InitialState;
@@ -57,6 +58,7 @@ const intialState = {
   noteTitle: "",
   userNotes: [],
   notesLength: 0,
+  existingNote: false,
   deleteNote: null,
 };
 

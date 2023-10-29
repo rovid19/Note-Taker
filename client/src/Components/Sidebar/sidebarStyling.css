@@ -69,9 +69,10 @@
 .sidebarArticle {
   position: relative;
   border-bottom: 2px rgba(184, 184, 184, 0.2) solid;
+  cursor: pointer;
 }
 
-.articleSvg {
+.sidebarArticle > svg {
   position: absolute;
   top: 8px;
   right: 4px;
@@ -85,7 +86,7 @@
   color: var(--defHBlack);
 }
 
-.sidebarArticle:hover .articleSvg {
+.sidebarArticle:hover svg {
   opacity: 1;
 }
 
