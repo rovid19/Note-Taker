@@ -25,7 +25,9 @@ export const generateSidebar = (): HTMLElement => {
           <h2>All notes</h2>
       </div>
       <div class="headerDiv2">
-          <h4 class="sidebarNotesLength"> notes</h4>
+          <h4 class="sidebarNotesLength">${console.log(
+            globalStore.get("notesLength")
+          )} notes</h4>
       </div>
       <div class="headerDiv3">
           <h5>${monthYear}</h5>
@@ -38,5 +40,3 @@ export const generateSidebar = (): HTMLElement => {
 
   return sidebar;
 };
-
-

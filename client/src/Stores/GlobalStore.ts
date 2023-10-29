@@ -9,6 +9,7 @@ interface InitialState {
   deleteNote: number | null;
   notesLength: number;
   existingNote: boolean;
+  //warningMessage: boolean;
   [key: string]: any;
 }
 
@@ -59,6 +60,7 @@ const intialState = {
   userNotes: [],
   notesLength: 0,
   existingNote: false,
+  //warningMessage: false,
   deleteNote: null,
 };
 

@@ -25,9 +25,8 @@ export const isSidebarVisible = async () => {
 
   if (sidebarVisible) {
     await noteService.fetchAllUserNotes();
-
     createSidebar(noteEditorVisible, noteEditorDiv);
-    getUserNotesLength();
+    updateUserNotesLength();
     createAllNotesContainer();
     sidebarNavigationLogic();
   } else {
@@ -80,8 +79,9 @@ export const reRenderAllNotesContainer = () => {
   createAllNotesContainer();
 };
 
-export const getUserNotesLength = (): void => {
-  const noteLength = globalStore.get("userNotes").length;
+export const updateUserNotesLength = (): void => {
+  const noteLength = (globalStore.get("userNotes") as unknown as UserNotes[])
+    .length;
   globalStore.set("notesLength", noteLength);
 };
 

@@ -1,13 +1,16 @@
 import globalStore from "../../Stores/GlobalStore";
 import noteService from "../../Services/NoteService";
 import { defaultNote, generateNewNote } from "./NoteEditor";
-import {
-  createAllNotesContainer,
-  getUserNotesLength,
-} from "../Sidebar/SidebarLogic";
+import { updateUserNotesLength } from "../Sidebar/SidebarLogic";
 import { fullDate } from "../../Utils/Date";
 import { navigateTo } from "../../Utils/Router";
 import { reRenderAllNotesContainer } from "../Sidebar/SidebarLogic";
+import { createWarning } from "../WarningMessage/WarningLogic";
+
+type NoteArray = {
+  _id: string;
+  [key: string]: string;
+};
 
 export const isNoteEditorVisible = async () => {
   const noteEditorVisible = globalStore.get("noteEditorVisible");
@@ -22,15 +25,6 @@ export const isNoteEditorVisible = async () => {
   }
 };
 
-const isNewNoteOrExistingNote = async (existingNote: boolean) => {
-  if (existingNote) {
-  } else {
-    await noteService.createNewNote(fullDate);
-    await noteService.fetchAllUserNotes();
-    reRenderNoteFields();
-  }
-};
-
 const createNoteEditor = (): void => {
   let div = document.createElement("div");
   div.id = "note-container";
@@ -39,6 +33,15 @@ const createNoteEditor = (): void => {
 
   saveNewNoteTitle();
   noteTextInput();
+};
+
+const isNewNoteOrExistingNote = async (existingNote: boolean) => {
+  if (existingNote) {
+  } else {
+    await noteService.createNewNote(fullDate);
+    await noteService.fetchAllUserNotes();
+    reRenderNoteFields();
+  }
 };
 
 const saveNewNoteTitle = (): void => {
@@ -86,20 +89,18 @@ export const deleteNote = async () => {
     await noteService.deleteNote(noteId);
     await noteService.fetchAllUserNotes();
     reRenderAllNotesContainer();
-    getUserNotesLength();
+    updateUserNotesLength();
+    globalStore.set("deleteNote", -1);
   }
 };
 
-type NoteArray = {
-  _id: string;
-  [key: string]: string;
-};
-
-export const setNoteIdToDeleteNote = (): void => {
+export const findNoteIdToDeleteNote = (): void => {
   const allNotes = globalStore.get("userNotes") as unknown as NoteArray[];
   const noteIndex = globalStore.get("deleteNote") as number;
-  globalStore.set("noteId", allNotes[noteIndex]._id);
-  deleteNote();
+  if (noteIndex !== -1) {
+    globalStore.set("noteId", allNotes[noteIndex]._id);
+    isNoteBeingDeletedOpen();
+  }
 };
 
 export const fetchExistingNote = async () => {
@@ -144,10 +145,25 @@ export const noteTextInput = (): void => {
   });
 };
 
-export const gatherNoteIdFromUrl = () => {
+/*export const gatherNoteIdFromUrl = () => {
   const url = window.location.pathname;
   const noteIdfromUrl = url.slice(7, url.length);
   globalStore.set("noteId", noteIdfromUrl);
 
   return noteIdfromUrl;
+};*/
+
+const isNoteBeingDeletedOpen = () => {
+  const params = new URLSearchParams(window.location.search);
+  const currentNoteId = params.get("noteId");
+  const deletingNoteId = globalStore.get("noteId");
+
+  if (currentNoteId === deletingNoteId) {
+    createWarning(
+      `Note you're currently trying to delete is open. Do you wish to continue?`
+    );
+    //globalStore.set("warningMessage", true);
+  } else {
+    deleteNote();
+  }
 };

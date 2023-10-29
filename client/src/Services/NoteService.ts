@@ -49,7 +49,19 @@ class NoteService extends Base {
   }
 
   async autoSaveNote(noteId: string, noteTitle: string, noteText: string) {
-    await this.put("/auto-save-note", { noteId, noteTitle, noteText });
+    const note = await this.put("/auto-save-note", {
+      noteId,
+      noteTitle,
+      noteText,
+    });
+    defaultNote.setNote(
+      note.title,
+      note.title,
+      note.dateCreated,
+      note.noteText,
+      note.noteText,
+      note._id
+    );
   }
 }
 

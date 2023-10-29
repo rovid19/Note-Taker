@@ -1,5 +1,4 @@
 import { fullDate } from "../../Utils/Date";
-import { noteTextInput } from "./NoteEditorLogic";
 
 export const generateNewNote = (): HTMLElement => {
   if (!document.querySelector("noteStyling")) {
