@@ -10,6 +10,10 @@ import globalStore from "../../Stores/GlobalStore";
 import { isActiveUrl } from "../../Utils/Router";
 import { reRenderNotesLengthElement } from "../../Components/Sidebar/SidebarLogic";
 import { defaultNote } from "../../Components/NoteEditor/NoteEditor";
+import {
+  isLoginVisible,
+  switchEventListeners,
+} from "../../Components/UserAuth/UserAuthLogic";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -20,6 +24,8 @@ globalStore.subscribe("noteEditorVisible", isNoteEditorVisible);
 globalStore.subscribe("deleteNote", findNoteIdToDeleteNote);
 globalStore.subscribe("notesLength", reRenderNotesLengthElement);
 globalStore.subscribe("existingNote", fetchExistingNote);
+globalStore.subscribe("loginVisible", isLoginVisible);
+//globalStore.subscribe("loginOrRegister", switchEventListeners);
 
 window.addEventListener("beforeunload", function (e) {
   console.log(defaultNote);

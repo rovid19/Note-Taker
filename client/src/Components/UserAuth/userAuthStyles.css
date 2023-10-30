@@ -1,0 +1,124 @@
+:root {
+  --defBlack: #1a1a1a;
+  --defGray: #f8f8f8;
+  --defGreen: #00a82d;
+  --defHBlack: #404040;
+  --light: #b8b8b8;
+  --ligherdark: #f2f2f2;
+}
+
+.user-auth-container {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(26, 26, 26, 0.2);
+}
+
+.userAuthMainDiv {
+  height: 40%;
+  width: 30%;
+  border-radius: 6px;
+}
+
+.userAuthForm {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  background-color: var(--defBlack);
+  border-radius: 6px;
+  padding: 16px;
+  position: relative;
+}
+
+.userAuthFieldset {
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  justify-content: center;
+  gap: 8px;
+}
+
+.userAuthDiv2 {
+  height: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 2px solid rgba(64, 64, 64, 0.3);
+}
+
+.userAuthLegend {
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 0;
+  margin-top: 8px;
+}
+
+.userAuthDiv1 {
+  height: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid rgba(64, 64, 64, 0.3);
+}
+
+.userAuthInput {
+  border: none;
+  background-color: var(--defHBlack);
+  padding: 8px;
+  height: 30px;
+  border-radius: 6px;
+  color: white;
+}
+
+.userAuthButton {
+  border: none;
+  background-color: var(--light);
+  padding: 8px;
+  width: 30%;
+  border-radius: 6px;
+  color: var(--defBlack);
+  cursor: pointer;
+  height: 40px;
+}
+
+.userAuthButton:hover {
+  background-color: #00a82d;
+  color: white;
+}
+
+.userAuthH4 {
+  color: var(--light);
+
+  margin-top: 8px;
+}
+
+.span {
+  cursor: pointer;
+}
+
+.span:hover {
+  color: white;
+}
+
+.userAuthSvg {
+  position: absolute;
+  color: var(--defHBlack);
+  top: 16px;
+  left: 16px;
+  cursor: pointer;
+}
+
+.userAuthSvg:hover {
+  color: var(--ligherdark);
+}

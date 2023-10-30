@@ -9,7 +9,8 @@ interface InitialState {
   deleteNote: number | null;
   notesLength: number;
   existingNote: boolean;
-  //warningMessage: boolean;
+  loginVisible: boolean;
+  loginOrRegister: string;
   [key: string]: any;
 }
 
@@ -60,7 +61,8 @@ const intialState = {
   userNotes: [],
   notesLength: 0,
   existingNote: false,
-  //warningMessage: false,
+  loginVisible: false,
+  loginOrRegister: "",
   deleteNote: null,
 };
 

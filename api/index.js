@@ -4,6 +4,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import notesRoute from "./Routes/notes.js";
+import userRoute from "./Routes/user.js";
 import path from "path";
 
 const app = express();
@@ -28,4 +29,5 @@ app.use(
 );
 app.use(express.json());
 app.use("/api/notes", notesRoute);
+app.use("/api/user", userRoute);
 app.listen(port);
