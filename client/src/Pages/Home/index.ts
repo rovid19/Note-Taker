@@ -12,8 +12,11 @@ import { reRenderNotesLengthElement } from "../../Components/Sidebar/SidebarLogi
 import { defaultNote } from "../../Components/NoteEditor/NoteEditor";
 import {
   isLoginVisible,
+  isUserLoggedIn,
   switchEventListeners,
 } from "../../Components/UserAuth/UserAuthLogic";
+import { userStore } from "../../Stores/UserStore";
+import { userApiRequest } from "../../Services/UserService";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -27,8 +30,9 @@ globalStore.subscribe("existingNote", fetchExistingNote);
 globalStore.subscribe("loginVisible", isLoginVisible);
 //globalStore.subscribe("loginOrRegister", switchEventListeners);
 
+userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
+
 window.addEventListener("beforeunload", function (e) {
-  console.log(defaultNote);
   if (
     defaultNote.fetchedNoteText !== defaultNote.noteText ||
     defaultNote.fetchedNoteTitle !== defaultNote.noteTitle
@@ -38,3 +42,4 @@ window.addEventListener("beforeunload", function (e) {
   }
 });
 isActiveUrl();
+userApiRequest.getUser();

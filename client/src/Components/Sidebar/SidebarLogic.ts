@@ -3,7 +3,7 @@ import noteService from "../../Services/NoteService";
 import { generateSidebar } from "./Sidebar";
 import { navigateTo } from "../../Utils/Router";
 import { autoSaveNote } from "../NoteEditor/NoteEditorLogic";
-import { defaultNote } from "../NoteEditor/NoteEditor";
+import { defaultUser } from "../../Stores/UserStore";
 
 export interface Note {
   title: string;
@@ -24,7 +24,7 @@ export const isSidebarVisible = async () => {
     noteEditorDiv = document.getElementById("note-container") as HTMLElement;
 
   if (sidebarVisible) {
-    await noteService.fetchAllUserNotes();
+    await noteService.fetchAllUserNotes(defaultUser.id);
     createSidebar(noteEditorVisible, noteEditorDiv);
     updateUserNotesLength();
     createAllNotesContainer();
@@ -117,7 +117,6 @@ const eventDelegationForNotes = (sidebarDiv2: HTMLElement): void => {
     if (parentElementDelete) {
       findIndexToDeleteNote(allSvgs, parentElementDelete);
     } else {
-      console.log(defaultNote);
       autoSaveNote();
       setNoteIdToOpenNote(allArticles, parentElementOpen);
       const noteId = globalStore.get("noteId");

@@ -8,7 +8,7 @@ const bcryptSalt = bcryptjs.genSaltSync(10);
 
 export const registerUser = async (req, res) => {
   const { email, username, password } = req.body;
-  console.log(email, username, password);
+
   const existingUser = await User.findOne({ email });
   const existingUsername = await User.findOne({ username: username });
 
@@ -37,9 +37,12 @@ export const loginUser = async (req, res) => {
   if (userFound) {
     const checkPass = bcryptjs.compareSync(password, userFound.password);
     if (checkPass) {
-      jwt.sign({}, jwtSecret, {}, async (err, token) => {
+      jwt.sign({ userId: userFound._id }, jwtSecret, {}, async (err, token) => {
         if (err) throw err;
-        res.cookie("token", token).json(userFound);
+
+        res
+          .cookie("token", token, { sameSite: "none", secure: true })
+          .json(userFound);
       });
     } else {
       res.status(400).json("Email or password is wrong");
@@ -47,4 +50,20 @@ export const loginUser = async (req, res) => {
   } else {
     res.status(400).json("Email or password is wrong");
   }
+};
+
+export const logoutUser = (req, res) => {
+  res.cookie("token", "").json("ok");
+};
+
+export const getUser = (req, res) => {
+  console.log(req.cookies);
+  /* if (token) {
+    jwt.verify({}, token, {}, async (user, err) => {
+      if (err) throw err;
+      const foundUser = await User.findById(user.id);
+
+      res.json(foundUser);
+    });
+  }*/
 };

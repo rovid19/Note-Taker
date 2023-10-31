@@ -17,10 +17,10 @@ export const generateNavbar = (): HTMLElement => {
     <div class="navbarTopContainerInnerDiv1">
         <div class="ntcInnerDivUsernameDiv">
         <div class="userDiv1">
-            <img src="../../public/img/1.png" alt="Image Alt Text">
+            <div class="pictureDiv"> G</div>
             </div>
             <div class="userDiv2">
-            <h1>Guest</h1> </div>
+            <h1 class="username">Guest</h1> </div>
         </div>
     </div> 
     <div class="navbarTopContainerInnerDiv2"> 

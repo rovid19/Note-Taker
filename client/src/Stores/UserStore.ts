@@ -1,39 +1,47 @@
 interface InitialState {
+  isUserLoggedIn: boolean;
   [key: string]: any;
 }
 
 type Listener = (key: any, value: any) => void;
 
-const initialState = {};
+const initialState = {
+  isUserLoggedIn: false,
+};
 
 class User {
   email: string;
   username: string;
   password: string;
   confirmedPassword: string;
+  id: string;
 
   constructor(
     email: string,
     username: string,
     password: string,
-    confirmedPassword: string
+    confirmedPassword: string,
+    id: string
   ) {
     (this.email = email),
       (this.username = username),
       (this.password = password);
     this.confirmedPassword = confirmedPassword;
+    this.id = id;
   }
 
   setUser(
     email: string,
     username: string,
     password: string,
-    confirmedPassword: string
+    confirmedPassword: string,
+    id: string
   ) {
     (this.email = email),
       (this.username = username),
       (this.password = password);
     this.confirmedPassword = confirmedPassword;
+    this.id = id;
   }
   setEmail(email: string) {
     this.email = email;
@@ -85,4 +93,4 @@ class UserStore {
 }
 
 export const userStore = new UserStore();
-export const defaultUser = new User("", "", "", "");
+export const defaultUser = new User("", "", "", "", "");

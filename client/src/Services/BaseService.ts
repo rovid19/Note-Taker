@@ -26,7 +26,9 @@ class Base {
 
   async post(endpoint: string, clientData: clientData) {
     try {
-      const response = await axios.post(this.baseUrl + endpoint, clientData);
+      const response = await axios.post(this.baseUrl + endpoint, clientData, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (e) {
       console.error(e);

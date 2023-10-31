@@ -6,6 +6,7 @@ import { fullDate } from "../../Utils/Date";
 import { navigateTo } from "../../Utils/Router";
 import { reRenderAllNotesContainer } from "../Sidebar/SidebarLogic";
 import { createWarning } from "../WarningMessage/WarningLogic";
+import { defaultUser } from "../../Stores/UserStore";
 
 type NoteArray = {
   _id: string;
@@ -38,8 +39,8 @@ const createNoteEditor = (): void => {
 const isNewNoteOrExistingNote = async (existingNote: boolean) => {
   if (existingNote) {
   } else {
-    await noteService.createNewNote(fullDate);
-    await noteService.fetchAllUserNotes();
+    await noteService.createNewNote(fullDate, defaultUser.id);
+    await noteService.fetchAllUserNotes(defaultUser.id);
     reRenderNoteFields();
   }
 };
@@ -62,7 +63,6 @@ const addNewNoteTitle = (noteTitleElement: HTMLElement) => {
     const target = e.target as HTMLInputElement;
     const value = target.value;
     defaultNote.setNoteTitle(value);
-    console.log(defaultNote.noteTitle);
   });
 };
 
@@ -74,7 +74,7 @@ const saveTitleAfterClickingOnNoteText = (
     const newNoteTitle = defaultNote.noteTitle;
     if (oldNoteTitle !== newNoteTitle) {
       await noteService.saveNewNoteTitle(newNoteTitle, defaultNote.id);
-      await noteService.fetchAllUserNotes();
+      await noteService.fetchAllUserNotes(defaultUser.id);
       reRenderAllNotesContainer();
       oldNoteTitle = newNoteTitle;
     }
@@ -87,7 +87,7 @@ export const deleteNote = async () => {
 
   if (noteIndex !== -1) {
     await noteService.deleteNote(noteId);
-    await noteService.fetchAllUserNotes();
+    await noteService.fetchAllUserNotes(defaultUser.id);
     reRenderAllNotesContainer();
     updateUserNotesLength();
     globalStore.set("deleteNote", -1);
@@ -131,7 +131,7 @@ export const autoSaveNote = async () => {
       defaultNote.noteTitle,
       defaultNote.noteText
     );
-    await noteService.fetchAllUserNotes();
+    await noteService.fetchAllUserNotes(defaultUser.id);
     reRenderAllNotesContainer();
   }
 };

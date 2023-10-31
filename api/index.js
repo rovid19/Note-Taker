@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import notesRoute from "./Routes/notes.js";
 import userRoute from "./Routes/user.js";
 import path from "path";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,4 +31,5 @@ app.use(
 app.use(express.json());
 app.use("/api/notes", notesRoute);
 app.use("/api/user", userRoute);
+app.use(cookieParser());
 app.listen(port);

@@ -7,8 +7,8 @@ class NoteService extends Base {
   constructor() {
     super("http://localhost:3000/api/notes");
   }
-  async createNewNote(fullDate: string) {
-    const newNote = await this.post("/create-new-note", { fullDate });
+  async createNewNote(fullDate: string, userId: string) {
+    const newNote = await this.post("/create-new-note", { fullDate, userId });
     defaultNote.setNote(
       newNote.title,
       newNote.title,
@@ -25,8 +25,8 @@ class NoteService extends Base {
       noteId,
     });
   }
-  async fetchAllUserNotes() {
-    const allNotes = await this.get("/fetch-user-notes", {});
+  async fetchAllUserNotes(userId: string) {
+    const allNotes = await this.get("/fetch-user-notes", { userId });
     globalStore.set("userNotes", allNotes);
   }
 
