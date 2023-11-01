@@ -19,7 +19,6 @@ class UserService extends Base {
   async loginUser(email: string, password: string) {
     const user = await this.post("/login-user", { email, password });
     defaultUser.setUser(user.email, user.username, "", "", user._id);
-    console.log(defaultUser);
     redirectAfterLogin();
   }
 
@@ -30,7 +29,8 @@ class UserService extends Base {
 
   async getUser() {
     const user = await this.get("/get-user", {});
-    console.log(user);
+    defaultUser.setUser(user.email, user.username, "", "", user._id);
+    userStore.set("isUserLoggedIn", true);
   }
 }
 

@@ -1,0 +1,35 @@
+"filename", "language", "TypeScript", "JSON with Comments", "XML", "JSON", "HTML", "CSS", "comment", "blank", "total"
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\index.html", "HTML", 0, 0, 0, 0, 18, 0, 0, 1, 19
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\package-lock.json", "JSON", 0, 0, 0, 967, 0, 0, 0, 1, 968
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\package.json", "JSON", 0, 0, 0, 19, 0, 0, 0, 1, 20
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\public\vite.svg", "XML", 0, 0, 1, 0, 0, 0, 0, 0, 1
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Navbar\Navbar.ts", "TypeScript", 63, 0, 0, 0, 0, 0, 1, 11, 75
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Navbar\NavbarLogic.ts", "TypeScript", 60, 0, 0, 0, 0, 0, 0, 12, 72
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Navbar\navbarStyles.css", "CSS", 0, 0, 0, 0, 0, 183, 0, 27, 210
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\NoteEditor.ts", "TypeScript", 75, 0, 0, 0, 0, 0, 0, 11, 86
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\NoteEditorLogic.ts", "TypeScript", 147, 0, 0, 0, 0, 0, 8, 22, 177
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\noteStyling.css", "CSS", 0, 0, 0, 0, 0, 61, 0, 10, 71
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\Sidebar.ts", "TypeScript", 30, 0, 0, 0, 0, 0, 0, 11, 41
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\SidebarLogic.ts", "TypeScript", 145, 0, 0, 0, 0, 0, 4, 23, 172
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\sidebarStyling.css", "CSS", 0, 0, 0, 0, 0, 81, 0, 16, 97
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\TodoList\TodoList.ts", "TypeScript", 36, 0, 0, 0, 0, 0, 0, 6, 42
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\TodoList\TodoListLogic.ts", "TypeScript", 21, 0, 0, 0, 0, 0, 0, 4, 25
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\TodoList\todoListStyles.css", "CSS", 0, 0, 0, 0, 0, 43, 0, 10, 53
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\UserAuth\UserAuth.ts", "TypeScript", 58, 0, 0, 0, 0, 0, 0, 13, 71
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\UserAuth\UserAuthLogic.ts", "TypeScript", 159, 0, 0, 0, 0, 0, 0, 26, 185
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\UserAuth\userAuthStyles.css", "CSS", 0, 0, 0, 0, 0, 108, 0, 17, 125
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\WarningMessage\GenerateMessage.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 6, 22
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\WarningMessage\WarningLogic.ts", "TypeScript", 23, 0, 0, 0, 0, 0, 0, 6, 29
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\WarningMessage\warningStyling.css", "CSS", 0, 0, 0, 0, 0, 70, 0, 8, 78
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Pages\Home\index.css", "CSS", 0, 0, 0, 0, 0, 26, 0, 3, 29
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Pages\Home\index.ts", "TypeScript", 42, 0, 0, 0, 0, 0, 1, 5, 48
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\BaseService.ts", "TypeScript", 57, 0, 0, 0, 0, 0, 0, 9, 66
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\NoteService.ts", "TypeScript", 63, 0, 0, 0, 0, 0, 0, 6, 69
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\UserService.ts", "TypeScript", 31, 0, 0, 0, 0, 0, 0, 7, 38
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\GlobalStore.ts", "TypeScript", 59, 0, 0, 0, 0, 0, 0, 11, 70
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\NotesStore.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\UserStore.ts", "TypeScript", 83, 0, 0, 0, 0, 0, 0, 14, 97
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\Date.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 3, 16
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\Router.ts", "TypeScript", 57, 0, 0, 0, 0, 0, 0, 10, 67
+"c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\tsconfig.json", "JSON with Comments", 0, 19, 0, 0, 0, 0, 2, 3, 24
+"Total", "-", 1238, 19, 1, 986, 18, 572, 16, 314, 3164

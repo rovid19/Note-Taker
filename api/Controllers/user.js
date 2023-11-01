@@ -57,13 +57,14 @@ export const logoutUser = (req, res) => {
 };
 
 export const getUser = (req, res) => {
-  console.log(req.cookies);
-  /* if (token) {
-    jwt.verify({}, token, {}, async (user, err) => {
-      if (err) throw err;
-      const foundUser = await User.findById(user.id);
+  const { token } = req.cookies;
 
+  if (token) {
+    jwt.verify(token, jwtSecret, {}, async (err, user) => {
+      if (err) throw err;
+      console.log(user);
+      const foundUser = await User.findById(user.userId);
       res.json(foundUser);
     });
-  }*/
+  }
 };

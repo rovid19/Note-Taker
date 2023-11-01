@@ -14,7 +14,6 @@ export const createUserAuth = (): void => {
 
 export const isLoginVisible = (): void => {
   const loginVisible = globalStore.get("loginVisible");
-
   if (loginVisible) {
     createUserAuth();
   } else {

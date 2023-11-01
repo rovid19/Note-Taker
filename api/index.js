@@ -21,15 +21,15 @@ mongoose.connect(
     useUnifiedTopology: true,
   }
 );
-
+app.use(express.json());
+app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
     origin: ["http://localhost:5173"],
   })
 );
-app.use(express.json());
+
 app.use("/api/notes", notesRoute);
 app.use("/api/user", userRoute);
-app.use(cookieParser());
 app.listen(port);

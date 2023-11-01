@@ -18,20 +18,29 @@ type UserNotes = {
 export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
   const noteEditorVisible = globalStore.state.noteEditorVisible;
-  let noteEditorDiv = {} as HTMLElement;
+  const todoListVisible = globalStore.get("todoListVisible") as boolean;
 
-  if (noteEditorVisible)
-    noteEditorDiv = document.getElementById("note-container") as HTMLElement;
+  const todoOrNoteElement = isNoteEditorOrTodoActive(
+    noteEditorVisible
+  ) as HTMLElement;
 
   if (sidebarVisible) {
     await noteService.fetchAllUserNotes(defaultUser.id);
-    createSidebar(noteEditorVisible, noteEditorDiv);
+    createSidebar(noteEditorVisible, todoOrNoteElement, todoListVisible);
     updateUserNotesLength();
     createAllNotesContainer();
     sidebarNavigationLogic();
   } else {
     document.getElementById("sidebar-container")?.remove();
   }
+};
+
+const isNoteEditorOrTodoActive = (
+  noteEditorVisible: string | number | boolean
+): HTMLElement => {
+  return noteEditorVisible
+    ? (document.getElementById("note-container") as HTMLElement)
+    : (document.querySelector(".todo-container") as HTMLElement);
 };
 
 export const sidebarNavigationLogic = (): void => {
@@ -48,6 +57,19 @@ export const createAllNotesContainer = (): void => {
   const div = document.createElement("div");
   div.className = "sidebarDiv2";
   const sidebarStyles = document.querySelector(".sidebarStyles") as HTMLElement;
+  mapOverAllUserNotes(userNotes, div);
+  sidebarStyles.appendChild(div);
+  const sidebarDiv2 = document.querySelector(".sidebarDiv2") as HTMLElement;
+
+  eventDelegationForNotes(sidebarDiv2);
+};
+
+export const reRenderAllNotesContainer = () => {
+  document.querySelector(".sidebarDiv2")?.remove();
+  createAllNotesContainer();
+};
+
+const mapOverAllUserNotes = (userNotes: Note[], div: HTMLElement): void => {
   userNotes.map((note) => {
     return (div.innerHTML += `
       <article class="sidebarArticle">
@@ -67,16 +89,6 @@ export const createAllNotesContainer = (): void => {
       </div>
       </article>`);
   });
-
-  sidebarStyles.appendChild(div);
-  const sidebarDiv2 = document.querySelector(".sidebarDiv2") as HTMLElement;
-
-  eventDelegationForNotes(sidebarDiv2);
-};
-
-export const reRenderAllNotesContainer = () => {
-  document.querySelector(".sidebarDiv2")?.remove();
-  createAllNotesContainer();
 };
 
 export const updateUserNotesLength = (): void => {
@@ -97,11 +109,17 @@ export const reRenderNotesLengthElement = (): void => {
 
 const createSidebar = (
   noteEditorVisible: string | number | boolean,
-  noteEditorDiv: HTMLElement
+  todoOrNoteElement: HTMLElement,
+  todoListVisible: boolean
 ): void => {
   let div = document.createElement("div");
   div.id = "sidebar-container";
-  if (noteEditorVisible) document.body.insertBefore(div, noteEditorDiv);
+  console.log(div, todoOrNoteElement);
+  // insert before noteEditor
+  if (noteEditorVisible) document.body.insertBefore(div, todoOrNoteElement);
+  // insert before todoList
+  else if (todoListVisible) document.body.insertBefore(div, todoOrNoteElement);
+  // normal insert if both aren't active
   else document.body.appendChild(div);
   document.getElementById("sidebar-container")?.appendChild(generateSidebar());
 };

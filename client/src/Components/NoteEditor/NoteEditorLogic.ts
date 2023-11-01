@@ -3,7 +3,10 @@ import noteService from "../../Services/NoteService";
 import { defaultNote, generateNewNote } from "./NoteEditor";
 import { updateUserNotesLength } from "../Sidebar/SidebarLogic";
 import { fullDate } from "../../Utils/Date";
-import { navigateTo } from "../../Utils/Router";
+import {
+  isNoteEditorAndTodoOpenAtTheSameTime,
+  navigateTo,
+} from "../../Utils/Router";
 import { reRenderAllNotesContainer } from "../Sidebar/SidebarLogic";
 import { createWarning } from "../WarningMessage/WarningLogic";
 import { defaultUser } from "../../Stores/UserStore";
@@ -19,7 +22,9 @@ export const isNoteEditorVisible = async () => {
 
   if (noteEditorVisible) {
     createNoteEditor();
+    const noteEditor = document.getElementById("note-container") as HTMLElement;
     isNewNoteOrExistingNote(existingNote);
+    isNoteEditorAndTodoOpenAtTheSameTime(noteEditor);
   } else {
     navigateTo("/");
     document.getElementById("note-container")?.remove();
@@ -37,10 +42,12 @@ const createNoteEditor = (): void => {
 };
 
 const isNewNoteOrExistingNote = async (existingNote: boolean) => {
+  const sidebarVisible = globalStore.get("sidebarVisible");
   if (existingNote) {
   } else {
     await noteService.createNewNote(fullDate, defaultUser.id);
     await noteService.fetchAllUserNotes(defaultUser.id);
+    if (sidebarVisible) reRenderAllNotesContainer();
     reRenderNoteFields();
   }
 };

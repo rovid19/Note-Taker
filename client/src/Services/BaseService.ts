@@ -16,7 +16,10 @@ class Base {
 
   async get(endpoint: string, params: params) {
     try {
-      const response = await axios.get(this.baseUrl + endpoint, { params });
+      const response = await axios.get(this.baseUrl + endpoint, {
+        params,
+        withCredentials: true,
+      });
       return response.data;
     } catch (e) {
       console.error(e);

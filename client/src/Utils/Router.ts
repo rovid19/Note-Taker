@@ -46,3 +46,21 @@ export const extractIdFromUrl = (): string => {
   const url = window.location.href;
   return url;
 };
+
+export const isNoteEditorAndTodoOpenAtTheSameTime = (
+  container: HTMLElement
+): void => {
+  const noteEditor = document.getElementById("note-container") as HTMLElement;
+  const noteEditorVisible = globalStore.get("noteEditorVisible");
+  const todoListVisible = globalStore.get("todoListVisible");
+
+  if (container === noteEditor) {
+    if (todoListVisible) {
+      globalStore.set("todoListVisible", false);
+    }
+  } else {
+    if (noteEditorVisible) {
+      globalStore.set("noteEditorVisible", false);
+    }
+  }
+};

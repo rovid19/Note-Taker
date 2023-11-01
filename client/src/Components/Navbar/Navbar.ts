@@ -16,7 +16,7 @@ export const generateNavbar = (): HTMLElement => {
   <div class="navbarTopContainer"> 
     <div class="navbarTopContainerInnerDiv1">
         <div class="ntcInnerDivUsernameDiv">
-        <div class="userDiv1">
+            <div class="userDiv1">
             <div class="pictureDiv"> G</div>
             </div>
             <div class="userDiv2">

@@ -10,6 +10,7 @@ export const navbarNavigationLogic = (): void => {
 
   toggleSidebar(allNotesLi);
   toggleNoteEditor(newNoteLi);
+  toggleTodoList(todoListLi);
   toggleLogin();
 };
 
@@ -22,6 +23,14 @@ const toggleSidebar = (liItem: HTMLElement): void => {
 const toggleNoteEditor = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (): void => {
     globalStore.set("noteEditorVisible", !globalStore.state.noteEditorVisible);
+    autoSaveNote();
+  });
+};
+
+const toggleTodoList = (liItem: HTMLElement): void => {
+  liItem.addEventListener("click", (): void => {
+    globalStore.set("todoListVisible", !globalStore.get("todoListVisible"));
+    console.log(globalStore.get("todoListVisible"));
     autoSaveNote();
   });
 };

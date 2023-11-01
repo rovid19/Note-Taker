@@ -17,6 +17,7 @@ import {
 } from "../../Components/UserAuth/UserAuthLogic";
 import { userStore } from "../../Stores/UserStore";
 import { userApiRequest } from "../../Services/UserService";
+import { isTodoListVisible } from "../../Components/TodoList/TodoListLogic";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -28,6 +29,7 @@ globalStore.subscribe("deleteNote", findNoteIdToDeleteNote);
 globalStore.subscribe("notesLength", reRenderNotesLengthElement);
 globalStore.subscribe("existingNote", fetchExistingNote);
 globalStore.subscribe("loginVisible", isLoginVisible);
+globalStore.subscribe("todoListVisible", isTodoListVisible);
 //globalStore.subscribe("loginOrRegister", switchEventListeners);
 
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
