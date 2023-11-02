@@ -12,6 +12,8 @@
 .todoMainDiv {
   height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .todoInnerDiv1 {
@@ -39,13 +41,21 @@
 }
 
 .todoInnerDiv2 {
-  height: 85%;
+  height: 8%;
+
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 16px;
+}
+
+.todoInnerDiv3 {
   padding: 16px;
+  flex-grow: 1;
 }
 
 .todoArticle {
   margin-top: 16px;
-  height: 5%;
+  height: 50px;
   border-radius: 6px;
   border-bottom: 2px solid rgba(64, 64, 64, 0.07);
   padding-left: 16px;
@@ -64,7 +74,7 @@
 }
 
 .todoAddButton {
-  height: 8%;
+  height: 100%;
   width: 100%;
   border: none;
   display: flex;

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 type clientData = {
-  [key: string]: string | number | boolean;
+  [key: string]: string | number | boolean | string[];
 };
 
 type params = {

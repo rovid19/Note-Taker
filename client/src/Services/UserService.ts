@@ -1,6 +1,7 @@
 import Base from "./BaseService";
 import { defaultUser, userStore } from "../Stores/UserStore";
 import { redirectAfterLogin } from "../Components/UserAuth/UserAuthLogic";
+import { todoService } from "./TodoService";
 
 class UserService extends Base {
   constructor() {
@@ -31,6 +32,7 @@ class UserService extends Base {
     const user = await this.get("/get-user", {});
     defaultUser.setUser(user.email, user.username, "", "", user._id);
     userStore.set("isUserLoggedIn", true);
+    await todoService.fetchTodo(user._id);
   }
 }
 

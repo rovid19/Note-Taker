@@ -8,8 +8,9 @@ import {
   navigateTo,
 } from "../../Utils/Router";
 import { reRenderAllNotesContainer } from "../Sidebar/SidebarLogic";
-import { createWarning } from "../WarningMessage/WarningLogic";
+import { createWarning } from "../PopupWindows/WarningMessage/WarningLogic";
 import { defaultUser } from "../../Stores/UserStore";
+import { todoList } from "../../Stores/TodoStore";
 
 type NoteArray = {
   _id: string;

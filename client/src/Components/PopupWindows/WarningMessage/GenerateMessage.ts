@@ -3,7 +3,8 @@ export const generateMessage = (warningMessage: string): HTMLElement => {
     const link = document.createElement("link");
     link.id = "warningStyles";
     link.rel = "stylesheet";
-    link.href = "../../src/Components/WarningMessage/warningStyling.css";
+    link.href =
+      "../../src/Components/PopupWindows/WarningMessage/warningStyling.css";
 
     document.head.appendChild(link);
   }

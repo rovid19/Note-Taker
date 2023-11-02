@@ -1,5 +1,5 @@
-import globalStore from "../../Stores/GlobalStore";
-import { deleteNote } from "../NoteEditor/NoteEditorLogic";
+import globalStore from "../../../Stores/GlobalStore";
+import { deleteNote } from "../../NoteEditor/NoteEditorLogic";
 import { generateMessage } from "./GenerateMessage";
 
 export const createWarning = (warningMessage: string) => {
