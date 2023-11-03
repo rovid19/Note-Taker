@@ -35,7 +35,6 @@ const addNewTaskEventListener = (): void => {
 
   addNewTask.addEventListener("click", (): void => {
     todoList.addItem(inputValue);
-    todoStore.push("todoList", inputValue);
     closeAddNewTask();
     mapOverTodoItems();
     saveItemToDatabase(inputValue);

@@ -5,7 +5,7 @@ interface InitialState {
 type Listener = (key: any, value: any) => void;
 
 const initialState = {
-  todoList: [],
+  todoIndex: null,
 };
 
 class TodoStore {
@@ -21,19 +21,19 @@ class TodoStore {
     return this.state[key];
   }
 
-  set(key: string, value: string | number | boolean): void {
+  set(key: string, value: string | number | boolean | null): void {
     if (this.state[key] !== value) {
       this.state[key] = value;
       this.notify(key, value);
     }
   }
 
-  push(key: string, value: string | number | boolean): void {
+  /*push(key: string, value: string | number | boolean): void {
     this.state[key].push(value);
     this.notify(key, value);
-  }
+  }*/
 
-  notify(key: string, value: string | number | boolean): void {
+  notify(key: string, value: string | number | boolean | null): void {
     if (this.listeners[key]) {
       this.listeners[key].forEach((listener) => listener(key, value));
     }
@@ -49,15 +49,20 @@ class TodoStore {
 }
 
 class Todo {
-  todoItem;
-  constructor(todoItem: string) {
-    this.todoItem = todoItem;
+  todoList;
+  constructor(todoList: string[]) {
+    this.todoList = todoList;
   }
 
   addItem(item: string) {
-    this.todoItem = item;
+    this.todoList.push(item);
+  }
+  deleteTodoItem(index: number) {
+    const newArray = this.todoList.filter((item, i) => i !== index);
+    this.todoList = newArray;
+    console.log(this.todoList);
   }
 }
 
 export const todoStore = new TodoStore();
-export const todoList = new Todo("");
+export const todoList = new Todo([]);

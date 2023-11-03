@@ -1,4 +1,4 @@
-import { todoStore } from "../Stores/TodoStore";
+import { todoList, todoStore } from "../Stores/TodoStore";
 import Base from "./BaseService";
 
 class Todo extends Base {
@@ -8,11 +8,16 @@ class Todo extends Base {
 
   async fetchTodo(userId: string) {
     const todo = await this.get("/fetch-user-todo", { userId });
-    todoStore.set("todoList", todo);
+    todo.forEach((item) => todoList.addItem(item));
+    console.log(todoList.todoList);
   }
 
   async saveItem(userId: string, todoItem: string) {
     await this.put("/save-todo", { userId, todoItem });
+  }
+
+  async deleteTask(userId: string, index: number) {
+    await this.put("/delete-task", { userId, index });
   }
 }
 

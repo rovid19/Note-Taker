@@ -17,7 +17,10 @@ import {
 } from "../../Components/UserAuth/UserAuthLogic";
 import { userStore } from "../../Stores/UserStore";
 import { userApiRequest } from "../../Services/UserService";
-import { isTodoListVisible } from "../../Components/TodoList/TodoListLogic";
+import {
+  deleteTodoItem,
+  isTodoListVisible,
+} from "../../Components/TodoList/TodoListLogic";
 import { todoStore } from "../../Stores/TodoStore";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
@@ -31,13 +34,13 @@ globalStore.subscribe("notesLength", reRenderNotesLengthElement);
 globalStore.subscribe("existingNote", fetchExistingNote);
 globalStore.subscribe("loginVisible", isLoginVisible);
 globalStore.subscribe("todoListVisible", isTodoListVisible);
-//globalStore.subscribe("loginOrRegister", switchEventListeners);
 
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 
-todoStore.subscribe("todoList", () =>
+/*todoStore.subscribe("todoList", () =>
   console.log("da", todoStore.get("todoList"))
-);
+);*/
+todoStore.subscribe("todoIndex", deleteTodoItem);
 
 window.addEventListener("beforeunload", function (e) {
   if (

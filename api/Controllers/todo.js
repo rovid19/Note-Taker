@@ -20,3 +20,17 @@ export const fetchTodo = async (req, res) => {
 
   res.json(user.todoList);
 };
+
+export const deleteTask = async (req, res) => {
+  const { userId, index } = req.body;
+
+  const user = await User.findById(userId);
+
+  const newArray = [...user.todoList].filter((item, i) => i !== index);
+
+  user.todoList = newArray;
+
+  await user.save();
+
+  res.json("alright");
+};
