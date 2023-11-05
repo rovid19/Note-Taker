@@ -67,7 +67,7 @@ export const deleteNote = async (req, res) => {
 
 export const fetchExistingNote = async (req, res) => {
   const { noteId } = req.query;
-
+  console.log(noteId);
   const note = await Note.findById(noteId);
   res.json(note);
 };

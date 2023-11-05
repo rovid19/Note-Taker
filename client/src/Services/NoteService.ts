@@ -17,7 +17,7 @@ class NoteService extends Base {
       newNote.noteText,
       newNote._id
     );
-    navigateTo(`/notes?noteId=${defaultNote.id}`);
+    navigateTo(`/notes/noteId=${defaultNote.id}`);
   }
   async saveNewNoteTitle(noteTitle: string | number | boolean, noteId: string) {
     await this.put("/save-note-title", {
@@ -35,8 +35,9 @@ class NoteService extends Base {
   }
 
   async getNote() {
-    let params = new URLSearchParams(window.location.search);
-    const noteId = params.get("noteId") as string;
+    const noteId = globalStore.get("noteId") as string;
+    const url = globalStore.get("url");
+    console.log(url);
     const note = await this.get("/get-specific-note", { noteId });
     defaultNote.setNote(
       note.title,

@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   email: String,
   username: String,
   password: String,
-  userNotes: [{ type: mongoose.Schema.Types.ObjectId, ref: "note" }],
+  folder: [{ type: mongoose.Schema.Types.ObjectId, ref: "folder" }],
   todoList: [],
 });
 

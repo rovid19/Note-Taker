@@ -138,7 +138,7 @@ const eventDelegationForNotes = (sidebarDiv2: HTMLElement): void => {
       autoSaveNote();
       setNoteIdToOpenNote(allArticles, parentElementOpen);
       const noteId = globalStore.get("noteId");
-      navigateTo(`/notes?noteId=${noteId}`);
+      navigateTo(`/notes/noteId=${noteId}`);
       globalStore.set("existingNote", true);
       globalStore.set("noteEditorVisible", true);
     }
