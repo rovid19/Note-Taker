@@ -1,34 +1,42 @@
 import globalStore from "../Stores/GlobalStore";
+import { setEditorsToTrueOrFalseAccordingly } from "./Utils";
 
-type Routes = {
-  url: string;
-  navigateToTodoList?: any;
-  navigateToNoteEditor?: any;
-};
+class Router {
+  routes: [];
+  constructor(routes: []) {
+    this.routes = routes;
+  }
 
-interface Router {
-  home: Routes;
-  [key: string]: Routes;
+  getCurrentUrl() {
+    const activeUrl = window.location.pathname;
+    console.log(activeUrl);
+    globalStore.set("url", activeUrl);
+  }
+
+  redirectToRoute() {
+    const url = globalStore.get("url");
+    console.log(url);
+    switch (url) {
+      case "/":
+        setEditorsToTrueOrFalseAccordingly("/");
+        break;
+      case "/note":
+        setEditorsToTrueOrFalseAccordingly("note");
+        break;
+      case "/dailytodo":
+        setEditorsToTrueOrFalseAccordingly("dailytodo");
+        break;
+    }
+  }
+
+  navigateTo(pathname: string) {
+    history.pushState(null, "", pathname);
+    this.getCurrentUrl();
+  }
 }
 
-const routerList: Router = {
-  home: {
-    url: "/",
-  },
-  todoList: {
-    url: "/todo-list",
-    navigateToTodoList: () => globalStore.set("todoListVisible", true),
-  },
-  noteEditor: {
-    url: "/notes",
-    navigateToNoteEditor: () => globalStore.set("noteEditorVisible", true),
-  },
-};
-
-export const isActiveUrl = (): void => {
-  const activeUrl = window.location.pathname;
-  globalStore.set("url", activeUrl);
-  checkForUrlChange();
+/*export const isActiveUrl = (): void => {
+ 
 };
 
 export const checkForUrlChange = (): void => {
@@ -39,7 +47,7 @@ export const checkForUrlChange = (): void => {
 };
 
 export const navigateTo = (pathname: string): void => {
-  history.pushState(null, "", pathname);
+ 
 };
 
 export const extractIdFromUrl = (): string => {
@@ -64,3 +72,6 @@ export const isNoteEditorAndTodoOpenAtTheSameTime = (
     }
   }
 };
+*/
+
+export const router = new Router([]);

@@ -2,6 +2,9 @@ interface InitialState {
   sidebarVisible: boolean;
   noteEditorVisible: boolean;
   todoListVisible: boolean;
+  homeVisible: boolean;
+  isInMainEditor: string;
+  activeLink: string;
   url: string;
   noteId: string;
   noteTitle: string;
@@ -55,7 +58,10 @@ const intialState = {
   sidebarVisible: false,
   noteEditorVisible: false,
   todoListVisible: false,
-  url: "/",
+  homeVisible: true,
+  isInMainEditor: "",
+  activeLink: "",
+  url: "/da",
   noteId: "",
   noteTitle: "",
   userNotes: [],

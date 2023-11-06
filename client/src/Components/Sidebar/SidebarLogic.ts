@@ -1,9 +1,9 @@
 import globalStore from "../../Stores/GlobalStore";
 import noteService from "../../Services/NoteService";
 import { generateSidebar } from "./Sidebar";
-import { navigateTo } from "../../Utils/Router";
 import { autoSaveNote } from "../NoteEditor/NoteEditorLogic";
 import { defaultUser } from "../../Stores/UserStore";
+import { router } from "../../Utils/Router";
 
 export interface Note {
   title: string;
@@ -114,7 +114,6 @@ const createSidebar = (
 ): void => {
   let div = document.createElement("div");
   div.id = "sidebar-container";
-  console.log(div, todoOrNoteElement);
   // insert before noteEditor
   if (noteEditorVisible) document.body.insertBefore(div, todoOrNoteElement);
   // insert before todoList
@@ -138,7 +137,7 @@ const eventDelegationForNotes = (sidebarDiv2: HTMLElement): void => {
       autoSaveNote();
       setNoteIdToOpenNote(allArticles, parentElementOpen);
       const noteId = globalStore.get("noteId");
-      navigateTo(`/notes/noteId=${noteId}`);
+      router.navigateTo(`/notes/noteId=${noteId}`);
       globalStore.set("existingNote", true);
       globalStore.set("noteEditorVisible", true);
     }

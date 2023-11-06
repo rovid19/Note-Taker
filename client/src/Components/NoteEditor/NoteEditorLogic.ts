@@ -3,14 +3,11 @@ import noteService from "../../Services/NoteService";
 import { defaultNote, generateNewNote } from "./NoteEditor";
 import { updateUserNotesLength } from "../Sidebar/SidebarLogic";
 import { fullDate } from "../../Utils/Date";
-import {
-  isNoteEditorAndTodoOpenAtTheSameTime,
-  navigateTo,
-} from "../../Utils/Router";
+
 import { reRenderAllNotesContainer } from "../Sidebar/SidebarLogic";
 import { createWarning } from "../PopupWindows/WarningMessage/WarningLogic";
 import { defaultUser } from "../../Stores/UserStore";
-import { todoList } from "../../Stores/TodoStore";
+import { router } from "../../Utils/Router";
 
 type NoteArray = {
   _id: string;
@@ -23,11 +20,8 @@ export const isNoteEditorVisible = async () => {
 
   if (noteEditorVisible) {
     createNoteEditor();
-    const noteEditor = document.getElementById("note-container") as HTMLElement;
     isNewNoteOrExistingNote(existingNote);
-    isNoteEditorAndTodoOpenAtTheSameTime(noteEditor);
   } else {
-    navigateTo("/");
     document.getElementById("note-container")?.remove();
   }
 };

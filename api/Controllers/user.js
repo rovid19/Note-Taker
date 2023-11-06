@@ -62,7 +62,7 @@ export const getUser = (req, res) => {
   if (token) {
     jwt.verify(token, jwtSecret, {}, async (err, user) => {
       if (err) throw err;
-      console.log(user);
+
       const foundUser = await User.findById(user.userId);
       res.json(foundUser);
     });

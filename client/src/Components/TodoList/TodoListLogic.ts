@@ -1,5 +1,4 @@
 import globalStore from "../../Stores/GlobalStore";
-import { isNoteEditorAndTodoOpenAtTheSameTime } from "../../Utils/Router";
 import { createAddNewTask } from "../PopupWindows/AddNewTask/addNewTaskLogic";
 import { generateTodoList } from "./TodoList";
 import { todoList, todoStore } from "../../Stores/TodoStore";
@@ -11,9 +10,6 @@ export const isTodoListVisible = (): void => {
 
   if (todoListVisible) {
     createTodoList();
-    const todoList = document.querySelector(".todo-container") as HTMLElement;
-    isNoteEditorAndTodoOpenAtTheSameTime(todoList);
-    //fetchUserTodo();
     mapOverTodoItems();
     todoEventListeners();
   } else {

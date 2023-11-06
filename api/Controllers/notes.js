@@ -3,7 +3,7 @@ import User from "../Models/User.js";
 
 export const createNewNote = async (req, res) => {
   const { fullDate, userId } = req.body;
-  console.log(userId, "ok");
+
   try {
     const findUser = await User.findById(userId);
     const newNote = await Note.create({
@@ -15,7 +15,7 @@ export const createNewNote = async (req, res) => {
     findUser.userNotes.push(newNote._id);
 
     await findUser.save();
-    console.log(findUser);
+
     res.json(newNote);
   } catch (e) {
     throw e;
@@ -40,7 +40,7 @@ export const saveNewNoteTitle = async (req, res) => {
 
 export const fetchAllUserNotes = async (req, res) => {
   const { userId } = req.query;
-  console.log(userId);
+
   try {
     const userNotes = await User.findById(userId).populate(
       "userNotes",
@@ -67,7 +67,7 @@ export const deleteNote = async (req, res) => {
 
 export const fetchExistingNote = async (req, res) => {
   const { noteId } = req.query;
-  console.log(noteId);
+
   const note = await Note.findById(noteId);
   res.json(note);
 };

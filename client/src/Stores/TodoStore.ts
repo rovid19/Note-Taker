@@ -60,7 +60,6 @@ class Todo {
   deleteTodoItem(index: number) {
     const newArray = this.todoList.filter((item, i) => i !== index);
     this.todoList = newArray;
-    console.log(this.todoList);
   }
 }
 

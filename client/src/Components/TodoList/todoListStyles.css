@@ -3,6 +3,8 @@
   --defGray: #f8f8f8;
   --defGreen: #00a82d;
   --defHBlack: #404040;
+  --lightB: #262626;
+  --darkB: #1e1e1e;
 }
 
 .todo-container {
@@ -14,6 +16,8 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  background-color: var(--darkB);
+  color: var(--defGray);
 }
 
 .todoInnerDiv1 {
@@ -30,7 +34,7 @@
 }
 
 .todoInnerDiv1 > h2 {
-  background-color: var(--defGray);
+  background-color: var(--lightB);
   font-size: 48px;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -84,12 +88,13 @@
   border-radius: 6px;
   cursor: pointer;
   border: 2px solid rgba(64, 64, 64, 0.02);
-  background-color: var(--defGray);
+  background-color: var(--lightB);
   transition: all 0.1s ease;
+  color: var(--defGray);
 }
 
 .todoAddButton:hover {
-  border: 2px solid rgba(64, 64, 64, 0.2);
+  border: 2px solid rgba(64, 64, 64, 0.5);
 }
 
 .blank {
@@ -118,9 +123,10 @@
 
 .todoButtonDelete {
   height: 70%;
-  background-color: var(--defGray);
+  background-color: var(--lightB);
+  color: var(--defGray);
   border: none;
-  width: 50%;
+  width: 5 0%;
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.1s ease;

@@ -1,7 +1,7 @@
 import { defaultNote } from "../Components/NoteEditor/NoteEditor";
 import Base from "../Services/BaseService";
 import globalStore from "../Stores/GlobalStore";
-import { navigateTo } from "../Utils/Router";
+import { router } from "../Utils/Router";
 
 class NoteService extends Base {
   constructor() {
@@ -17,7 +17,7 @@ class NoteService extends Base {
       newNote.noteText,
       newNote._id
     );
-    navigateTo(`/notes/noteId=${defaultNote.id}`);
+    router.navigateTo(`/notes/noteId=${defaultNote.id}`);
   }
   async saveNewNoteTitle(noteTitle: string | number | boolean, noteId: string) {
     await this.put("/save-note-title", {
@@ -36,8 +36,6 @@ class NoteService extends Base {
 
   async getNote() {
     const noteId = globalStore.get("noteId") as string;
-    const url = globalStore.get("url");
-    console.log(url);
     const note = await this.get("/get-specific-note", { noteId });
     defaultNote.setNote(
       note.title,

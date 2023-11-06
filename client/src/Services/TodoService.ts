@@ -9,7 +9,6 @@ class Todo extends Base {
   async fetchTodo(userId: string) {
     const todo = await this.get("/fetch-user-todo", { userId });
     todo.forEach((item) => todoList.addItem(item));
-    console.log(todoList.todoList);
   }
 
   async saveItem(userId: string, todoItem: string) {

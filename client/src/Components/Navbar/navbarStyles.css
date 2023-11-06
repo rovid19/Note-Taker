@@ -3,12 +3,14 @@
   --defGray: #f8f8f8;
   --defGreen: #00a82d;
   --defHBlack: #404040;
+  --lightB: #262626;
+  --darkB: #1e1e1e;
 }
 
 .navbarStyles {
   height: 100%;
   width: 100%;
-  background-color: var(--defBlack);
+  background-color: var(--lightB);
   color: white;
 }
 
@@ -18,11 +20,13 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border-right: 2px solid rgba(184, 184, 184, 0.05);
 }
 
 .navbarBottomContainer {
   height: 75%;
-  background-color: var(--defBlack);
+  background-color: var(--lightB);
+  border-right: 2px solid rgba(184, 184, 184, 0.05);
 }
 
 .navbarTopContainerInnerDiv1 {
@@ -185,6 +189,10 @@
 }
 
 .navbarBottomContainerInnerDiv2 > nav > ul > li:hover {
+  background-color: var(--defHBlack) !important;
+}
+
+.homeLi:hover {
   background-color: var(--defHBlack);
 }
 
