@@ -19,7 +19,7 @@ export const navbarNavigationLogic = (): void => {
 
 const toggleSidebar = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (): void => {
-    globalStore.set("sidebarVisible", !globalStore.state.sidebarVisible);
+    openSidebar();
     autoSaveNote();
   });
 };
@@ -76,4 +76,8 @@ const handleLogout = (): void => {
   userApiRequest.logoutUser();
   globalStore.set("loginVisible", false);
   autoSaveNote();
+};
+
+export const openSidebar = (): void => {
+  globalStore.set("sidebarVisible", !globalStore.state.sidebarVisible);
 };

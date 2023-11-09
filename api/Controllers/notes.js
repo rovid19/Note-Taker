@@ -42,12 +42,13 @@ export const fetchAllUserNotes = async (req, res) => {
   const { userId } = req.query;
 
   try {
-    const userNotes = await User.findById(userId).populate(
-      "userNotes",
-      "title noteText dateCreated"
-    );
+    const user = await User.findById(userId);
 
-    res.json(userNotes.userNotes.reverse());
+    user.folderModel = "Folder";
+
+    await user.populate("folder", "name");
+
+    res.json(user);
   } catch (e) {
     throw e;
   }

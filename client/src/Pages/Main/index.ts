@@ -22,6 +22,7 @@ import {
 } from "../../Components/TodoList/TodoListLogic";
 import { todoStore } from "../../Stores/TodoStore";
 import { setActiveLinkCss } from "../../Utils/Utils";
+import { isHomeVisible } from "../../Components/Home/HomeLogic";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -35,6 +36,7 @@ globalStore.subscribe("existingNote", fetchExistingNote);
 globalStore.subscribe("loginVisible", isLoginVisible);
 globalStore.subscribe("todoListVisible", isTodoListVisible);
 globalStore.subscribe("activeLink", setActiveLinkCss);
+globalStore.subscribe("homeVisible", isHomeVisible);
 
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 

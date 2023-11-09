@@ -58,7 +58,7 @@ const intialState = {
   sidebarVisible: false,
   noteEditorVisible: false,
   todoListVisible: false,
-  homeVisible: true,
+  homeVisible: false,
   isInMainEditor: "",
   activeLink: "",
   url: "/da",

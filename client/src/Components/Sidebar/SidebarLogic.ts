@@ -19,14 +19,21 @@ export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
   const noteEditorVisible = globalStore.state.noteEditorVisible;
   const todoListVisible = globalStore.get("todoListVisible") as boolean;
+  const homeVisible = globalStore.get("homeVisible") as boolean;
 
-  const todoOrNoteElement = isNoteEditorOrTodoActive(
-    noteEditorVisible
+  const todoOrNoteElement = whichEditorIsActive(
+    noteEditorVisible,
+    homeVisible
   ) as HTMLElement;
 
   if (sidebarVisible) {
     await noteService.fetchAllUserNotes(defaultUser.id);
-    createSidebar(noteEditorVisible, todoOrNoteElement, todoListVisible);
+    createSidebar(
+      noteEditorVisible,
+      todoOrNoteElement,
+      todoListVisible,
+      homeVisible
+    );
     updateUserNotesLength();
     createAllNotesContainer();
     sidebarNavigationLogic();
@@ -35,11 +42,14 @@ export const isSidebarVisible = async () => {
   }
 };
 
-const isNoteEditorOrTodoActive = (
-  noteEditorVisible: string | number | boolean
+const whichEditorIsActive = (
+  noteEditorVisible: string | number | boolean,
+  homeVisible: boolean
 ): HTMLElement => {
   return noteEditorVisible
     ? (document.getElementById("note-container") as HTMLElement)
+    : homeVisible
+    ? (document.querySelector(".home-container") as HTMLElement)
     : (document.querySelector(".todo-container") as HTMLElement);
 };
 
@@ -104,18 +114,21 @@ export const reRenderNotesLengthElement = (): void => {
 
   noteLengthElement.textContent = `${globalStore.get(
     "notesLength"
-  )} notes` as string;
+  )} projects` as string;
 };
 
 const createSidebar = (
   noteEditorVisible: string | number | boolean,
   todoOrNoteElement: HTMLElement,
-  todoListVisible: boolean
+  todoListVisible: boolean,
+  homeVisible: boolean
 ): void => {
   let div = document.createElement("div");
   div.id = "sidebar-container";
   // insert before noteEditor
   if (noteEditorVisible) document.body.insertBefore(div, todoOrNoteElement);
+  // insert before home
+  else if (homeVisible) document.body.appendChild(div);
   // insert before todoList
   else if (todoListVisible) document.body.insertBefore(div, todoOrNoteElement);
   // normal insert if both aren't active

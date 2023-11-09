@@ -14,11 +14,13 @@ export const setEditorsToTrueOrFalseAccordingly = (editor: string): void => {
 
     globalStore.set("activeLink", "todo");
   } else if (editor === "/") {
+    console.log(globalStore.get("homeVisible"));
     globalStore.set("homeVisible", true);
     globalStore.set("noteEditorVisible", false);
     globalStore.set("todoListVisible", false);
 
     globalStore.set("activeLink", "home");
+    console.log(globalStore.get("homeVisible"));
   }
 };
 
