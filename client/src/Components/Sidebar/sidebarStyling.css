@@ -11,6 +11,14 @@
   --lightBO: rgba(38, 38, 38, 0.2);
 }
 
+::-webkit-scrollbar {
+  width: 100px;
+}
+
+#sidebar-container {
+  z-index: 100;
+}
+
 .sidebarStyles {
   height: 100%;
   width: 100%;
@@ -18,7 +26,6 @@
   flex-direction: column;
   background-color: var(--lightB);
   color: var(--defGray);
-  border-left: 2px solid rgba(184, 184, 184, 0.05);
 }
 
 .sidebarDiv1 {
@@ -26,11 +33,15 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  border-right: 2px solid rgba(184, 184, 184, 0.1);
+  border-right: 2px solid rgba(184, 184, 184, 0.05);
 }
 
 .sidebarDiv2 {
+  display: flex;
+  flex-direction: column;
   padding: 8px;
+  border-right: 2px solid rgba(184, 184, 184, 0.05);
+  flex-grow: 1;
 }
 
 .headerDiv2 > h4 {
@@ -73,7 +84,7 @@
 }
 
 .sidebarDiv1 > svg:hover {
-  color: var(--defBlack);
+  color: var(--light);
 }
 
 .sidebarArticle {
@@ -93,16 +104,11 @@
 }
 
 .sidebarArticle > svg:hover {
-  color: var(--defHBlack);
+  color: var(--light);
 }
 
 .sidebarArticle:hover svg {
   opacity: 1;
-}
-
-.sidebarDiv2 {
-  flex-grow: 1;
-  overflow-y: scroll;
 }
 
 .filterSvg {
@@ -115,4 +121,33 @@
 
 .filterSvg:hover {
   color: var(--defGray);
+}
+
+.sidebarSvg {
+  color: var(--defHBlack);
+}
+
+.noFolderDisplayDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.createNewFolderBtn {
+  border: none;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: transparent;
+  font-size: 16px;
+  color: var(--defGray);
+}
+
+.createNewFolderBtn:hover {
+  border: 2px solid rgba(184, 184, 184, 0.2);
 }

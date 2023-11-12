@@ -5,10 +5,10 @@ interface InitialState {
 type Listener = (key: any, value: any) => void;
 
 const initialState = {
-  todoIndex: null,
+  isCreateNewFolderVisible: false,
 };
 
-class TodoStore {
+class ProjectStore {
   state: InitialState;
   listeners: { [key: string]: Listener[] };
 
@@ -43,20 +43,20 @@ class TodoStore {
   }
 }
 
-class Todo {
-  todoList;
-  constructor(todoList: string[]) {
-    this.todoList = todoList;
+class Folder {
+  userFolder: any[];
+  constructor(userFolder: any[]) {
+    this.userFolder = userFolder;
   }
 
-  addItem(item: string) {
-    this.todoList.push(item);
+  addFolder(newFolder: {}) {
+    this.userFolder.push(newFolder);
   }
-  deleteTodoItem(index: number) {
-    const newArray = this.todoList.filter((item, i) => i !== index);
-    this.todoList = newArray;
+
+  setAllFolders(allFolders: any[]) {
+    this.userFolder = allFolders;
   }
 }
 
-export const todoStore = new TodoStore();
-export const todoList = new Todo([]);
+export const defaultFolder = new Folder([]);
+export const projectStore = new ProjectStore();

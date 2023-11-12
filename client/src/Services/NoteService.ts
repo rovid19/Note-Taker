@@ -1,9 +1,10 @@
 import { defaultNote } from "../Components/NoteEditor/NoteEditor";
-import Base from "../Services/BaseService";
+import Base from "./BaseService";
 import globalStore from "../Stores/GlobalStore";
-import { router } from "../Utils/Router";
+import { router } from "../Utils/Router/Router";
+import { noteStore } from "../Stores/NoteStore";
 
-class NoteService extends Base {
+class ProjectService extends Base {
   constructor() {
     super("http://localhost:3000/api/notes");
   }
@@ -35,7 +36,7 @@ class NoteService extends Base {
   }
 
   async getNote() {
-    const noteId = globalStore.get("noteId") as string;
+    const noteId = noteStore.get("noteId") as string;
     const note = await this.get("/get-specific-note", { noteId });
     defaultNote.setNote(
       note.title,
@@ -64,4 +65,4 @@ class NoteService extends Base {
   }
 }
 
-export default new NoteService();
+export default new ProjectService();

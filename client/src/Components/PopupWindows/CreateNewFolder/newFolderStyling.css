@@ -1,0 +1,93 @@
+:root {
+  --defBlack: #1a1a1a;
+  --defGray: #f8f8f8;
+  --defGreen: #00a82d;
+  --defHBlack: #404040;
+  --light: #b8b8b8;
+  --ligherdark: #f2f2f2;
+  --lightB: #262626;
+  --darkB: #1e1e1e;
+}
+
+.newfolder-container {
+  position: absolute;
+  background-color: rgba(26, 26, 26, 0.8);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 101;
+}
+
+.newFolderDivMain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 20%;
+  width: 50%;
+  color: var(--ligherdark);
+  border-radius: 6px;
+  gap: 16px;
+}
+.newFolderDiv1 {
+  height: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.newFolderInput {
+  width: 65%;
+  height: 60%;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border: none;
+  padding: 16px;
+  font-size: 16px;
+  outline: none;
+  background-color: var(--lightB);
+  color: var(--defGray);
+}
+
+.newFolderButton {
+  border: none;
+  outline: none;
+  padding: 8px;
+  height: 60%;
+  width: 15%;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  cursor: pointer;
+  background-color: #00a82d;
+  color: var(--light);
+}
+
+.newFolderInput,
+.addNewFolderButton {
+  box-sizing: border-box;
+}
+
+.addNewFolderButton:hover {
+  color: white;
+}
+
+.backSvg {
+  position: absolute;
+  top: 16px;
+  left: 8px;
+  border: none;
+  background-color: var(--defHBlack);
+  border-radius: 6px;
+  color: var(--light);
+  cursor: pointer;
+  opacity: 0;
+}
+
+.backSvg:hover {
+  color: white;
+}

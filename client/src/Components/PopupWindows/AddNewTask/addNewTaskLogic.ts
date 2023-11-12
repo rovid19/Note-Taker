@@ -1,5 +1,5 @@
 import { todoService } from "../../../Services/TodoService";
-import { todoList, todoStore } from "../../../Stores/TodoStore";
+import { todoList } from "../../../Stores/TodoStore";
 import { defaultUser } from "../../../Stores/UserStore";
 import { mapOverTodoItems } from "../../TodoList/TodoListLogic";
 import { generateAddNewTask } from "./AddNewTask";

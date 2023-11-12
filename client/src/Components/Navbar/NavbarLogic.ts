@@ -1,7 +1,7 @@
 import { userApiRequest } from "../../Services/UserService";
 import globalStore from "../../Stores/GlobalStore";
 import { defaultUser, userStore } from "../../Stores/UserStore";
-import { router } from "../../Utils/Router";
+import { router } from "../../Utils/Router/Router";
 import { autoSaveNote } from "../NoteEditor/NoteEditorLogic";
 
 export const navbarNavigationLogic = (): void => {
@@ -19,10 +19,13 @@ export const navbarNavigationLogic = (): void => {
 
 const toggleSidebar = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (): void => {
-    openSidebar();
+    const url = window.location.pathname;
+    if (url.includes("/projects")) {
+    } else router.navigateTo("/projects");
     autoSaveNote();
   });
 };
+
 const openNoteEditor = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (e: Event): void => {
     e.preventDefault();
@@ -33,15 +36,18 @@ const openNoteEditor = (liItem: HTMLElement): void => {
 
 const openHome = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (): void => {
-    router.navigateTo("/");
+    const sidebarVisible = globalStore.get("sidebarVisible");
+    if (sidebarVisible) router.navigateTo("/projects/");
+    else router.navigateTo("/");
     autoSaveNote();
   });
 };
 
 const openTodoList = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (e: Event): void => {
-    e.preventDefault();
-    router.navigateTo("/dailytodo");
+    const sidebarVisible = globalStore.get("sidebarVisible");
+    if (sidebarVisible) router.navigateTo("/projects/dailytodo");
+    else router.navigateTo("/dailytodo");
     autoSaveNote();
   });
 };
@@ -76,8 +82,4 @@ const handleLogout = (): void => {
   userApiRequest.logoutUser();
   globalStore.set("loginVisible", false);
   autoSaveNote();
-};
-
-export const openSidebar = (): void => {
-  globalStore.set("sidebarVisible", !globalStore.state.sidebarVisible);
 };

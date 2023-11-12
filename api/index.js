@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import notesRoute from "./Routes/notes.js";
 import userRoute from "./Routes/user.js";
 import todoRoute from "./Routes/todo.js";
+import projectRoute from "./Routes/projects.js";
 import path from "path";
 import cookieParser from "cookie-parser";
 
@@ -34,5 +35,6 @@ app.use(
 app.use("/api/notes", notesRoute);
 app.use("/api/user", userRoute);
 app.use("/api/todo", todoRoute);
+app.use("/api/projects", projectRoute);
 
 app.listen(port);

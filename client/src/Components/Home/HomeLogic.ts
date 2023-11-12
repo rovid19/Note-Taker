@@ -1,13 +1,9 @@
 import globalStore from "../../Stores/GlobalStore";
-import { openSidebar } from "../Navbar/NavbarLogic";
 import { generateHome } from "./Home";
 
 export const isHomeVisible = (): void => {
   const homeVisible = globalStore.get("homeVisible");
-  console.log(homeVisible);
-
   if (homeVisible) {
-    console.log("ok");
     createHome();
   } else {
     document.querySelector(".home-container")?.remove();
@@ -29,6 +25,6 @@ const homeEventListeners = (): void => {
 const startNewProjectButton = (newProjectBtn: HTMLElement): void => {
   const sidebarVisible = globalStore.get("sidebarVisible");
   newProjectBtn.addEventListener("click", (): void => {
-    if (!sidebarVisible) openSidebar();
+    // if (!sidebarVisible) openSidebar();
   });
 };

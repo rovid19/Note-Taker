@@ -3,7 +3,6 @@ import {
   autoSaveNote,
   createNewNote,
   deleteNote,
-  fetchAllUserNotes,
   fetchExistingNote,
   saveNewNoteTitle,
 } from "../Controllers/notes.js";
@@ -14,7 +13,7 @@ router.post("/create-new-note", createNewNote);
 
 router.put("/save-note-title", saveNewNoteTitle);
 
-router.get("/fetch-user-notes", fetchAllUserNotes);
+/*router.get("/fetch-user-notes", fetchAllUserNotes);*/
 
 router.delete("/delete-note", deleteNote);
 

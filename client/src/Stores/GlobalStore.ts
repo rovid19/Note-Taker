@@ -4,14 +4,11 @@ interface InitialState {
   todoListVisible: boolean;
   homeVisible: boolean;
   isInMainEditor: string;
+  isEditorOpen: boolean;
+  isProjectOpen: boolean;
   activeLink: string;
   url: string;
-  noteId: string;
-  noteTitle: string;
-  userNotes: string[];
-  deleteNote: number | null;
-  notesLength: number;
-  existingNote: boolean;
+
   loginVisible: boolean;
   loginOrRegister: string;
   [key: string]: any;
@@ -60,16 +57,12 @@ const intialState = {
   todoListVisible: false,
   homeVisible: false,
   isInMainEditor: "",
+  isEditorOpen: false,
+  isProjectOpen: false,
   activeLink: "",
   url: "/da",
-  noteId: "",
-  noteTitle: "",
-  userNotes: [],
-  notesLength: 0,
-  existingNote: false,
   loginVisible: false,
   loginOrRegister: "",
-  deleteNote: null,
 };
 
 export default new GlobalStore();

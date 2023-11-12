@@ -1,14 +1,25 @@
 interface InitialState {
+  noteId: string;
+  noteTitle: string;
+  userNotes: string[];
+  deleteNote: number | null;
+  notesLength: number;
+  existingNote: boolean;
   [key: string]: any;
 }
 
 type Listener = (key: any, value: any) => void;
 
 const initialState = {
-  todoIndex: null,
+  noteId: "",
+  noteTitle: "",
+  userNotes: [],
+  notesLength: 0,
+  existingNote: false,
+  deleteNote: null,
 };
 
-class TodoStore {
+class NoteStore {
   state: InitialState;
   listeners: { [key: string]: Listener[] };
 
@@ -43,20 +54,4 @@ class TodoStore {
   }
 }
 
-class Todo {
-  todoList;
-  constructor(todoList: string[]) {
-    this.todoList = todoList;
-  }
-
-  addItem(item: string) {
-    this.todoList.push(item);
-  }
-  deleteTodoItem(index: number) {
-    const newArray = this.todoList.filter((item, i) => i !== index);
-    this.todoList = newArray;
-  }
-}
-
-export const todoStore = new TodoStore();
-export const todoList = new Todo([]);
+export const noteStore = new NoteStore();

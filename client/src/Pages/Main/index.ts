@@ -7,7 +7,7 @@ import {
 } from "../../Components/NoteEditor/NoteEditorLogic";
 import { navbarNavigationLogic } from "../../Components/Navbar/NavbarLogic";
 import globalStore from "../../Stores/GlobalStore";
-import { router } from "../../Utils/Router";
+import { router } from "../../Utils/Router/Router";
 import { reRenderNotesLengthElement } from "../../Components/Sidebar/SidebarLogic";
 import { defaultNote } from "../../Components/NoteEditor/NoteEditor";
 import {
@@ -21,8 +21,10 @@ import {
   isTodoListVisible,
 } from "../../Components/TodoList/TodoListLogic";
 import { todoStore } from "../../Stores/TodoStore";
-import { setActiveLinkCss } from "../../Utils/Utils";
+import { setActiveLinkCss } from "../../Utils/Router/RouterLogic";
 import { isHomeVisible } from "../../Components/Home/HomeLogic";
+import { projectStore } from "../../Stores/ProjectStore";
+import { isCreateNewFolderVisible } from "../../Components/PopupWindows/CreateNewFolder/CreateNewFolderLogic";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -42,6 +44,7 @@ userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 
 todoStore.subscribe("todoIndex", deleteTodoItem);
 
+projectStore.subscribe("isCreateNewFolderVisible", isCreateNewFolderVisible);
 window.addEventListener("beforeunload", function (e) {
   if (
     defaultNote.fetchedNoteText !== defaultNote.noteText ||
@@ -51,7 +54,5 @@ window.addEventListener("beforeunload", function (e) {
     e.returnValue = "";
   }
 });
-
-userApiRequest.getUser();
-
+await userApiRequest.getUser();
 router.getCurrentUrl();

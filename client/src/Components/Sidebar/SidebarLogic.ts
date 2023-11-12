@@ -1,14 +1,28 @@
 import globalStore from "../../Stores/GlobalStore";
-import noteService from "../../Services/NoteService";
 import { generateSidebar } from "./Sidebar";
 import { autoSaveNote } from "../NoteEditor/NoteEditorLogic";
 import { defaultUser } from "../../Stores/UserStore";
-import { router } from "../../Utils/Router";
+import { router } from "../../Utils/Router/Router";
+import { extractProjectFromUrl } from "../../Utils/Router/RouterLogic";
+import { noteStore } from "../../Stores/NoteStore";
+import { projectService } from "../../Services/ProjectService";
+import { defaultFolder, projectStore } from "../../Stores/ProjectStore";
 
-export interface Note {
-  title: string;
-  noteText: string;
+export type todoItem = {
+  name: string;
+  isDone: boolean;
+};
+
+export type todo = {
+  name: string;
   dateCreated: string;
+  todoItems: todoItem[];
+};
+
+export interface Folder {
+  title: string;
+  dateCreated: string;
+  content: Folder | todo;
 }
 
 type UserNotes = {
@@ -17,6 +31,7 @@ type UserNotes = {
 
 export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
+  console.log(sidebarVisible);
   const noteEditorVisible = globalStore.state.noteEditorVisible;
   const todoListVisible = globalStore.get("todoListVisible") as boolean;
   const homeVisible = globalStore.get("homeVisible") as boolean;
@@ -27,7 +42,7 @@ export const isSidebarVisible = async () => {
   ) as HTMLElement;
 
   if (sidebarVisible) {
-    await noteService.fetchAllUserNotes(defaultUser.id);
+    await projectService.fetchAllUserProjects(defaultUser.id);
     createSidebar(
       noteEditorVisible,
       todoOrNoteElement,
@@ -35,11 +50,20 @@ export const isSidebarVisible = async () => {
       homeVisible
     );
     updateUserNotesLength();
-    createAllNotesContainer();
+    createAllFolderContainer();
     sidebarNavigationLogic();
   } else {
     document.getElementById("sidebar-container")?.remove();
+    removeUrl();
   }
+};
+
+const removeUrl = (): void => {
+  setTimeout(() => {
+    const url = window.location.pathname;
+    const newUrl = extractProjectFromUrl(url);
+    window.history.replaceState({}, "", newUrl);
+  }, 0);
 };
 
 const whichEditorIsActive = (
@@ -56,32 +80,40 @@ const whichEditorIsActive = (
 export const sidebarNavigationLogic = (): void => {
   const closeSidebarSvg = document.querySelector(".sidebarSvg") as HTMLElement;
 
-  closeSidebarSvg.addEventListener("click", () =>
+  closeSidebarSvg.addEventListener("click", () => {
     //ovo je zapravo toggleSidebar funckija jer ne zelim poduplati event listener
-    globalStore.set("sidebarVisible", !globalStore.state.sidebarVisible)
-  );
+    const url = window.location.pathname.replace("/projects", "");
+    router.navigateTo(url);
+  });
 };
 
-export const createAllNotesContainer = (): void => {
-  const userNotes = globalStore.get("userNotes") as unknown as Note[];
+export const createAllFolderContainer = (): void => {
   const div = document.createElement("div");
   div.className = "sidebarDiv2";
   const sidebarStyles = document.querySelector(".sidebarStyles") as HTMLElement;
-  mapOverAllUserNotes(userNotes, div);
+  mapOverAllUserProjects(defaultFolder.userFolder, div);
   sidebarStyles.appendChild(div);
   const sidebarDiv2 = document.querySelector(".sidebarDiv2") as HTMLElement;
 
   eventDelegationForNotes(sidebarDiv2);
 };
 
-export const reRenderAllNotesContainer = () => {
+export const reRenderAllFolderContainer = () => {
   document.querySelector(".sidebarDiv2")?.remove();
-  createAllNotesContainer();
+  createAllFolderContainer();
 };
 
-const mapOverAllUserNotes = (userNotes: Note[], div: HTMLElement): void => {
-  userNotes.map((note) => {
-    return (div.innerHTML += `
+const mapOverAllUserProjects = (
+  userFolders: Folder[],
+  div: HTMLElement
+): void => {
+  console.log(userFolders);
+  if (userFolders === undefined) {
+    createNewFolderButton(div);
+  } else {
+    console.log(userFolders);
+    userFolders.map((folder) => {
+      return (div.innerHTML += `
       <article class="sidebarArticle">
      
       <svg class="articleSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20">
@@ -89,22 +121,34 @@ const mapOverAllUserNotes = (userNotes: Note[], div: HTMLElement): void => {
   </svg>
   
       <div class="articleInnerDiv1">
-      <h2 class="articleTitle" > ${note.title} </h2>
+      <h2 class="articleTitle" > ${folder.title} </h2>
       </div>
       <div class="articleInnerDiv2">
-      <h4> ${note.noteText} </h4>
+      <h4>  </h4>
       </div>
       <div class="articleInnerDiv3">
-      <h6> ${note.dateCreated} </h6>
+      <h6> ${folder.dateCreated} </h6>
       </div>
       </article>`);
-  });
+    });
+  }
+};
+
+const createNewFolderButton = (div: HTMLElement): void => {
+  div.innerHTML += `
+  <div class="noFolderDisplayDiv"> 
+    <button class="createNewFolderBtn"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+  </svg>
+   Create new folder </button> 
+  </div>
+  `;
 };
 
 export const updateUserNotesLength = (): void => {
-  const noteLength = (globalStore.get("userNotes") as unknown as UserNotes[])
+  const noteLength = (noteStore.get("userNotes") as unknown as UserNotes[])
     .length;
-  globalStore.set("notesLength", noteLength);
+  noteStore.set("notesLength", noteLength);
 };
 
 export const reRenderNotesLengthElement = (): void => {
@@ -128,7 +172,7 @@ const createSidebar = (
   // insert before noteEditor
   if (noteEditorVisible) document.body.insertBefore(div, todoOrNoteElement);
   // insert before home
-  else if (homeVisible) document.body.appendChild(div);
+  else if (homeVisible) document.body.insertBefore(div, todoOrNoteElement);
   // insert before todoList
   else if (todoListVisible) document.body.insertBefore(div, todoOrNoteElement);
   // normal insert if both aren't active
@@ -141,17 +185,22 @@ const eventDelegationForNotes = (sidebarDiv2: HTMLElement): void => {
     const target = event.target as SVGSVGElement;
     const parentElementOpen = target.closest(".sidebarArticle") as Element;
     const parentElementDelete = target.closest(".articleSvg");
+    const parentElementCreateNewFolder = target.closest(".createNewFolderBtn");
     const allSvgs = document.querySelectorAll(".articleSvg");
     const allArticles = document.querySelectorAll(".sidebarArticle");
 
     if (parentElementDelete) {
       findIndexToDeleteNote(allSvgs, parentElementDelete);
+    } else if (parentElementCreateNewFolder) {
+      console.log(projectStore.get("isCreateNewFolderVisible"));
+      projectStore.set("isCreateNewFolderVisible", true);
+      console.log(projectStore.get("isCreateNewFolderVisible"));
     } else {
       autoSaveNote();
       setNoteIdToOpenNote(allArticles, parentElementOpen);
-      const noteId = globalStore.get("noteId");
+      const noteId = noteStore.get("noteId");
       router.navigateTo(`/notes/noteId=${noteId}`);
-      globalStore.set("existingNote", true);
+      noteStore.set("existingNote", true);
       globalStore.set("noteEditorVisible", true);
     }
   });
@@ -163,7 +212,7 @@ const eventDelegationForNotes = (sidebarDiv2: HTMLElement): void => {
     const array = [...allSvgs];
     array.findIndex((item, i) => {
       if (item === parentElement) {
-        globalStore.set("deleteNote", i);
+        noteStore.set("deleteNote", i);
       }
     });
   };
@@ -173,10 +222,10 @@ const eventDelegationForNotes = (sidebarDiv2: HTMLElement): void => {
     parentElement: Element
   ) => {
     const array = [...allArticles];
-    const userNotes = globalStore.get("userNotes") as unknown as UserNotes[];
+    const userNotes = noteStore.get("userNotes") as unknown as UserNotes[];
     array.findIndex((item, i) => {
       if (item === parentElement) {
-        globalStore.set("noteId", userNotes[i]._id);
+        noteStore.set("noteId", userNotes[i]._id);
       }
     });
   };

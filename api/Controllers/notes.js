@@ -38,7 +38,7 @@ export const saveNewNoteTitle = async (req, res) => {
   }
 };
 
-export const fetchAllUserNotes = async (req, res) => {
+/*export const fetchAllUserNotes = async (req, res) => {
   const { userId } = req.query;
 
   try {
@@ -52,7 +52,7 @@ export const fetchAllUserNotes = async (req, res) => {
   } catch (e) {
     throw e;
   }
-};
+};*/
 
 export const deleteNote = async (req, res) => {
   const { noteId } = req.body;

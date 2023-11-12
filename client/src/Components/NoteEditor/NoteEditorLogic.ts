@@ -4,10 +4,10 @@ import { defaultNote, generateNewNote } from "./NoteEditor";
 import { updateUserNotesLength } from "../Sidebar/SidebarLogic";
 import { fullDate } from "../../Utils/Date";
 
-import { reRenderAllNotesContainer } from "../Sidebar/SidebarLogic";
+import { reRenderAllFolderContainer } from "../Sidebar/SidebarLogic";
 import { createWarning } from "../PopupWindows/WarningMessage/WarningLogic";
 import { defaultUser } from "../../Stores/UserStore";
-import { router } from "../../Utils/Router";
+import { noteStore } from "../../Stores/NoteStore";
 
 type NoteArray = {
   _id: string;
@@ -16,7 +16,7 @@ type NoteArray = {
 
 export const isNoteEditorVisible = async () => {
   const noteEditorVisible = globalStore.get("noteEditorVisible");
-  const existingNote = globalStore.get("existingNote") as boolean;
+  const existingNote = noteStore.get("existingNote") as boolean;
 
   if (noteEditorVisible) {
     createNoteEditor();
@@ -42,7 +42,7 @@ const isNewNoteOrExistingNote = async (existingNote: boolean) => {
   } else {
     await noteService.createNewNote(fullDate, defaultUser.id);
     await noteService.fetchAllUserNotes(defaultUser.id);
-    if (sidebarVisible) reRenderAllNotesContainer();
+    if (sidebarVisible) reRenderAllFolderContainer();
     reRenderNoteFields();
   }
 };
@@ -54,7 +54,7 @@ const saveNewNoteTitle = (): void => {
   const noteTextElement = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
-  let oldNoteTitle = globalStore.get("noteTitle") as string;
+  let oldNoteTitle = noteStore.get("noteTitle") as string;
 
   addNewNoteTitle(noteTitleElement);
   saveTitleAfterClickingOnNoteText(noteTextElement, oldNoteTitle);
@@ -77,30 +77,30 @@ const saveTitleAfterClickingOnNoteText = (
     if (oldNoteTitle !== newNoteTitle) {
       await noteService.saveNewNoteTitle(newNoteTitle, defaultNote.id);
       await noteService.fetchAllUserNotes(defaultUser.id);
-      reRenderAllNotesContainer();
+      reRenderAllFolderContainer();
       oldNoteTitle = newNoteTitle;
     }
   });
 };
 
 export const deleteNote = async () => {
-  const noteIndex = globalStore.get("deleteNote") as number;
-  const noteId = globalStore.get("noteId") as string;
+  const noteIndex = noteStore.get("deleteNote") as number;
+  const noteId = noteStore.get("noteId") as string;
 
   if (noteIndex !== -1) {
     await noteService.deleteNote(noteId);
     await noteService.fetchAllUserNotes(defaultUser.id);
-    reRenderAllNotesContainer();
+    reRenderAllFolderContainer();
     updateUserNotesLength();
-    globalStore.set("deleteNote", -1);
+    noteStore.set("deleteNote", -1);
   }
 };
 
 export const findNoteIdToDeleteNote = (): void => {
-  const allNotes = globalStore.get("userNotes") as unknown as NoteArray[];
-  const noteIndex = globalStore.get("deleteNote") as number;
+  const allNotes = noteStore.get("userNotes") as unknown as NoteArray[];
+  const noteIndex = noteStore.get("deleteNote") as number;
   if (noteIndex !== -1) {
-    globalStore.set("noteId", allNotes[noteIndex]._id);
+    noteStore.set("noteId", allNotes[noteIndex]._id);
     isNoteBeingDeletedOpen();
   }
 };
@@ -109,7 +109,7 @@ export const fetchExistingNote = async () => {
   const existingNote = globalStore.get("existingNote");
   if (existingNote) {
     await noteService.getNote();
-    globalStore.set("existingNote", false);
+    noteStore.set("existingNote", false);
     reRenderNoteFields();
   }
 };
@@ -134,7 +134,7 @@ export const autoSaveNote = async () => {
       defaultNote.noteText
     );
     await noteService.fetchAllUserNotes(defaultUser.id);
-    reRenderAllNotesContainer();
+    reRenderAllFolderContainer();
   }
 };
 
@@ -147,18 +147,10 @@ export const noteTextInput = (): void => {
   });
 };
 
-/*export const gatherNoteIdFromUrl = () => {
-  const url = window.location.pathname;
-  const noteIdfromUrl = url.slice(7, url.length);
-  globalStore.set("noteId", noteIdfromUrl);
-
-  return noteIdfromUrl;
-};*/
-
 const isNoteBeingDeletedOpen = () => {
   const params = new URLSearchParams(window.location.search);
   const currentNoteId = params.get("noteId");
-  const deletingNoteId = globalStore.get("noteId");
+  const deletingNoteId = noteStore.get("noteId");
 
   if (currentNoteId === deletingNoteId) {
     createWarning(

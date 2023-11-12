@@ -4,10 +4,8 @@ const folderSchema = new mongoose.Schema({
   name: String,
   dateCreated: String,
   content: [
-    {
-      _id: mongoose.Schema.Types.ObjectId,
-      kind: String,
-    },
+    { type: mongoose.Schema.Types.ObjectId, ref: "todo" },
+    { type: mongoose.Schema.Types.ObjectId, ref: "folder" },
   ],
 });
 
