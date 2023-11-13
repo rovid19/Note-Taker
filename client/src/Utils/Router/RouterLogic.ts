@@ -1,4 +1,5 @@
 import globalStore from "../../Stores/GlobalStore";
+import { router } from "./Router";
 
 export const setComponentsToTrueOrFalseAccordingly = (
   component: string
@@ -16,14 +17,14 @@ export const setComponentsToTrueOrFalseAccordingly = (
       globalStore.set("homeVisible", false);
       globalStore.set("sidebarVisible", true);
       globalStore.set("activeLink", "todo");
-    } else if (component === "/projects/") {
+    } else if (component === "/projects/home") {
       globalStore.set("homeVisible", true);
       globalStore.set("noteEditorVisible", false);
       globalStore.set("todoListVisible", false);
       globalStore.set("sidebarVisible", true);
       globalStore.set("activeLink", "home");
     } else {
-      globalStore.set("sidebarVisible", true);
+      router.navigateTo("/projects/home");
     }
   } else {
     if (component === "/note") {
@@ -38,7 +39,7 @@ export const setComponentsToTrueOrFalseAccordingly = (
       globalStore.set("homeVisible", false);
       globalStore.set("sidebarVisible", false);
       globalStore.set("activeLink", "todo");
-    } else if (component === "/") {
+    } else if (component === "/home") {
       globalStore.set("homeVisible", true);
       globalStore.set("noteEditorVisible", false);
       globalStore.set("todoListVisible", false);
@@ -52,6 +53,7 @@ export const setActiveLinkCss = (): void => {
   const activeLink = globalStore.get("activeLink");
   const homeLi = document.querySelector(".homeLi") as HTMLElement;
   const todoLi = document.querySelector(".todoListLi") as HTMLElement;
+
   if (activeLink === "home") {
     homeLi.style.backgroundColor = "#404040";
     todoLi.style.backgroundColor = "#262626";
@@ -72,9 +74,10 @@ export const extractProjectFromUrl = (url: string): string => {
 
 export const isComponentOpen = (): boolean => {
   const editorVisible = globalStore.get("editorVisible");
-  const todoVisible = globalStore.get("todoVisible");
+  const todoVisible = globalStore.get("todoListVisible");
   const homeVisible = globalStore.get("homeVisible");
   const componentArray = [editorVisible, todoVisible, homeVisible];
+  console.log(editorVisible, todoVisible, homeVisible);
   let isComponentVisible = componentArray.some((item) => item);
 
   return isComponentVisible;

@@ -39,7 +39,6 @@
 .sidebarDiv2 {
   display: flex;
   flex-direction: column;
-  padding: 8px;
   border-right: 2px solid rgba(184, 184, 184, 0.05);
   flex-grow: 1;
 }
@@ -89,8 +88,12 @@
 
 .sidebarArticle {
   position: relative;
-  border-bottom: 2px rgba(184, 184, 184, 0.2) solid;
   cursor: pointer;
+  padding: 8px;
+}
+
+.sidebarArticle:hover {
+  background-color: var(--defHBlack);
 }
 
 .sidebarArticle > svg {
@@ -150,4 +153,13 @@
 
 .createNewFolderBtn:hover {
   border: 2px solid rgba(184, 184, 184, 0.2);
+}
+
+.articleInnerDiv1 {
+  display: flex;
+  gap: 8px;
+}
+
+.articleTitle {
+  font-size: 20px;
 }

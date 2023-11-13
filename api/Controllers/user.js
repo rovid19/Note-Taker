@@ -66,5 +66,8 @@ export const getUser = (req, res) => {
       const foundUser = await User.findById(user.userId);
       res.json(foundUser);
     });
+  } else {
+    let user = false;
+    res.json(user);
   }
 };

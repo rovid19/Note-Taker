@@ -19,10 +19,10 @@ export type todo = {
   todoItems: todoItem[];
 };
 
-export interface Folder {
+export interface FolderInterface {
   title: string;
   dateCreated: string;
-  content: Folder | todo;
+  content: FolderInterface | todo;
 }
 
 type UserNotes = {
@@ -31,7 +31,6 @@ type UserNotes = {
 
 export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
-  console.log(sidebarVisible);
   const noteEditorVisible = globalStore.state.noteEditorVisible;
   const todoListVisible = globalStore.get("todoListVisible") as boolean;
   const homeVisible = globalStore.get("homeVisible") as boolean;
@@ -104,14 +103,12 @@ export const reRenderAllFolderContainer = () => {
 };
 
 const mapOverAllUserProjects = (
-  userFolders: Folder[],
+  userFolders: FolderInterface[],
   div: HTMLElement
 ): void => {
-  console.log(userFolders);
-  if (userFolders === undefined) {
+  if (userFolders.length === 0) {
     createNewFolderButton(div);
   } else {
-    console.log(userFolders);
     userFolders.map((folder) => {
       return (div.innerHTML += `
       <article class="sidebarArticle">
@@ -121,14 +118,13 @@ const mapOverAllUserProjects = (
   </svg>
   
       <div class="articleInnerDiv1">
-      <h2 class="articleTitle" > ${folder.title} </h2>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+</svg>
+
+      <h2 class="articleTitle" > ${folder.name} </h2>
       </div>
-      <div class="articleInnerDiv2">
-      <h4>  </h4>
-      </div>
-      <div class="articleInnerDiv3">
-      <h6> ${folder.dateCreated} </h6>
-      </div>
+     
       </article>`);
     });
   }
@@ -192,18 +188,27 @@ const eventDelegationForNotes = (sidebarDiv2: HTMLElement): void => {
     if (parentElementDelete) {
       findIndexToDeleteNote(allSvgs, parentElementDelete);
     } else if (parentElementCreateNewFolder) {
-      console.log(projectStore.get("isCreateNewFolderVisible"));
       projectStore.set("isCreateNewFolderVisible", true);
-      console.log(projectStore.get("isCreateNewFolderVisible"));
     } else {
-      autoSaveNote();
+      /*autoSaveNote();
       setNoteIdToOpenNote(allArticles, parentElementOpen);
       const noteId = noteStore.get("noteId");
       router.navigateTo(`/notes/noteId=${noteId}`);
       noteStore.set("existingNote", true);
-      globalStore.set("noteEditorVisible", true);
+      globalStore.set("noteEditorVisible", true);*/
+      openFolder(parentElementOpen);
     }
   });
+
+  const openFolder = (parentElementOpen: Element): void => {
+    const userFolders = defaultFolder.userFolder;
+    userFolders.forEach((folder, i) => {
+      if (folder) {
+        console.log(i);
+        defaultFolder.selectedFolder(folder.name, folder._id, folder.content);
+      }
+    });
+  };
 
   const findIndexToDeleteNote = (
     allSvgs: NodeListOf<Element>,

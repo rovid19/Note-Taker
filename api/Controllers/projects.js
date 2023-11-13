@@ -4,18 +4,18 @@ import Folder from "../Models/Folder.js";
 export const fetchAllUserFolders = async (req, res) => {
   const { userId } = req.query;
 
-  const user = await User.findById(userId).populate("folder", "name");
+  const user = await User.findById(userId).populate("folder");
 
   res.json(user);
 };
 
 export const createNewFolder = async (req, res) => {
-  const { userId, fullDate, name } = req.body;
+  const { userId, folderName, folderId, fullDate } = req.body;
 
   const user = await User.findById(userId);
 
   const newFolder = await Folder.create({
-    name,
+    name: folderName,
     dateCreated: fullDate,
   });
 

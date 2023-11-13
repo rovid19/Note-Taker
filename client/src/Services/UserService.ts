@@ -30,9 +30,11 @@ class UserService extends Base {
 
   async getUser() {
     const user = await this.get("/get-user", {});
-    defaultUser.setUser(user.email, user.username, "", "", user._id);
-    userStore.set("isUserLoggedIn", true);
-    await todoService.fetchTodo(user._id);
+    if (user) {
+      defaultUser.setUser(user.email, user.username, "", "", user._id);
+      userStore.set("isUserLoggedIn", true);
+      await todoService.fetchTodo(user._id);
+    }
   }
 }
 

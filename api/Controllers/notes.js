@@ -1,20 +1,21 @@
 import Note from "../Models/Note.js";
 import User from "../Models/User.js";
+import Folder from "../Models/Folder.js";
 
 export const createNewNote = async (req, res) => {
-  const { fullDate, userId } = req.body;
+  const { fullDate, folderId } = req.body;
 
   try {
-    const findUser = await User.findById(userId);
+    const folder = await Folder.findById(folderId);
     const newNote = await Note.create({
       title: "New Note",
       dateCreated: fullDate,
       noteText: "",
     });
 
-    findUser.userNotes.push(newNote._id);
+    folder.content.push(newNote._id);
 
-    await findUser.save();
+    await folder.save();
 
     res.json(newNote);
   } catch (e) {

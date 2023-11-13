@@ -37,8 +37,8 @@ const openNoteEditor = (liItem: HTMLElement): void => {
 const openHome = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (): void => {
     const sidebarVisible = globalStore.get("sidebarVisible");
-    if (sidebarVisible) router.navigateTo("/projects/");
-    else router.navigateTo("/");
+    if (sidebarVisible) router.navigateTo("/projects/home");
+    else router.navigateTo("/home ");
     autoSaveNote();
   });
 };

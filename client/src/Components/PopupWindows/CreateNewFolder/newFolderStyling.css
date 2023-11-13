@@ -54,7 +54,7 @@
   color: var(--defGray);
 }
 
-.newFolderButton {
+.addNewFolderButton {
   border: none;
   outline: none;
   padding: 8px;

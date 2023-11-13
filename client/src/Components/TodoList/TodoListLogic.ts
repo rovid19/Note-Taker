@@ -7,7 +7,7 @@ import { defaultUser } from "../../Stores/UserStore";
 
 export const isTodoListVisible = (): void => {
   const todoListVisible = globalStore.get("todoListVisible");
-
+  console.log(todoListVisible);
   if (todoListVisible) {
     createTodoList();
     mapOverTodoItems();

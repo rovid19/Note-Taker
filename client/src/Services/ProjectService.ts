@@ -10,6 +10,20 @@ class ProjectService extends Base {
     const userProjects = await this.get("/fetch-user-projects", { userId });
     defaultFolder.setAllFolders(userProjects.folder);
   }
+
+  async addNewFolder(
+    userId: string,
+    folderName: string,
+    folderId: string,
+    fullDate: string
+  ) {
+    await this.post("/create-new-folder", {
+      userId,
+      folderName,
+      folderId,
+      fullDate,
+    });
+  }
 }
 
 export const projectService = new ProjectService();

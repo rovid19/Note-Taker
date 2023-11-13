@@ -54,5 +54,8 @@ window.addEventListener("beforeunload", function (e) {
     e.returnValue = "";
   }
 });
+
 await userApiRequest.getUser();
-router.getCurrentUrl();
+
+if (window.location.pathname === "/") router.navigateTo("/home");
+else router.getCurrentUrl();
