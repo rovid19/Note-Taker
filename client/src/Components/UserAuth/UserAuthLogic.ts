@@ -1,3 +1,4 @@
+import { projectService } from "../../Services/ProjectService";
 import { userApiRequest } from "../../Services/UserService";
 import globalStore from "../../Stores/GlobalStore";
 import { defaultUser, userStore } from "../../Stores/UserStore";
@@ -147,7 +148,7 @@ const registerInputData = (): void => {
 export const redirectAfterLogin = (): void => {
   const userAuthDiv = document.querySelector(".user-auth-container");
   userAuthDiv?.remove();
-
+  projectService.fetchAllUserProjects(defaultUser.id);
   userStore.set("isUserLoggedIn", true);
 };
 

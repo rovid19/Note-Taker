@@ -77,7 +77,6 @@ export const isComponentOpen = (): boolean => {
   const todoVisible = globalStore.get("todoListVisible");
   const homeVisible = globalStore.get("homeVisible");
   const componentArray = [editorVisible, todoVisible, homeVisible];
-  console.log(editorVisible, todoVisible, homeVisible);
   let isComponentVisible = componentArray.some((item) => item);
 
   return isComponentVisible;

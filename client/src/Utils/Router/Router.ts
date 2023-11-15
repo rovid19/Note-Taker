@@ -24,7 +24,6 @@ class Router {
     if (pathname === "/projects") {
       const componentVisible = isComponentOpen();
       const url = window.location.pathname;
-      console.log(pathname, url, componentVisible);
       if (componentVisible) {
         history.pushState(null, "", `/projects${url}`);
       } else {

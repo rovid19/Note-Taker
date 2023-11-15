@@ -86,12 +86,6 @@
   color: var(--light);
 }
 
-.sidebarArticle {
-  position: relative;
-  cursor: pointer;
-  padding: 8px;
-}
-
 .sidebarArticle:hover {
   background-color: var(--defHBlack);
 }
@@ -115,11 +109,27 @@
 }
 
 .filterSvg {
-  margin-left: auto;
   border: none;
   background-color: transparent;
   color: var(--light);
   cursor: pointer;
+}
+
+.addFolderSvg {
+  border: none;
+  background-color: transparent;
+  color: var(--light);
+  cursor: pointer;
+}
+
+.addFolderSvg:hover {
+  color: var(--defGray);
+}
+
+.sidebarButtons {
+  width: 20%;
+  margin-left: auto;
+  display: flex;
 }
 
 .filterSvg:hover {
@@ -158,8 +168,82 @@
 .articleInnerDiv1 {
   display: flex;
   gap: 8px;
+  padding: 8px;
 }
 
 .articleTitle {
-  font-size: 20px;
+  font-size: 16px;
+}
+
+.subMenu {
+  background-color: var(--darkB);
+  width: 100%;
+  z-index: 100;
+  left: 0;
+  border-radius: 6px;
+}
+
+.submenuNav {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  z-index: 100;
+}
+
+.submenuNav > ul {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  gap: 8px;
+  list-style-type: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.submenuNav > ul > li {
+  width: 100%;
+  height: 20px;
+  display: flex;
+  gap: 16px;
+  padding: 8px;
+  padding-left: 16px;
+}
+
+.submenuNav > ul > li:hover {
+  background-color: var(--defHBlack);
+}
+
+.svgHolder {
+  display: flex;
+  align-items: center;
+}
+
+.folderSubmenu {
+  background-color: var(--lightB);
+  width: 100%;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.submenuArticle {
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  position: relative;
+  flex-direction: column;
+  padding-left: 8px;
+}
+
+.sidebarArticle {
+  position: relative;
+  cursor: pointer;
+  gap: 16px;
+  font-size: 16px;
+  overflow: hidden;
+}
+
+.submenuArticle:hover {
+  background-color: var(--defHBlack);
 }

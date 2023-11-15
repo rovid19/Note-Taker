@@ -1,7 +1,11 @@
 import { projectService } from "../../../Services/ProjectService";
-import { projectStore } from "../../../Stores/ProjectStore";
+import { defaultFolder, projectStore } from "../../../Stores/ProjectStore";
 import { defaultUser } from "../../../Stores/UserStore";
 import { fullDate } from "../../../Utils/Date";
+import {
+  reRenderAllFolderContainer,
+  renderTotalNumberOfUserProjects,
+} from "../../Sidebar/SidebarLogic";
 
 import { generateCreateNewFolder } from "./CreateNewFolder";
 
@@ -31,10 +35,18 @@ const newFolderEventListeners = (): void => {
   const folderTitleInput = document.querySelector(
     ".newFolderInput"
   ) as HTMLElement;
-  createFolder.addEventListener("click", (): void => {
+  createFolder.addEventListener("click", async () => {
     const folderTitle = projectStore.get("newFolderTitle") as string;
     projectStore.set("isCreateNewFolderVisible", false);
-    projectService.addNewFolder(defaultUser.id, folderTitle, "", fullDate);
+    await projectService.addNewFolder(
+      defaultUser.id,
+      folderTitle,
+      defaultFolder.folderId,
+      fullDate
+    );
+    await projectService.fetchAllUserProjects(defaultUser.id);
+    reRenderAllFolderContainer();
+    renderTotalNumberOfUserProjects();
   });
   closePopup.addEventListener("click", () =>
     projectStore.set("isCreateNewFolderVisible", false)

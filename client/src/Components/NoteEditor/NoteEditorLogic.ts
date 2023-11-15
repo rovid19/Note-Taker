@@ -1,7 +1,6 @@
 import globalStore from "../../Stores/GlobalStore";
 import noteService from "../../Services/NoteService";
 import { defaultNote, generateNewNote } from "./NoteEditor";
-import { updateUserNotesLength } from "../Sidebar/SidebarLogic";
 import { fullDate } from "../../Utils/Date";
 
 import { reRenderAllFolderContainer } from "../Sidebar/SidebarLogic";
@@ -91,7 +90,6 @@ export const deleteNote = async () => {
     await noteService.deleteNote(noteId);
     await noteService.fetchAllUserNotes(defaultUser.id);
     reRenderAllFolderContainer();
-    updateUserNotesLength();
     noteStore.set("deleteNote", -1);
   }
 };

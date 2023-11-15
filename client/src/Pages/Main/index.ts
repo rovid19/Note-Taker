@@ -1,5 +1,8 @@
 import { generateNavbar } from "../../Components/Navbar/Navbar";
-import { isSidebarVisible } from "../../Components/Sidebar/SidebarLogic";
+import {
+  isSidebarVisible,
+  openSelectedFolder,
+} from "../../Components/Sidebar/SidebarLogic";
 import {
   fetchExistingNote,
   isNoteEditorVisible,
@@ -8,13 +11,12 @@ import {
 import { navbarNavigationLogic } from "../../Components/Navbar/NavbarLogic";
 import globalStore from "../../Stores/GlobalStore";
 import { router } from "../../Utils/Router/Router";
-import { reRenderNotesLengthElement } from "../../Components/Sidebar/SidebarLogic";
 import { defaultNote } from "../../Components/NoteEditor/NoteEditor";
 import {
   isLoginVisible,
   isUserLoggedIn,
 } from "../../Components/UserAuth/UserAuthLogic";
-import { userStore } from "../../Stores/UserStore";
+import { defaultUser, userStore } from "../../Stores/UserStore";
 import { userApiRequest } from "../../Services/UserService";
 import {
   deleteTodoItem,
@@ -25,6 +27,7 @@ import { setActiveLinkCss } from "../../Utils/Router/RouterLogic";
 import { isHomeVisible } from "../../Components/Home/HomeLogic";
 import { projectStore } from "../../Stores/ProjectStore";
 import { isCreateNewFolderVisible } from "../../Components/PopupWindows/CreateNewFolder/CreateNewFolderLogic";
+import { projectService } from "../../Services/ProjectService";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -33,7 +36,6 @@ globalStore.subscribe("url", router.redirectToRoute);
 globalStore.subscribe("sidebarVisible", isSidebarVisible);
 globalStore.subscribe("noteEditorVisible", isNoteEditorVisible);
 globalStore.subscribe("deleteNote", findNoteIdToDeleteNote);
-globalStore.subscribe("notesLength", reRenderNotesLengthElement);
 globalStore.subscribe("existingNote", fetchExistingNote);
 globalStore.subscribe("loginVisible", isLoginVisible);
 globalStore.subscribe("todoListVisible", isTodoListVisible);
@@ -45,6 +47,8 @@ userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 todoStore.subscribe("todoIndex", deleteTodoItem);
 
 projectStore.subscribe("isCreateNewFolderVisible", isCreateNewFolderVisible);
+projectStore.subscribe("selectedFolder", openSelectedFolder);
+
 window.addEventListener("beforeunload", function (e) {
   if (
     defaultNote.fetchedNoteText !== defaultNote.noteText ||
@@ -56,6 +60,7 @@ window.addEventListener("beforeunload", function (e) {
 });
 
 await userApiRequest.getUser();
-
+if (defaultUser.id.length > 2)
+  await projectService.fetchAllUserProjects(defaultUser.id);
 if (window.location.pathname === "/") router.navigateTo("/home");
 else router.getCurrentUrl();

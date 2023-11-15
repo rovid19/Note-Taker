@@ -1,3 +1,4 @@
+import { reRenderAllFolderContainer } from "../Components/Sidebar/SidebarLogic";
 import { defaultFolder } from "../Stores/ProjectStore";
 import Base from "./BaseService";
 

@@ -4,7 +4,12 @@ import Folder from "../Models/Folder.js";
 export const fetchAllUserFolders = async (req, res) => {
   const { userId } = req.query;
 
-  const user = await User.findById(userId).populate("folder");
+  const user = await User.findById(userId).populate({
+    path: "folder",
+    populate: {
+      path: "content",
+    },
+  });
 
   res.json(user);
 };
@@ -12,16 +17,38 @@ export const fetchAllUserFolders = async (req, res) => {
 export const createNewFolder = async (req, res) => {
   const { userId, folderName, folderId, fullDate } = req.body;
 
-  const user = await User.findById(userId);
+  if (!folderId) {
+    try {
+      const user = await User.findById(userId);
+      const newFolder = await Folder.create({
+        name: folderName,
+        dateCreated: fullDate,
+        type: "folder",
+      });
 
-  const newFolder = await Folder.create({
-    name: folderName,
-    dateCreated: fullDate,
-  });
+      user.folder.push(newFolder._id);
 
-  user.folder.push(newFolder._id);
+      await user.save();
+      res.json("ok");
+    } catch (e) {
+      throw e;
+    }
+  } else {
+    try {
+      console.log("okdS");
+      const folder = await Folder.findById(folderId);
+      const newSubFolder = await Folder.create({
+        name: folderName,
+        dateCreated: fullDate,
+        type: "folder",
+      });
 
-  await user.save();
+      folder.content.push(newSubFolder._id);
 
-  res.json("ok");
+      await folder.save();
+      res.json("ok");
+    } catch (e) {
+      throw e;
+    }
+  }
 };

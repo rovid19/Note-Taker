@@ -1,33 +1,10 @@
 import globalStore from "../../Stores/GlobalStore";
 import { generateSidebar } from "./Sidebar";
-import { autoSaveNote } from "../NoteEditor/NoteEditorLogic";
-import { defaultUser } from "../../Stores/UserStore";
 import { router } from "../../Utils/Router/Router";
 import { extractProjectFromUrl } from "../../Utils/Router/RouterLogic";
 import { noteStore } from "../../Stores/NoteStore";
-import { projectService } from "../../Services/ProjectService";
 import { defaultFolder, projectStore } from "../../Stores/ProjectStore";
-
-export type todoItem = {
-  name: string;
-  isDone: boolean;
-};
-
-export type todo = {
-  name: string;
-  dateCreated: string;
-  todoItems: todoItem[];
-};
-
-export interface FolderInterface {
-  title: string;
-  dateCreated: string;
-  content: FolderInterface | todo;
-}
-
-type UserNotes = {
-  [key: string]: string;
-};
+import { FolderInterface, UserNotes, Item } from "../../Utils/TsTypes";
 
 export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
@@ -41,18 +18,19 @@ export const isSidebarVisible = async () => {
   ) as HTMLElement;
 
   if (sidebarVisible) {
-    await projectService.fetchAllUserProjects(defaultUser.id);
     createSidebar(
       noteEditorVisible,
       todoOrNoteElement,
       todoListVisible,
       homeVisible
     );
-    updateUserNotesLength();
+    sidebarEventListeners();
+    renderTotalNumberOfUserProjects();
     createAllFolderContainer();
     sidebarNavigationLogic();
   } else {
     document.getElementById("sidebar-container")?.remove();
+    window.removeEventListener("click", closeSubMenuIfOpen);
     removeUrl();
   }
 };
@@ -79,6 +57,8 @@ const whichEditorIsActive = (
 export const sidebarNavigationLogic = (): void => {
   const closeSidebarSvg = document.querySelector(".sidebarSvg") as HTMLElement;
 
+  window.addEventListener("click", closeSubMenuIfOpen);
+
   closeSidebarSvg.addEventListener("click", () => {
     //ovo je zapravo toggleSidebar funckija jer ne zelim poduplati event listener
     const url = window.location.pathname.replace("/projects", "");
@@ -94,7 +74,7 @@ export const createAllFolderContainer = (): void => {
   sidebarStyles.appendChild(div);
   const sidebarDiv2 = document.querySelector(".sidebarDiv2") as HTMLElement;
 
-  eventDelegationForNotes(sidebarDiv2);
+  eventDelegationForProjects(sidebarDiv2);
 };
 
 export const reRenderAllFolderContainer = () => {
@@ -111,20 +91,16 @@ const mapOverAllUserProjects = (
   } else {
     userFolders.map((folder) => {
       return (div.innerHTML += `
-      <article class="sidebarArticle">
-     
-      <svg class="articleSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20">
-    <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clip-rule="evenodd" />
-  </svg>
-  
-      <div class="articleInnerDiv1">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-</svg>
-
-      <h2 class="articleTitle" > ${folder.name} </h2>
-      </div>
-     
+      <article class="sidebarArticle">  
+        <div class="articleInnerDiv1">
+          <div class="svgHolder"> 
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </div>
+          <h2 class="articleTitle" > ${folder.name} </h2>
+        </div>
+          
       </article>`);
     });
   }
@@ -135,26 +111,19 @@ const createNewFolderButton = (div: HTMLElement): void => {
   <div class="noFolderDisplayDiv"> 
     <button class="createNewFolderBtn"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20">
     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-  </svg>
-   Create new folder </button> 
+    </svg>
+    Create new folder </button> 
   </div>
   `;
 };
 
-export const updateUserNotesLength = (): void => {
-  const noteLength = (noteStore.get("userNotes") as unknown as UserNotes[])
-    .length;
-  noteStore.set("notesLength", noteLength);
-};
-
-export const reRenderNotesLengthElement = (): void => {
-  const noteLengthElement = document.querySelector(
+export const renderTotalNumberOfUserProjects = (): void => {
+  const projectLengthElement = document.querySelector(
     ".sidebarNotesLength"
   ) as HTMLElement;
+  const userProjectsLength = defaultFolder.userFolder.length;
 
-  noteLengthElement.textContent = `${globalStore.get(
-    "notesLength"
-  )} projects` as string;
+  projectLengthElement.textContent = `${userProjectsLength} projects`;
 };
 
 const createSidebar = (
@@ -165,73 +134,287 @@ const createSidebar = (
 ): void => {
   let div = document.createElement("div");
   div.id = "sidebar-container";
-  // insert before noteEditor
   if (noteEditorVisible) document.body.insertBefore(div, todoOrNoteElement);
-  // insert before home
   else if (homeVisible) document.body.insertBefore(div, todoOrNoteElement);
-  // insert before todoList
   else if (todoListVisible) document.body.insertBefore(div, todoOrNoteElement);
-  // normal insert if both aren't active
   else document.body.appendChild(div);
   document.getElementById("sidebar-container")?.appendChild(generateSidebar());
 };
 
-const eventDelegationForNotes = (sidebarDiv2: HTMLElement): void => {
-  sidebarDiv2?.addEventListener("click", (event: Event): void => {
-    const target = event.target as SVGSVGElement;
-    const parentElementOpen = target.closest(".sidebarArticle") as Element;
-    const parentElementDelete = target.closest(".articleSvg");
+const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
+  const allArticles = document.querySelectorAll(".sidebarArticle");
+  sidebarDiv2?.addEventListener("click", (e: Event): void => {
+    closeSubMenuIfOpen();
+    const target = e.target as HTMLElement;
+    const parentElementArticle = target.closest(".sidebarArticle") as Element;
     const parentElementCreateNewFolder = target.closest(".createNewFolderBtn");
-    const allSvgs = document.querySelectorAll(".articleSvg");
-    const allArticles = document.querySelectorAll(".sidebarArticle");
 
-    if (parentElementDelete) {
-      findIndexToDeleteNote(allSvgs, parentElementDelete);
-    } else if (parentElementCreateNewFolder) {
+    if (parentElementCreateNewFolder) {
       projectStore.set("isCreateNewFolderVisible", true);
-    } else {
+    } else if (parentElementArticle) {
       /*autoSaveNote();
       setNoteIdToOpenNote(allArticles, parentElementOpen);
       const noteId = noteStore.get("noteId");
       router.navigateTo(`/notes/noteId=${noteId}`);
       noteStore.set("existingNote", true);
       globalStore.set("noteEditorVisible", true);*/
-      openFolder(parentElementOpen);
+      const selectedFolder = selectFolder(parentElementArticle, allArticles);
+      isFolderOpenOrClosed(selectedFolder);
+    }
+  });
+  sidebarDiv2?.addEventListener("contextmenu", (e: Event): void => {
+    e.preventDefault();
+
+    const target = e.target as HTMLElement;
+    const parentElementArticle = target.closest(".sidebarArticle") as Element;
+    if (parentElementArticle) {
+      createFolderSubMenu(parentElementArticle, allArticles);
+      selectFolder(parentElementArticle, allArticles);
+    }
+  });
+};
+
+const selectFolder = (
+  parentElementArticle: Element,
+  allArticles: NodeListOf<Element>
+): HTMLElement => {
+  const array = [...allArticles];
+  let selectedFolderElement = {} as HTMLElement;
+  array.forEach((folder, i) => {
+    if (folder === parentElementArticle) {
+      setFolderAccordinglyToSubfolderCounter(i);
+      selectedFolderElement = folder as HTMLElement;
+    }
+  });
+  return selectedFolderElement;
+};
+
+const createFolderSubMenu = (
+  isParentElementArticle: Element,
+  allArticles: NodeListOf<Element>
+): void => {
+  const array = [...allArticles];
+  array.forEach((folder, i) => {
+    if (folder === isParentElementArticle) {
+      closeSubMenuIfOpen();
+      projectStore.set("subFolderVisible", true);
+      const subMenu = document.createElement("div");
+      subMenu.className = "subMenu";
+      subMenu.innerHTML = `
+      <nav class="submenuNav">
+        <ul> 
+          <li class="addSubFolderLi"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15">
+            <path fill-rule="evenodd" d="M19.5 21a3 3 0 003-3V9a3 3 0 00-3-3h-5.379a.75.75 0 01-.53-.22L11.47 3.66A2.25 2.25 0 009.879 3H4.5a3 3 0 00-3 3v12a3 3 0 003 3h15zm-6.75-10.5a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V10.5z" clip-rule="evenodd" />
+            </svg>
+            Add new subfolder </li>
+          <li class="addNoteLi"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15">
+            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+            </svg>
+            Add new note </li>
+          <li class="addTaskLi"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15">
+            <path d="M5.566 4.657A4.505 4.505 0 016.75 4.5h10.5c.41 0 .806.055 1.183.157A3 3 0 0015.75 3h-7.5a3 3 0 00-2.684 1.657zM2.25 12a3 3 0 013-3h13.5a3 3 0 013 3v6a3 3 0 01-3 3H5.25a3 3 0 01-3-3v-6zM5.25 7.5c-.41 0-.806.055-1.184.157A3 3 0 016.75 6h10.5a3 3 0 012.683 1.657A4.505 4.505 0 0018.75 7.5H5.25z" />
+            </svg>
+            Add new task list</li>
+          <li class="deleteFolderLi"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15">
+            <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clip-rule="evenodd" />
+            </svg>
+            Delete folder</li>
+        </ul>
+      </nav>
+      `;
+
+      folder.appendChild(subMenu);
+      subMenuEventListeners();
+    }
+  });
+};
+
+const subMenuEventListeners = (): void => {
+  const submenu = document.querySelector(".subMenu") as HTMLElement;
+
+  submenu.addEventListener("click", (e: Event): void => {
+    const target = e.target as HTMLElement;
+    const parentElementAddFolder = target.closest(".addSubFolderLi");
+    const parentElementAddNote = target.closest(".addNoteLi");
+    const parentElementAddTask = target.closest(".addTaskLi");
+
+    if (parentElementAddFolder)
+      projectStore.set("isCreateNewFolderVisible", true);
+    else if (parentElementAddNote) globalStore.set("noteEditorVisible", true);
+    else if (parentElementAddTask) globalStore.set("todoListVisible", true);
+    else {
+    }
+  });
+};
+
+const closeSubMenuIfOpen = (): void => {
+  const subFolderVisible = projectStore.get("subFolderVisible");
+  if (subFolderVisible) {
+    document.querySelector(".subMenu")?.remove();
+    projectStore.set("subFolderVisible", false);
+  }
+};
+
+const findIndexToDeleteNote = (
+  allSvgs: NodeListOf<Element>,
+  parentElement: Element
+): void => {
+  const array = [...allSvgs];
+  array.findIndex((item, i) => {
+    if (item === parentElement) {
+      noteStore.set("deleteNote", i);
+    }
+  });
+};
+
+const setNoteIdToOpenNote = (
+  allArticles: NodeListOf<Element>,
+  parentElement: Element
+) => {
+  const array = [...allArticles];
+  const userNotes = noteStore.get("userNotes") as unknown as UserNotes[];
+  array.findIndex((item, i) => {
+    if (item === parentElement) {
+      noteStore.set("noteId", userNotes[i]._id);
+    }
+  });
+};
+
+const sidebarEventListeners = (): void => {
+  const addFolder = document.querySelector(".addFolderSvg") as HTMLElement;
+
+  addFolder.addEventListener("click", (): void => {
+    projectStore.set("isCreateNewFolderVisible", true);
+  });
+};
+
+export const openSelectedFolder = (selectedFolder: HTMLElement): void => {
+  const elementIcon = selectedFolder.querySelector(".svgHolder") as HTMLElement;
+  elementIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+</svg>
+`;
+  selectedFolder.id = "opened";
+  addSelectedFolderMenu(selectedFolder);
+};
+
+const addSelectedFolderMenu = (selectedFolder: HTMLElement): void => {
+  const menu = document.createElement("div");
+  menu.className = "folderSubmenu";
+  console.log(defaultFolder.folderContent);
+  defaultFolder.folderContent.map((item) => {
+    menu.innerHTML += `
+      <article class="submenuArticle" id=${
+        item.type
+      }> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
+      item
+    )}</div> ${item.name} </article></div>
+    `;
+  });
+  selectedFolder.appendChild(menu);
+  subfolderEventDelegations();
+};
+
+const addIcon = (item: Item): string => {
+  if (item.type === "folder")
+    return `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+</svg>
+`;
+  else if (item.type === "note")
+    return `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
+<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+</svg>
+`;
+  else
+    return `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
+<path stroke-linecap="round" stroke-linejoin="round" d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122" />
+</svg>
+`;
+};
+
+const closeSelectedFolder = (selectedFolder: HTMLElement): void => {
+  const elementIcon = selectedFolder.querySelector(".svgHolder") as HTMLElement;
+  elementIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+  </svg>
+`;
+  selectedFolder.id = "";
+  document.querySelector(".folderSubmenu")?.remove();
+};
+
+const isFolderOpenOrClosed = (selectedFolder: HTMLElement): void => {
+  if (selectedFolder.id === "opened") closeSelectedFolder(selectedFolder);
+  else openSelectedFolder(selectedFolder);
+};
+
+const subfolderEventDelegations = (): void => {
+  const folderSubmenu = document.querySelector(".folderSubmenu") as HTMLElement;
+  const allFolders = document.querySelectorAll(".submenuArticle");
+
+  folderSubmenu.addEventListener("click", (e: Event): void => {
+    const target = e.target as HTMLElement;
+    const folder = target.closest("#folder");
+    const note = target.closest("#note");
+    const task = target.closest("#task");
+
+    if (folder) {
+      console.log("dada");
+      e.stopPropagation();
+      const selectedFolder = selectFolder(folder, allFolders);
+      isFolderOpenOrClosed(selectedFolder);
     }
   });
 
-  const openFolder = (parentElementOpen: Element): void => {
-    const userFolders = defaultFolder.userFolder;
-    userFolders.forEach((folder, i) => {
-      if (folder) {
-        console.log(i);
-        defaultFolder.selectedFolder(folder.name, folder._id, folder.content);
-      }
-    });
-  };
+  folderSubmenu.addEventListener("contextmenu", (e: Event): void => {
+    const target = e.target as HTMLElement;
+    const folder = target.closest(".submenuArticle") as Element;
+    e.stopPropagation();
+    e.preventDefault();
+    createFolderSubMenu(folder, allFolders);
+  });
+};
 
-  const findIndexToDeleteNote = (
-    allSvgs: NodeListOf<Element>,
-    parentElement: Element
-  ): void => {
-    const array = [...allSvgs];
-    array.findIndex((item, i) => {
-      if (item === parentElement) {
-        noteStore.set("deleteNote", i);
-      }
-    });
-  };
+export const setFolderAccordinglyToSubfolderCounter = (i: number): void => {
+  defaultFolder.addIndexToSubfolderCounter(i);
+  const subfolderCounter = defaultFolder.subfolderCounter;
+  let targetFolder = defaultFolder.userFolder[subfolderCounter[0]];
 
-  const setNoteIdToOpenNote = (
-    allArticles: NodeListOf<Element>,
-    parentElement: Element
-  ) => {
-    const array = [...allArticles];
-    const userNotes = noteStore.get("userNotes") as unknown as UserNotes[];
-    array.findIndex((item, i) => {
-      if (item === parentElement) {
-        noteStore.set("noteId", userNotes[i]._id);
-      }
-    });
-  };
+  for (let i = 0; i < subfolderCounter.length; i++) {
+    if (i === 0) {
+      targetFolder;
+      defaultFolder.selectedFolder(
+        targetFolder.name,
+        targetFolder._id,
+        targetFolder.content
+      );
+      console.log(defaultFolder);
+    } else {
+      targetFolder = `${targetFolder}.content[subfolderCounter[i]]`;
+      defaultFolder.selectedFolder(
+        targetFolder.name,
+        targetFolder._id,
+        targetFolder.content
+      );
+    }
+  }
+
+  /*if (counter === 1) {
+    const selectedFolder = defaultFolder.userFolder[i];
+    defaultFolder.selectedFolder(
+      selectedFolder.name,
+      selectedFolder._id,
+      selectedFolder.content
+    );
+  } else if (counter === 2) {
+    const selectedFolder =
+      defaultFolder.userFolder[subfolderCounter[0]].content[
+        subfolderCounter[1]
+      ];
+    defaultFolder.selectedFolder(
+      selectedFolder.name,
+      selectedFolder._id,
+      selectedFolder.content
+    );
+  }*/
 };

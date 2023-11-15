@@ -1,8 +1,4 @@
-import {
-  FolderInterface,
-  todo,
-  todoItem,
-} from "../Components/Sidebar/SidebarLogic";
+import { FolderInterface } from "../Components/Sidebar/SidebarLogic";
 
 interface InitialState {
   [key: string]: any;
@@ -13,6 +9,8 @@ type Listener = (key: any, value: any) => void;
 const initialState = {
   isCreateNewFolderVisible: false,
   newFolderTitle: "",
+  subFolderVisible: false,
+  selectedFolder: false,
 };
 
 class ProjectStore {
@@ -51,21 +49,23 @@ class ProjectStore {
 }
 
 class Folder {
-  folderName: string;
-  folderId: string;
-  folderContent: FolderInterface[];
-
-  userFolder: any[];
+  folderName;
+  folderId;
+  folderContent;
+  userFolder;
+  subfolderCounter;
   constructor(
-    folderName: string,
-    folderId: string,
-    folderContent: FolderInterface[],
-    userFolder: any[]
+    folderName: string = "",
+    folderId: string = "",
+    folderContent: FolderInterface[] = [],
+    userFolder: any[] = [],
+    subfolderCounter: number[] = []
   ) {
     (this.folderName = folderName),
       (this.folderId = folderId),
       (this.folderContent = folderContent),
       (this.userFolder = userFolder);
+    this.subfolderCounter = subfolderCounter;
   }
 
   addFolder(newFolder: {}) {
@@ -85,7 +85,11 @@ class Folder {
       (this.folderId = folderId),
       (this.folderContent = folderContent);
   }
+
+  addIndexToSubfolderCounter(i: number) {
+    this.subfolderCounter.push(i);
+  }
 }
 
-export const defaultFolder = new Folder("", "", [], []);
+export const defaultFolder = new Folder();
 export const projectStore = new ProjectStore();
