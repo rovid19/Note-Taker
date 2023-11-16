@@ -15,6 +15,7 @@ export interface FolderInterface {
   dateCreated: string;
   content: FolderInterface | todo;
   type: string;
+  _id: string;
 }
 
 export type UserNotes = {
@@ -29,3 +30,10 @@ export type Note = {
 };
 
 export type Item = todo & FolderInterface & Note;
+
+export type CounterArr = CounterArrItem[];
+
+export type CounterArrItem = {
+  id: string;
+  index: number[];
+};

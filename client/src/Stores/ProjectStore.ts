@@ -1,4 +1,5 @@
 import { FolderInterface } from "../Components/Sidebar/SidebarLogic";
+import { CounterArr } from "../Utils/TsTypes";
 
 interface InitialState {
   [key: string]: any;
@@ -53,19 +54,16 @@ class Folder {
   folderId;
   folderContent;
   userFolder;
-  subfolderCounter;
   constructor(
     folderName: string = "",
     folderId: string = "",
     folderContent: FolderInterface[] = [],
-    userFolder: any[] = [],
-    subfolderCounter: number[] = []
+    userFolder: any[] = []
   ) {
     (this.folderName = folderName),
       (this.folderId = folderId),
       (this.folderContent = folderContent),
       (this.userFolder = userFolder);
-    this.subfolderCounter = subfolderCounter;
   }
 
   addFolder(newFolder: {}) {
@@ -85,11 +83,30 @@ class Folder {
       (this.folderId = folderId),
       (this.folderContent = folderContent);
   }
+}
 
-  addIndexToSubfolderCounter(i: number) {
-    this.subfolderCounter.push(i);
+class SubfolderCounter {
+  counterArray;
+  constructor(counterArray: CounterArr = []) {
+    this.counterArray = counterArray;
+  }
+  addIndexToCounterArray(id: string, i: number) {
+    this.counterArray.forEach((item) => {
+      if (item.id === id) {
+        item.index.push(i);
+      }
+    });
+  }
+
+  setCounterArray(array: CounterArr) {
+    this.counterArray = array;
+  }
+
+  setId(id: string, i: number) {
+    this.counterArray[i].id = id;
   }
 }
 
 export const defaultFolder = new Folder();
 export const projectStore = new ProjectStore();
+export const counterArray = new SubfolderCounter();

@@ -1,5 +1,5 @@
-import { reRenderAllFolderContainer } from "../Components/Sidebar/SidebarLogic";
 import { defaultFolder } from "../Stores/ProjectStore";
+import { fillSubfolderCounterArray } from "../Utils/GeneralFunctions";
 import Base from "./BaseService";
 
 class ProjectService extends Base {
@@ -10,6 +10,7 @@ class ProjectService extends Base {
   async fetchAllUserProjects(userId: string) {
     const userProjects = await this.get("/fetch-user-projects", { userId });
     defaultFolder.setAllFolders(userProjects.folder);
+    fillSubfolderCounterArray(userProjects.folder);
   }
 
   async addNewFolder(

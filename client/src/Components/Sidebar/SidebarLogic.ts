@@ -3,7 +3,12 @@ import { generateSidebar } from "./Sidebar";
 import { router } from "../../Utils/Router/Router";
 import { extractProjectFromUrl } from "../../Utils/Router/RouterLogic";
 import { noteStore } from "../../Stores/NoteStore";
-import { defaultFolder, projectStore } from "../../Stores/ProjectStore";
+import {
+  counterArray,
+  counterArray,
+  defaultFolder,
+  projectStore,
+} from "../../Stores/ProjectStore";
 import { FolderInterface, UserNotes, Item } from "../../Utils/TsTypes";
 
 export const isSidebarVisible = async () => {
@@ -91,7 +96,7 @@ const mapOverAllUserProjects = (
   } else {
     userFolders.map((folder) => {
       return (div.innerHTML += `
-      <article class="sidebarArticle">  
+      <article class="sidebarArticle" data-custom=${folder._id}>  
         <div class="articleInnerDiv1">
           <div class="svgHolder"> 
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
@@ -148,6 +153,7 @@ const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
     const target = e.target as HTMLElement;
     const parentElementArticle = target.closest(".sidebarArticle") as Element;
     const parentElementCreateNewFolder = target.closest(".createNewFolderBtn");
+    const isParentMainFolder = target.closest("[data-custom]") as HTMLElement;
 
     if (parentElementCreateNewFolder) {
       projectStore.set("isCreateNewFolderVisible", true);
@@ -158,7 +164,11 @@ const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
       router.navigateTo(`/notes/noteId=${noteId}`);
       noteStore.set("existingNote", true);
       globalStore.set("noteEditorVisible", true);*/
-      const selectedFolder = selectFolder(parentElementArticle, allArticles);
+      const selectedFolder = selectFolder(
+        parentElementArticle,
+        allArticles,
+        isParentMainFolder
+      );
       isFolderOpenOrClosed(selectedFolder);
     }
   });
@@ -167,29 +177,37 @@ const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
 
     const target = e.target as HTMLElement;
     const parentElementArticle = target.closest(".sidebarArticle") as Element;
+    const isParentMainFolder = target.closest("[data-custom]") as HTMLElement;
     if (parentElementArticle) {
-      createFolderSubMenu(parentElementArticle, allArticles);
-      selectFolder(parentElementArticle, allArticles);
+      createFolderRightClick(parentElementArticle, allArticles);
+      selectFolder(parentElementArticle, allArticles, isParentMainFolder);
     }
   });
 };
 
 const selectFolder = (
-  parentElementArticle: Element,
-  allArticles: NodeListOf<Element>
+  parentElementFolder: Element,
+  allArticles: NodeListOf<Element>,
+  isParentMainFolder: HTMLElement
 ): HTMLElement => {
   const array = [...allArticles];
   let selectedFolderElement = {} as HTMLElement;
-  array.forEach((folder, i) => {
-    if (folder === parentElementArticle) {
-      setFolderAccordinglyToSubfolderCounter(i);
-      selectedFolderElement = folder as HTMLElement;
-    }
-  });
+  if (isParentMainFolder) {
+    array.forEach((folder, i) => {
+      if (folder === parentElementFolder) {
+        //setFolderAccordinglyToMainFolder(i);
+        selectedFolderElement = folder as HTMLElement;
+        const folderId = isParentMainFolder.dataset.custom as string;
+        counterArray.addIndexToCounterArray(folderId, i);
+        console.log(counterArray.counterArray);
+      }
+    });
+  }
+
   return selectedFolderElement;
 };
 
-const createFolderSubMenu = (
+const createFolderRightClick = (
   isParentElementArticle: Element,
   allArticles: NodeListOf<Element>
 ): void => {
@@ -295,13 +313,13 @@ export const openSelectedFolder = (selectedFolder: HTMLElement): void => {
 </svg>
 `;
   selectedFolder.id = "opened";
-  addSelectedFolderMenu(selectedFolder);
+  console.log(selectedFolder);
+  createSelectedFolderSubmenu(selectedFolder);
 };
 
-const addSelectedFolderMenu = (selectedFolder: HTMLElement): void => {
+const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
   const menu = document.createElement("div");
   menu.className = "folderSubmenu";
-  console.log(defaultFolder.folderContent);
   defaultFolder.folderContent.map((item) => {
     menu.innerHTML += `
       <article class="submenuArticle" id=${
@@ -334,6 +352,7 @@ const addIcon = (item: Item): string => {
 };
 
 const closeSelectedFolder = (selectedFolder: HTMLElement): void => {
+  defaultFolder.selectedFolder("", "", []);
   const elementIcon = selectedFolder.querySelector(".svgHolder") as HTMLElement;
   elementIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
   <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -359,7 +378,6 @@ const subfolderEventDelegations = (): void => {
     const task = target.closest("#task");
 
     if (folder) {
-      console.log("dada");
       e.stopPropagation();
       const selectedFolder = selectFolder(folder, allFolders);
       isFolderOpenOrClosed(selectedFolder);
@@ -371,13 +389,15 @@ const subfolderEventDelegations = (): void => {
     const folder = target.closest(".submenuArticle") as Element;
     e.stopPropagation();
     e.preventDefault();
-    createFolderSubMenu(folder, allFolders);
+    createFolderRightClick(folder, allFolders);
   });
 };
 
-export const setFolderAccordinglyToSubfolderCounter = (i: number): void => {
-  defaultFolder.addIndexToSubfolderCounter(i);
-  const subfolderCounter = defaultFolder.subfolderCounter;
+export const setFolderAccordinglyToMainFolder = (i: number): void => {
+  const arrayForOpeningFolders = counterArray.counterArray;
+
+  /*defaultFolder.addIndexToSubfolderCounter(i);
+  const subfolderCounter = counterArray.subfolderCounter;
   let targetFolder = defaultFolder.userFolder[subfolderCounter[0]];
 
   for (let i = 0; i < subfolderCounter.length; i++) {
@@ -388,14 +408,15 @@ export const setFolderAccordinglyToSubfolderCounter = (i: number): void => {
         targetFolder._id,
         targetFolder.content
       );
-      console.log(defaultFolder);
+      console.log(targetFolder);
     } else {
-      targetFolder = `${targetFolder}.content[subfolderCounter[i]]`;
+      targetFolder = targetFolder.content[subfolderCounter[i]];
       defaultFolder.selectedFolder(
         targetFolder.name,
         targetFolder._id,
         targetFolder.content
       );
+      console.log(targetFolder);
     }
   }
 
