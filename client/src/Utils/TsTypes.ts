@@ -15,6 +15,7 @@ export interface FolderInterface {
   dateCreated: string;
   content: FolderInterface | todo;
   type: string;
+  openSubfolders: number[];
   _id: string;
 }
 
@@ -35,5 +36,5 @@ export type CounterArr = CounterArrItem[];
 
 export type CounterArrItem = {
   id: string;
-  index: number[];
+  subfolders: FolderInterface[];
 };

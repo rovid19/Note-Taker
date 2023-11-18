@@ -2,14 +2,12 @@ import globalStore from "../../Stores/GlobalStore";
 import { generateSidebar } from "./Sidebar";
 import { router } from "../../Utils/Router/Router";
 import { extractProjectFromUrl } from "../../Utils/Router/RouterLogic";
-import { noteStore } from "../../Stores/NoteStore";
 import {
-  counterArray,
   counterArray,
   defaultFolder,
   projectStore,
 } from "../../Stores/ProjectStore";
-import { FolderInterface, UserNotes, Item } from "../../Utils/TsTypes";
+import { FolderInterface, Item } from "../../Utils/TsTypes";
 
 export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
@@ -35,7 +33,7 @@ export const isSidebarVisible = async () => {
     sidebarNavigationLogic();
   } else {
     document.getElementById("sidebar-container")?.remove();
-    window.removeEventListener("click", closeSubMenuIfOpen);
+    window.removeEventListener("click", closeSelectedFolderIfOpen);
     removeUrl();
   }
 };
@@ -62,7 +60,7 @@ const whichEditorIsActive = (
 export const sidebarNavigationLogic = (): void => {
   const closeSidebarSvg = document.querySelector(".sidebarSvg") as HTMLElement;
 
-  window.addEventListener("click", closeSubMenuIfOpen);
+  window.addEventListener("click", closeSelectedFolderIfOpen);
 
   closeSidebarSvg.addEventListener("click", () => {
     //ovo je zapravo toggleSidebar funckija jer ne zelim poduplati event listener
@@ -96,7 +94,7 @@ const mapOverAllUserProjects = (
   } else {
     userFolders.map((folder) => {
       return (div.innerHTML += `
-      <article class="sidebarArticle" data-custom=${folder._id}>  
+      <article class="sidebarArticle" data-id=${folder._id} data-mainfolder=${folder._id}>  
         <div class="articleInnerDiv1">
           <div class="svgHolder"> 
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
@@ -149,26 +147,23 @@ const createSidebar = (
 const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
   const allArticles = document.querySelectorAll(".sidebarArticle");
   sidebarDiv2?.addEventListener("click", (e: Event): void => {
-    closeSubMenuIfOpen();
+    closeSelectedFolderIfOpen();
     const target = e.target as HTMLElement;
-    const parentElementArticle = target.closest(".sidebarArticle") as Element;
     const parentElementCreateNewFolder = target.closest(".createNewFolderBtn");
-    const isParentMainFolder = target.closest("[data-custom]") as HTMLElement;
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
 
     if (parentElementCreateNewFolder) {
       projectStore.set("isCreateNewFolderVisible", true);
-    } else if (parentElementArticle) {
+    } else if (isParentFolder) {
+      isParentFolder;
       /*autoSaveNote();
       setNoteIdToOpenNote(allArticles, parentElementOpen);
       const noteId = noteStore.get("noteId");
       router.navigateTo(`/notes/noteId=${noteId}`);
       noteStore.set("existingNote", true);
       globalStore.set("noteEditorVisible", true);*/
-      const selectedFolder = selectFolder(
-        parentElementArticle,
-        allArticles,
-        isParentMainFolder
-      );
+
+      const selectedFolder = selectFolder(allArticles, isParentFolder);
       isFolderOpenOrClosed(selectedFolder);
     }
   });
@@ -177,29 +172,28 @@ const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
 
     const target = e.target as HTMLElement;
     const parentElementArticle = target.closest(".sidebarArticle") as Element;
-    const isParentMainFolder = target.closest("[data-custom]") as HTMLElement;
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
+
     if (parentElementArticle) {
-      createFolderRightClick(parentElementArticle, allArticles);
-      selectFolder(parentElementArticle, allArticles, isParentMainFolder);
+      selectFolder(allArticles, isParentFolder);
+      createFolderRightClickMenu(parentElementArticle, allArticles);
     }
   });
 };
 
 const selectFolder = (
-  parentElementFolder: Element,
-  allArticles: NodeListOf<Element>,
-  isParentMainFolder: HTMLElement
+  allFolders: NodeListOf<Element>,
+  isParentFolder: HTMLElement
 ): HTMLElement => {
-  const array = [...allArticles];
+  const array = [...allFolders];
   let selectedFolderElement = {} as HTMLElement;
-  if (isParentMainFolder) {
+  if (isParentFolder) {
     array.forEach((folder, i) => {
-      if (folder === parentElementFolder) {
-        //setFolderAccordinglyToMainFolder(i);
+      if (folder === isParentFolder) {
         selectedFolderElement = folder as HTMLElement;
-        const folderId = isParentMainFolder.dataset.custom as string;
-        counterArray.addIndexToCounterArray(folderId, i);
-        console.log(counterArray.counterArray);
+        const folderId = isParentFolder.dataset.id as string;
+        setFolderAccordinglyToMainFolder(i, folderId);
+        console.log(selectedFolderElement);
       }
     });
   }
@@ -207,14 +201,15 @@ const selectFolder = (
   return selectedFolderElement;
 };
 
-const createFolderRightClick = (
+const createFolderRightClickMenu = (
   isParentElementArticle: Element,
   allArticles: NodeListOf<Element>
 ): void => {
+  console.log(defaultFolder);
   const array = [...allArticles];
   array.forEach((folder, i) => {
     if (folder === isParentElementArticle) {
-      closeSubMenuIfOpen();
+      closeSelectedFolderIfOpen();
       projectStore.set("subFolderVisible", true);
       const subMenu = document.createElement("div");
       subMenu.className = "subMenu";
@@ -242,12 +237,12 @@ const createFolderRightClick = (
       `;
 
       folder.appendChild(subMenu);
-      subMenuEventListeners();
+      rightClickMenuEventListeners();
     }
   });
 };
 
-const subMenuEventListeners = (): void => {
+const rightClickMenuEventListeners = (): void => {
   const submenu = document.querySelector(".subMenu") as HTMLElement;
 
   submenu.addEventListener("click", (e: Event): void => {
@@ -264,16 +259,7 @@ const subMenuEventListeners = (): void => {
     }
   });
 };
-
-const closeSubMenuIfOpen = (): void => {
-  const subFolderVisible = projectStore.get("subFolderVisible");
-  if (subFolderVisible) {
-    document.querySelector(".subMenu")?.remove();
-    projectStore.set("subFolderVisible", false);
-  }
-};
-
-const findIndexToDeleteNote = (
+/*const findIndexToDeleteNote = (
   allSvgs: NodeListOf<Element>,
   parentElement: Element
 ): void => {
@@ -296,7 +282,7 @@ const setNoteIdToOpenNote = (
       noteStore.set("noteId", userNotes[i]._id);
     }
   });
-};
+};*/
 
 const sidebarEventListeners = (): void => {
   const addFolder = document.querySelector(".addFolderSvg") as HTMLElement;
@@ -313,24 +299,60 @@ export const openSelectedFolder = (selectedFolder: HTMLElement): void => {
 </svg>
 `;
   selectedFolder.id = "opened";
-  console.log(selectedFolder);
+
   createSelectedFolderSubmenu(selectedFolder);
+};
+
+const closeSelectedFolderIfOpen = (): void => {
+  const subFolderVisible = projectStore.get("subFolderVisible");
+  if (subFolderVisible) {
+    document.querySelector(".subMenu")?.remove();
+    projectStore.set("subFolderVisible", false);
+  }
 };
 
 const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
   const menu = document.createElement("div");
   menu.className = "folderSubmenu";
+
   defaultFolder.folderContent.map((item) => {
     menu.innerHTML += `
-      <article class="submenuArticle" id=${
-        item.type
-      }> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
+      <article class="submenuArticle" id=${item.type} data-id=${
+      item._id
+    }> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
       item
     )}</div> ${item.name} </article></div>
     `;
   });
   selectedFolder.appendChild(menu);
   subfolderEventDelegations();
+};
+
+const subfolderEventDelegations = (): void => {
+  const folderSubmenu = document.querySelector(".folderSubmenu") as HTMLElement;
+  const allFolders = document.querySelectorAll(".submenuArticle");
+
+  folderSubmenu.addEventListener("click", (e: Event): void => {
+    const target = e.target as HTMLElement;
+    const folder = target.closest("#folder");
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
+
+    if (folder) {
+      e.stopPropagation();
+      const selectedFolder = selectFolder(allFolders, isParentFolder);
+      isFolderOpenOrClosed(selectedFolder);
+    }
+  });
+
+  folderSubmenu.addEventListener("contextmenu", (e: Event): void => {
+    const target = e.target as HTMLElement;
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
+
+    e.stopPropagation();
+    e.preventDefault();
+    selectFolder(allFolders, isParentFolder);
+    createFolderRightClickMenu(isParentFolder, allFolders);
+  });
 };
 
 const addIcon = (item: Item): string => {
@@ -363,79 +385,27 @@ const closeSelectedFolder = (selectedFolder: HTMLElement): void => {
 };
 
 const isFolderOpenOrClosed = (selectedFolder: HTMLElement): void => {
+  console.log(selectedFolder);
   if (selectedFolder.id === "opened") closeSelectedFolder(selectedFolder);
   else openSelectedFolder(selectedFolder);
 };
 
-const subfolderEventDelegations = (): void => {
-  const folderSubmenu = document.querySelector(".folderSubmenu") as HTMLElement;
-  const allFolders = document.querySelectorAll(".submenuArticle");
-
-  folderSubmenu.addEventListener("click", (e: Event): void => {
-    const target = e.target as HTMLElement;
-    const folder = target.closest("#folder");
-    const note = target.closest("#note");
-    const task = target.closest("#task");
-
-    if (folder) {
-      e.stopPropagation();
-      const selectedFolder = selectFolder(folder, allFolders);
-      isFolderOpenOrClosed(selectedFolder);
+export const setFolderAccordinglyToMainFolder = (
+  i: number,
+  folderId: string
+): void => {
+  const newArray = counterArray.counterArray;
+  const loopThroughArray = (array: any[]): void => {
+    for (let folder of array) {
+      if (folder._id === folderId) {
+        folder.openSubfolders.push(i);
+        defaultFolder.selectedFolder(folder.name, folder._id, folder.content);
+        console.log(defaultFolder);
+      } else {
+        if (folder.content.length > 0) loopThroughArray(folder.content);
+      }
     }
-  });
+  };
 
-  folderSubmenu.addEventListener("contextmenu", (e: Event): void => {
-    const target = e.target as HTMLElement;
-    const folder = target.closest(".submenuArticle") as Element;
-    e.stopPropagation();
-    e.preventDefault();
-    createFolderRightClick(folder, allFolders);
-  });
-};
-
-export const setFolderAccordinglyToMainFolder = (i: number): void => {
-  const arrayForOpeningFolders = counterArray.counterArray;
-
-  /*defaultFolder.addIndexToSubfolderCounter(i);
-  const subfolderCounter = counterArray.subfolderCounter;
-  let targetFolder = defaultFolder.userFolder[subfolderCounter[0]];
-
-  for (let i = 0; i < subfolderCounter.length; i++) {
-    if (i === 0) {
-      targetFolder;
-      defaultFolder.selectedFolder(
-        targetFolder.name,
-        targetFolder._id,
-        targetFolder.content
-      );
-      console.log(targetFolder);
-    } else {
-      targetFolder = targetFolder.content[subfolderCounter[i]];
-      defaultFolder.selectedFolder(
-        targetFolder.name,
-        targetFolder._id,
-        targetFolder.content
-      );
-      console.log(targetFolder);
-    }
-  }
-
-  /*if (counter === 1) {
-    const selectedFolder = defaultFolder.userFolder[i];
-    defaultFolder.selectedFolder(
-      selectedFolder.name,
-      selectedFolder._id,
-      selectedFolder.content
-    );
-  } else if (counter === 2) {
-    const selectedFolder =
-      defaultFolder.userFolder[subfolderCounter[0]].content[
-        subfolderCounter[1]
-      ];
-    defaultFolder.selectedFolder(
-      selectedFolder.name,
-      selectedFolder._id,
-      selectedFolder.content
-    );
-  }*/
+  loopThroughArray(newArray);
 };

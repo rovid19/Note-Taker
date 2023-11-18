@@ -83,11 +83,14 @@ class Folder {
       (this.folderId = folderId),
       (this.folderContent = folderContent);
   }
+  setFolderId(id: string) {
+    this.folderId = id;
+  }
 }
 
 class SubfolderCounter {
   counterArray;
-  constructor(counterArray: CounterArr = []) {
+  constructor(counterArray: FolderInterface[] = []) {
     this.counterArray = counterArray;
   }
   addIndexToCounterArray(id: string, i: number) {
@@ -98,7 +101,7 @@ class SubfolderCounter {
     });
   }
 
-  setCounterArray(array: CounterArr) {
+  setCounterArray(array: FolderInterface[]) {
     this.counterArray = array;
   }
 
