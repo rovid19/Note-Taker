@@ -50,28 +50,31 @@ export const createNewFolder = async (req, res) => {
         name: folderName,
         dateCreated: fullDate,
         type: "folder",
+        depth: 0,
       });
 
       user.folder.push(newFolder._id);
 
       await user.save();
-      res.json("ok");
+      res.json(newFolder);
     } catch (e) {
       throw e;
     }
   } else {
     try {
       const folder = await Folder.findById(folderId);
+      const addLayerToDepth = folder.depth + 1;
       const newSubFolder = await Folder.create({
         name: folderName,
         dateCreated: fullDate,
         type: "folder",
+        depth: addLayerToDepth,
       });
 
       folder.content.push(newSubFolder._id);
 
       await folder.save();
-      res.json("ok");
+      res.json(newSubFolder);
     } catch (e) {
       throw e;
     }

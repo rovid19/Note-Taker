@@ -225,15 +225,14 @@
   width: 100%;
   padding-top: 8px;
   padding-bottom: 8px;
+  top: 100px;
 }
 
 .submenuArticle {
-  padding: 8px;
   display: flex;
   gap: 8px;
   position: relative;
   flex-direction: column;
-  padding-left: 8px;
 }
 
 .sidebarArticle {
@@ -244,6 +243,6 @@
   overflow: hidden;
 }
 
-.submenuArticle:hover {
+.submenuArticle[data="hover"]:hover {
   background-color: var(--defHBlack);
 }

@@ -1,7 +1,9 @@
 import { FolderInterface } from "../Components/Sidebar/SidebarLogic";
-import { CounterArr } from "../Utils/TsTypes";
 
 interface InitialState {
+  isCreateNewFolderVisible: boolean;
+  newFolderTitle: string;
+  subFolderVisible: boolean;
   [key: string]: any;
 }
 
@@ -12,6 +14,7 @@ const initialState = {
   newFolderTitle: "",
   subFolderVisible: false,
   selectedFolder: false,
+  selectedFolderDepth: null,
 };
 
 class ProjectStore {
@@ -27,14 +30,14 @@ class ProjectStore {
     return this.state[key];
   }
 
-  set(key: string, value: string | number | boolean | null): void {
+  set(key: string, value: string | number | boolean | null | Element): void {
     if (this.state[key] !== value) {
       this.state[key] = value;
       this.notify(key, value);
     }
   }
 
-  notify(key: string, value: string | number | boolean | null): void {
+  notify(key: string, value: string | number | boolean | null | Element): void {
     if (this.listeners[key]) {
       this.listeners[key].forEach((listener) => listener(key, value));
     }
@@ -88,28 +91,5 @@ class Folder {
   }
 }
 
-class SubfolderCounter {
-  counterArray;
-  constructor(counterArray: FolderInterface[] = []) {
-    this.counterArray = counterArray;
-  }
-  addIndexToCounterArray(id: string, i: number) {
-    this.counterArray.forEach((item) => {
-      if (item.id === id) {
-        item.index.push(i);
-      }
-    });
-  }
-
-  setCounterArray(array: FolderInterface[]) {
-    this.counterArray = array;
-  }
-
-  setId(id: string, i: number) {
-    this.counterArray[i].id = id;
-  }
-}
-
 export const defaultFolder = new Folder();
 export const projectStore = new ProjectStore();
-export const counterArray = new SubfolderCounter();

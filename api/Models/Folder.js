@@ -5,7 +5,7 @@ const folderSchema = new mongoose.Schema({
   dateCreated: String,
   content: [{ type: mongoose.Schema.Types.ObjectId, ref: "folder" }],
   type: String,
-  openSubfolders: [],
+  depth: Number,
 });
 
 const folderModel = mongoose.model("folder", folderSchema);

@@ -2,11 +2,7 @@ import globalStore from "../../Stores/GlobalStore";
 import { generateSidebar } from "./Sidebar";
 import { router } from "../../Utils/Router/Router";
 import { extractProjectFromUrl } from "../../Utils/Router/RouterLogic";
-import {
-  counterArray,
-  defaultFolder,
-  projectStore,
-} from "../../Stores/ProjectStore";
+import { defaultFolder, projectStore } from "../../Stores/ProjectStore";
 import { FolderInterface, Item } from "../../Utils/TsTypes";
 
 export const isSidebarVisible = async () => {
@@ -33,7 +29,7 @@ export const isSidebarVisible = async () => {
     sidebarNavigationLogic();
   } else {
     document.getElementById("sidebar-container")?.remove();
-    window.removeEventListener("click", closeSelectedFolderIfOpen);
+    window.removeEventListener("click", closeRightClickMenuIfOpen);
     removeUrl();
   }
 };
@@ -60,7 +56,7 @@ const whichEditorIsActive = (
 export const sidebarNavigationLogic = (): void => {
   const closeSidebarSvg = document.querySelector(".sidebarSvg") as HTMLElement;
 
-  window.addEventListener("click", closeSelectedFolderIfOpen);
+  window.addEventListener("click", closeRightClickMenuIfOpen);
 
   closeSidebarSvg.addEventListener("click", () => {
     //ovo je zapravo toggleSidebar funckija jer ne zelim poduplati event listener
@@ -147,7 +143,6 @@ const createSidebar = (
 const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
   const allArticles = document.querySelectorAll(".sidebarArticle");
   sidebarDiv2?.addEventListener("click", (e: Event): void => {
-    closeSelectedFolderIfOpen();
     const target = e.target as HTMLElement;
     const parentElementCreateNewFolder = target.closest(".createNewFolderBtn");
     const isParentFolder = target.closest("[data-id]") as HTMLElement;
@@ -155,7 +150,6 @@ const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
     if (parentElementCreateNewFolder) {
       projectStore.set("isCreateNewFolderVisible", true);
     } else if (isParentFolder) {
-      isParentFolder;
       /*autoSaveNote();
       setNoteIdToOpenNote(allArticles, parentElementOpen);
       const noteId = noteStore.get("noteId");
@@ -175,6 +169,7 @@ const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
     const isParentFolder = target.closest("[data-id]") as HTMLElement;
 
     if (parentElementArticle) {
+      closeRightClickMenuIfOpen();
       selectFolder(allArticles, isParentFolder);
       createFolderRightClickMenu(parentElementArticle, allArticles);
     }
@@ -193,7 +188,6 @@ const selectFolder = (
         selectedFolderElement = folder as HTMLElement;
         const folderId = isParentFolder.dataset.id as string;
         setFolderAccordinglyToMainFolder(i, folderId);
-        console.log(selectedFolderElement);
       }
     });
   }
@@ -205,11 +199,9 @@ const createFolderRightClickMenu = (
   isParentElementArticle: Element,
   allArticles: NodeListOf<Element>
 ): void => {
-  console.log(defaultFolder);
   const array = [...allArticles];
   array.forEach((folder, i) => {
     if (folder === isParentElementArticle) {
-      closeSelectedFolderIfOpen();
       projectStore.set("subFolderVisible", true);
       const subMenu = document.createElement("div");
       subMenu.className = "subMenu";
@@ -303,7 +295,7 @@ export const openSelectedFolder = (selectedFolder: HTMLElement): void => {
   createSelectedFolderSubmenu(selectedFolder);
 };
 
-const closeSelectedFolderIfOpen = (): void => {
+const closeRightClickMenuIfOpen = (): void => {
   const subFolderVisible = projectStore.get("subFolderVisible");
   if (subFolderVisible) {
     document.querySelector(".subMenu")?.remove();
@@ -324,27 +316,36 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
     )}</div> ${item.name} </article></div>
     `;
   });
+
   selectedFolder.appendChild(menu);
-  subfolderEventDelegations();
+  const selectedFolderSubmenu = selectedFolder.querySelector(
+    ".folderSubmenu"
+  ) as HTMLElement;
+  const svgHolder = selectedFolderSubmenu.querySelector(
+    ".svgHolder"
+  ) as HTMLElement;
+
+  createDivIndent(selectedFolderSubmenu, svgHolder);
+
+  subfolderEventDelegations(selectedFolderSubmenu);
+  //defaultFolder.selectedFolder("", "", []);
 };
 
-const subfolderEventDelegations = (): void => {
-  const folderSubmenu = document.querySelector(".folderSubmenu") as HTMLElement;
-  const allFolders = document.querySelectorAll(".submenuArticle");
+const subfolderEventDelegations = (folder: HTMLElement): void => {
+  const allFolders = folder.querySelectorAll(".submenuArticle");
 
-  folderSubmenu.addEventListener("click", (e: Event): void => {
+  folder.addEventListener("click", (e: Event): void => {
     const target = e.target as HTMLElement;
-    const folder = target.closest("#folder");
     const isParentFolder = target.closest("[data-id]") as HTMLElement;
 
-    if (folder) {
+    if (isParentFolder) {
       e.stopPropagation();
       const selectedFolder = selectFolder(allFolders, isParentFolder);
-      isFolderOpenOrClosed(selectedFolder);
+      if (selectedFolder) isFolderOpenOrClosed(selectedFolder);
     }
   });
 
-  folderSubmenu.addEventListener("contextmenu", (e: Event): void => {
+  folder.addEventListener("contextmenu", (e: Event): void => {
     const target = e.target as HTMLElement;
     const isParentFolder = target.closest("[data-id]") as HTMLElement;
 
@@ -352,6 +353,22 @@ const subfolderEventDelegations = (): void => {
     e.preventDefault();
     selectFolder(allFolders, isParentFolder);
     createFolderRightClickMenu(isParentFolder, allFolders);
+  });
+
+  folder.addEventListener("mouseover", (): void => {
+    const submenuArticle = folder.querySelector(
+      ".submenuArticle"
+    ) as HTMLElement;
+    console.log(submenuArticle);
+    submenuArticle.setAttribute("data", "hover");
+  });
+
+  folder.addEventListener("mouseout", (): void => {
+    const submenuArticle = folder.querySelector(
+      ".submenuArticle"
+    ) as HTMLElement;
+    console.log(submenuArticle);
+    submenuArticle.removeAttribute("data");
   });
 };
 
@@ -374,18 +391,20 @@ const addIcon = (item: Item): string => {
 };
 
 const closeSelectedFolder = (selectedFolder: HTMLElement): void => {
-  defaultFolder.selectedFolder("", "", []);
   const elementIcon = selectedFolder.querySelector(".svgHolder") as HTMLElement;
   elementIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
   <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
   </svg>
 `;
   selectedFolder.id = "";
-  document.querySelector(".folderSubmenu")?.remove();
+  const selectedFolderSubmenu = selectedFolder.querySelector(
+    ".folderSubmenu"
+  ) as HTMLElement;
+
+  if (selectedFolderSubmenu) selectedFolderSubmenu.remove();
 };
 
 const isFolderOpenOrClosed = (selectedFolder: HTMLElement): void => {
-  console.log(selectedFolder);
   if (selectedFolder.id === "opened") closeSelectedFolder(selectedFolder);
   else openSelectedFolder(selectedFolder);
 };
@@ -394,13 +413,12 @@ export const setFolderAccordinglyToMainFolder = (
   i: number,
   folderId: string
 ): void => {
-  const newArray = counterArray.counterArray;
+  const newArray = defaultFolder.userFolder;
   const loopThroughArray = (array: any[]): void => {
     for (let folder of array) {
       if (folder._id === folderId) {
-        folder.openSubfolders.push(i);
         defaultFolder.selectedFolder(folder.name, folder._id, folder.content);
-        console.log(defaultFolder);
+        projectStore.set("selectedFolderDepth", folder.depth);
       } else {
         if (folder.content.length > 0) loopThroughArray(folder.content);
       }
@@ -408,4 +426,21 @@ export const setFolderAccordinglyToMainFolder = (
   };
 
   loopThroughArray(newArray);
+};
+
+const createDivIndent = (
+  selectedFolderSubmenu: HTMLElement,
+  svgHolder: HTMLElement
+): void => {
+  const selectedFolderDepth = projectStore.get("selectedFolderDepth") as number;
+  const divIndent = document.createElement("div");
+  divIndent.style.width = `${8 * selectedFolderDepth}px`;
+  divIndent.style.borderRight = "2px solid #404040";
+  divIndent.className = "divIndent";
+
+  const article = selectedFolderSubmenu.querySelector(
+    ".submenuArticle"
+  ) as HTMLElement;
+  const innerDiv = article.querySelector(".articleInnerDiv1") as HTMLElement;
+  innerDiv.insertBefore(divIndent, svgHolder);
 };
