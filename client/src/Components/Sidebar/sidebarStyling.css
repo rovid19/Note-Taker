@@ -86,10 +86,6 @@
   color: var(--light);
 }
 
-.sidebarArticle:hover {
-  background-color: var(--defHBlack);
-}
-
 .sidebarArticle > svg {
   position: absolute;
   top: 8px;
@@ -244,5 +240,9 @@
 }
 
 .submenuArticle[data="hover"]:hover {
+  background-color: var(--defHBlack);
+}
+
+.sidebarArticle[data="hover"]:hover {
   background-color: var(--defHBlack);
 }

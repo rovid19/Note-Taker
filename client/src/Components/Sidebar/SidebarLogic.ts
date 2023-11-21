@@ -174,6 +174,19 @@ const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
       createFolderRightClickMenu(parentElementArticle, allArticles);
     }
   });
+
+  sidebarDiv2.addEventListener("mouseover", (e: Event) => {
+    const target = e.target as HTMLElement;
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
+    if (isParentFolder) isParentFolder.setAttribute("data", "hover");
+  });
+
+  sidebarDiv2.addEventListener("mouseout", (e: Event) => {
+    const target = e.target as HTMLElement;
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
+
+    if (isParentFolder) isParentFolder.removeAttribute("data");
+  });
 };
 
 const selectFolder = (
@@ -321,11 +334,8 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
   const selectedFolderSubmenu = selectedFolder.querySelector(
     ".folderSubmenu"
   ) as HTMLElement;
-  const svgHolder = selectedFolderSubmenu.querySelector(
-    ".svgHolder"
-  ) as HTMLElement;
 
-  createDivIndent(selectedFolderSubmenu, svgHolder);
+  createDivIndent(selectedFolderSubmenu);
 
   subfolderEventDelegations(selectedFolderSubmenu);
   //defaultFolder.selectedFolder("", "", []);
@@ -355,20 +365,20 @@ const subfolderEventDelegations = (folder: HTMLElement): void => {
     createFolderRightClickMenu(isParentFolder, allFolders);
   });
 
-  folder.addEventListener("mouseover", (): void => {
-    const submenuArticle = folder.querySelector(
-      ".submenuArticle"
-    ) as HTMLElement;
-    console.log(submenuArticle);
-    submenuArticle.setAttribute("data", "hover");
+  folder.addEventListener("mouseover", (e: Event): void => {
+    const target = e.target as HTMLElement;
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
+
+    isParentFolder.setAttribute("data", "hover");
   });
 
-  folder.addEventListener("mouseout", (): void => {
-    const submenuArticle = folder.querySelector(
-      ".submenuArticle"
-    ) as HTMLElement;
-    console.log(submenuArticle);
-    submenuArticle.removeAttribute("data");
+  folder.addEventListener("mouseout", (e: Event): void => {
+    const target = e.target as HTMLElement;
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
+
+    if (isParentFolder) {
+      isParentFolder.removeAttribute("data");
+    }
   });
 };
 
@@ -428,19 +438,26 @@ export const setFolderAccordinglyToMainFolder = (
   loopThroughArray(newArray);
 };
 
-const createDivIndent = (
-  selectedFolderSubmenu: HTMLElement,
-  svgHolder: HTMLElement
-): void => {
+const createDivIndent = (selectedFolderSubmenu: HTMLElement): void => {
   const selectedFolderDepth = projectStore.get("selectedFolderDepth") as number;
   const divIndent = document.createElement("div");
   divIndent.style.width = `${8 * selectedFolderDepth}px`;
   divIndent.style.borderRight = "2px solid #404040";
   divIndent.className = "divIndent";
+  selectedFolderSubmenu.appendChild(divIndent);
+  attachDivIndentToAllSubfolders(selectedFolderSubmenu, divIndent);
+};
 
-  const article = selectedFolderSubmenu.querySelector(
-    ".submenuArticle"
-  ) as HTMLElement;
-  const innerDiv = article.querySelector(".articleInnerDiv1") as HTMLElement;
-  innerDiv.insertBefore(divIndent, svgHolder);
+const attachDivIndentToAllSubfolders = (
+  selectedFolderSubmenu: HTMLElement,
+  divIndent: HTMLElement
+) => {
+  const svgHolder = selectedFolderSubmenu.querySelectorAll(
+    ".svgHolder"
+  ) as NodeListOf<Element>;
+  const svgHolderArray = [...svgHolder];
+  svgHolderArray.forEach((folder) => {
+    const parent = folder.parentNode as HTMLElement;
+    parent.insertBefore(divIndent.cloneNode(true), folder);
+  });
 };
