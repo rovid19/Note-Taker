@@ -13,10 +13,12 @@ export type todo = {
 export interface FolderInterface {
   name: string;
   dateCreated: string;
-  content: FolderInterface | todo;
+  content: (FolderInterface | todo)[];
   type: string;
   openSubfolders: number[];
   _id: string;
+  parentId?: string;
+  new?: boolean;
 }
 
 export type UserNotes = {

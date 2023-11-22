@@ -26,7 +26,7 @@ import { todoStore } from "../../Stores/TodoStore";
 import { setActiveLinkCss } from "../../Utils/Router/RouterLogic";
 import { isHomeVisible } from "../../Components/Home/HomeLogic";
 import { projectStore } from "../../Stores/ProjectStore";
-import { isCreateNewFolderVisible } from "../../Components/PopupWindows/CreateNewFolder/CreateNewFolderLogic";
+import { isCreateNewFolderVisible } from "../../Components/Sidebar/SidebarLogic";
 import { projectService } from "../../Services/ProjectService";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
@@ -48,6 +48,7 @@ todoStore.subscribe("todoIndex", deleteTodoItem);
 
 projectStore.subscribe("isCreateNewFolderVisible", isCreateNewFolderVisible);
 projectStore.subscribe("selectedFolder", openSelectedFolder);
+projectStore.subscribe("createNewFolder", isCreateNewFolderVisible);
 
 window.addEventListener("beforeunload", function (e) {
   if (

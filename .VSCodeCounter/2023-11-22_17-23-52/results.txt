@@ -1,0 +1,99 @@
+Date : 2023-11-22 17:23:52
+Directory : c:\Users\Ljubo\Documents\GitHub\Note-Taker\client
+Total : 49 files,  4213 codes, 47 comments, 558 blanks, all 4818 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| TypeScript         |         34 |      2,164 |         45 |        400 |      2,609 |
+| CSS                |         10 |      1,025 |          0 |        152 |      1,177 |
+| JSON               |          2 |        986 |          0 |          2 |        988 |
+| JSON with Comments |          1 |         19 |          2 |          3 |         24 |
+| HTML               |          1 |         18 |          0 |          1 |         19 |
+| XML                |          1 |          1 |          0 |          0 |          1 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                  | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                     |         49 |      4,213 |         47 |        558 |      4,818 |
+| . (Files)                                                                                                             |          4 |      1,023 |          2 |          6 |      1,031 |
+| public                                                                                                                |          1 |          1 |          0 |          0 |          1 |
+| src                                                                                                                   |         44 |      3,189 |         45 |        552 |      3,786 |
+| src\Components                                                                                                        |         27 |      2,410 |         42 |        411 |      2,863 |
+| src\Components\Home                                                                                                   |          3 |        100 |          1 |         21 |        122 |
+| src\Components\Navbar                                                                                                 |          3 |        329 |          1 |         54 |        384 |
+| src\Components\NoteEditor                                                                                             |          3 |        282 |          1 |         43 |        326 |
+| src\Components\PopupWindows                                                                                           |          9 |        429 |          0 |         77 |        506 |
+| src\Components\PopupWindows\AddNewTask                                                                                |          3 |        156 |          0 |         29 |        185 |
+| src\Components\PopupWindows\CreateNewFolder                                                                           |          3 |        163 |          0 |         28 |        191 |
+| src\Components\PopupWindows\WarningMessage                                                                            |          3 |        110 |          0 |         20 |        130 |
+| src\Components\Sidebar                                                                                                |          3 |        690 |         33 |        119 |        842 |
+| src\Components\TodoList                                                                                               |          3 |        253 |          6 |         42 |        301 |
+| src\Components\UserAuth                                                                                               |          3 |        327 |          0 |         55 |        382 |
+| src\Pages                                                                                                             |          2 |         87 |          0 |         12 |         99 |
+| src\Pages\Main                                                                                                        |          2 |         87 |          0 |         12 |         99 |
+| src\Services                                                                                                          |          5 |        198 |          0 |         33 |        231 |
+| src\Stores                                                                                                            |          5 |        328 |          3 |         68 |        399 |
+| src\Utils                                                                                                             |          5 |        166 |          0 |         28 |        194 |
+| src\Utils (Files)                                                                                                     |          3 |         56 |          0 |         13 |         69 |
+| src\Utils\Router                                                                                                      |          2 |        110 |          0 |         15 |        125 |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                                              | language           | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\index.html                                                          | HTML               |         18 |          0 |          1 |         19 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\package-lock.json                                                   | JSON               |        967 |          0 |          1 |        968 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\package.json                                                        | JSON               |         19 |          0 |          1 |         20 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\public\vite.svg                                                     | XML                |          1 |          0 |          0 |          1 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Home\Home.ts                                         | TypeScript         |         23 |          0 |          7 |         30 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Home\HomeLogic.ts                                    | TypeScript         |         25 |          1 |          5 |         31 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Home\homeStyling.css                                 | CSS                |         52 |          0 |          9 |         61 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Navbar\Navbar.ts                                     | TypeScript         |         67 |          1 |         12 |         80 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Navbar\NavbarLogic.ts                                | TypeScript         |         72 |          0 |         14 |         86 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Navbar\navbarStyles.css                              | CSS                |        190 |          0 |         28 |        218 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\NoteEditor.ts                             | TypeScript         |         75 |          0 |         11 |         86 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\NoteEditorLogic.ts                        | TypeScript         |        139 |          1 |         22 |        162 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\noteStyling.css                           | CSS                |         68 |          0 |         10 |         78 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\AddNewTask\AddNewTask.ts                | TypeScript         |         28 |          0 |         11 |         39 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\AddNewTask\addNewTaskLogic.ts           | TypeScript         |         43 |          0 |          9 |         52 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\AddNewTask\addNewTaskStyling.css        | CSS                |         85 |          0 |          9 |         94 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\CreateNewFolder\CreateNewFolder.ts      | TypeScript         |         26 |          0 |         11 |         37 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\CreateNewFolder\CreateNewFolderLogic.ts | TypeScript         |         52 |          0 |          8 |         60 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\CreateNewFolder\newFolderStyling.css    | CSS                |         85 |          0 |          9 |         94 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\WarningMessage\GenerateMessage.ts       | TypeScript         |         17 |          0 |          6 |         23 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\WarningMessage\WarningLogic.ts          | TypeScript         |         23 |          0 |          6 |         29 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\WarningMessage\warningStyling.css       | CSS                |         70 |          0 |          8 |         78 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\Sidebar.ts                                   | TypeScript         |         40 |          0 |         14 |         54 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\SidebarLogic.ts                              | TypeScript         |        432 |         33 |         66 |        531 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\sidebarStyling.css                           | CSS                |        218 |          0 |         39 |        257 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\TodoList\TodoList.ts                                 | TypeScript         |         25 |          0 |          6 |         31 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\TodoList\TodoListLogic.ts                            | TypeScript         |        105 |          6 |         16 |        127 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\TodoList\todoListStyles.css                          | CSS                |        123 |          0 |         20 |        143 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\UserAuth\UserAuth.ts                                 | TypeScript         |         58 |          0 |         13 |         71 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\UserAuth\UserAuthLogic.ts                            | TypeScript         |        161 |          0 |         25 |        186 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\UserAuth\userAuthStyles.css                          | CSS                |        108 |          0 |         17 |        125 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Pages\Main\index.css                                            | CSS                |         26 |          0 |          3 |         29 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Pages\Main\index.ts                                             | TypeScript         |         61 |          0 |          9 |         70 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\BaseService.ts                                         | TypeScript         |         57 |          0 |          9 |         66 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\NoteService.ts                                         | TypeScript         |         63 |          0 |          6 |         69 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\ProjectService.ts                                      | TypeScript         |         25 |          0 |          5 |         30 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\TodoService.ts                                         | TypeScript         |         18 |          0 |          6 |         24 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\UserService.ts                                         | TypeScript         |         35 |          0 |          7 |         42 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\GlobalStore.ts                                           | TypeScript         |         57 |          0 |         12 |         69 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\NoteStore.ts                                             | TypeScript         |         47 |          0 |         11 |         58 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\ProjectStore.ts                                          | TypeScript         |         91 |          3 |         18 |        112 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\TodoStore.ts                                             | TypeScript         |         50 |          0 |         13 |         63 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\UserStore.ts                                             | TypeScript         |         83 |          0 |         14 |         97 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\Date.ts                                                   | TypeScript         |         13 |          0 |          3 |         16 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\GeneralFunctions.ts                                       | TypeScript         |         10 |          0 |          2 |         12 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\Router\Router.ts                                          | TypeScript         |         34 |          0 |          7 |         41 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\Router\RouterLogic.ts                                     | TypeScript         |         76 |          0 |          8 |         84 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\TsTypes.ts                                                | TypeScript         |         33 |          0 |          8 |         41 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\tsconfig.json                                                       | JSON with Comments |         19 |          2 |          3 |         24 |
+| Total                                                                                                                 |                    |      4,213 |         47 |        558 |      4,818 |
++-----------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

@@ -1,4 +1,4 @@
-import { defaultFolder } from "../Stores/ProjectStore";
+import { userProjects } from "../Stores/ProjectStore";
 import Base from "./BaseService";
 
 class ProjectService extends Base {
@@ -7,8 +7,8 @@ class ProjectService extends Base {
   }
 
   async fetchAllUserProjects(userId: string) {
-    const userProjects = await this.get("/fetch-user-projects", { userId });
-    defaultFolder.setAllFolders(userProjects.folder);
+    const projects = await this.get("/fetch-user-projects", { userId });
+    userProjects.setProjects(projects.folder);
   }
 
   async addNewFolder(

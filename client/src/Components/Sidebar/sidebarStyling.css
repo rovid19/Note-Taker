@@ -41,6 +41,7 @@
   flex-direction: column;
   border-right: 2px solid rgba(184, 184, 184, 0.05);
   flex-grow: 1;
+  overflow: scroll;
 }
 
 .headerDiv2 > h4 {
@@ -245,4 +246,12 @@
 
 .sidebarArticle[data="hover"]:hover {
   background-color: var(--defHBlack);
+}
+
+.addNewFolderInput {
+  border: none;
+  background: transparent;
+  height: 100%;
+  width: 100%;
+  color: var(--defGray);
 }

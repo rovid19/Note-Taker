@@ -2,8 +2,16 @@ import globalStore from "../../Stores/GlobalStore";
 import { generateSidebar } from "./Sidebar";
 import { router } from "../../Utils/Router/Router";
 import { extractProjectFromUrl } from "../../Utils/Router/RouterLogic";
-import { defaultFolder, projectStore } from "../../Stores/ProjectStore";
+import {
+  defaultFolder,
+  projectStore,
+  userProjects,
+} from "../../Stores/ProjectStore";
 import { FolderInterface, Item } from "../../Utils/TsTypes";
+import { fullDate } from "../../Utils/Date";
+import { generateRandomId } from "../../Utils/GeneralFunctions";
+import { projectService } from "../../Services/ProjectService";
+import { defaultUser } from "../../Stores/UserStore";
 
 export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
@@ -56,10 +64,9 @@ const whichEditorIsActive = (
 export const sidebarNavigationLogic = (): void => {
   const closeSidebarSvg = document.querySelector(".sidebarSvg") as HTMLElement;
 
-  window.addEventListener("click", closeRightClickMenuIfOpen);
+  //window.addEventListener("click", closeRightClickMenuIfOpen);
 
   closeSidebarSvg.addEventListener("click", () => {
-    //ovo je zapravo toggleSidebar funckija jer ne zelim poduplati event listener
     const url = window.location.pathname.replace("/projects", "");
     router.navigateTo(url);
   });
@@ -69,7 +76,7 @@ export const createAllFolderContainer = (): void => {
   const div = document.createElement("div");
   div.className = "sidebarDiv2";
   const sidebarStyles = document.querySelector(".sidebarStyles") as HTMLElement;
-  mapOverAllUserProjects(defaultFolder.userFolder, div);
+  mapOverAllUserProjects(userProjects.projects, div);
   sidebarStyles.appendChild(div);
   const sidebarDiv2 = document.querySelector(".sidebarDiv2") as HTMLElement;
 
@@ -90,14 +97,21 @@ const mapOverAllUserProjects = (
   } else {
     userFolders.map((folder) => {
       return (div.innerHTML += `
-      <article class="sidebarArticle" data-id=${folder._id} data-mainfolder=${folder._id}>  
+      <article class="sidebarArticle" data-id=${folder._id} data-mainfolder=${
+        folder._id
+      }>  
         <div class="articleInnerDiv1">
           <div class="svgHolder"> 
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
           </div>
-          <h2 class="articleTitle" > ${folder.name} </h2>
+          ${
+            !folder.new
+              ? `<h2 class="articleTitle" > ${folder.name} </h2>`
+              : `<input class="addNewFolderInput" newFolder="new" placeholder="Enter new folder name"/>`
+          }
+         
         </div>
           
       </article>`);
@@ -120,7 +134,7 @@ export const renderTotalNumberOfUserProjects = (): void => {
   const projectLengthElement = document.querySelector(
     ".sidebarNotesLength"
   ) as HTMLElement;
-  const userProjectsLength = defaultFolder.userFolder.length;
+  const userProjectsLength = userProjects.projects.length;
 
   projectLengthElement.textContent = `${userProjectsLength} projects`;
 };
@@ -142,6 +156,9 @@ const createSidebar = (
 
 const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
   const allArticles = document.querySelectorAll(".sidebarArticle");
+  const newlyAddedFolderInput = document.querySelector(
+    ".addNewFolderInput"
+  ) as HTMLElement;
   sidebarDiv2?.addEventListener("click", (e: Event): void => {
     const target = e.target as HTMLElement;
     const parentElementCreateNewFolder = target.closest(".createNewFolderBtn");
@@ -187,6 +204,13 @@ const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
 
     if (isParentFolder) isParentFolder.removeAttribute("data");
   });
+  if (newlyAddedFolderInput) {
+    newlyAddedFolderInput.addEventListener("input", (e: Event): void => {
+      const target = e.target as HTMLInputElement;
+      defaultFolder.setNewFolderTitle(target.value);
+      console.log(defaultFolder.folderName);
+    });
+  }
 };
 
 const selectFolder = (
@@ -293,7 +317,7 @@ const sidebarEventListeners = (): void => {
   const addFolder = document.querySelector(".addFolderSvg") as HTMLElement;
 
   addFolder.addEventListener("click", (): void => {
-    projectStore.set("isCreateNewFolderVisible", true);
+    projectStore.set("createNewFolder", true);
   });
 };
 
@@ -423,25 +447,40 @@ export const setFolderAccordinglyToMainFolder = (
   i: number,
   folderId: string
 ): void => {
-  const newArray = defaultFolder.userFolder;
-  const loopThroughArray = (array: any[]): void => {
-    for (let folder of array) {
-      if (folder._id === folderId) {
-        defaultFolder.selectedFolder(folder.name, folder._id, folder.content);
-        projectStore.set("selectedFolderDepth", folder.depth);
-      } else {
-        if (folder.content.length > 0) loopThroughArray(folder.content);
-      }
-    }
-  };
+  const newArray = userProjects.projects;
 
-  loopThroughArray(newArray);
+  loopThroughArray(newArray, folderId, "openCloseFolder");
 };
 
+export const loopThroughArray = (
+  array: any[],
+  folderId: string,
+  purpose: string
+): FolderInterface => {
+  let newFolder = {} as FolderInterface;
+  for (let folder of array) {
+    if (folder._id === folderId) {
+      if (purpose === "newFolder") {
+        newFolder = folder;
+      } else {
+        defaultFolder.selectedFolder(
+          folder.name,
+          folder._id,
+          "",
+          folder.depth,
+          folder.content
+        );
+      }
+    } else {
+      if (folder.content.length > 0)
+        loopThroughArray(folder.content, folderId, purpose);
+    }
+  }
+  return newFolder;
+};
 const createDivIndent = (selectedFolderSubmenu: HTMLElement): void => {
-  const selectedFolderDepth = projectStore.get("selectedFolderDepth") as number;
   const divIndent = document.createElement("div");
-  divIndent.style.width = `${8 * selectedFolderDepth}px`;
+  divIndent.style.width = `${8 * defaultFolder.folderDepth}px`;
   divIndent.style.borderRight = "2px solid #404040";
   divIndent.className = "divIndent";
   selectedFolderSubmenu.appendChild(divIndent);
@@ -460,4 +499,75 @@ const attachDivIndentToAllSubfolders = (
     const parent = folder.parentNode as HTMLElement;
     parent.insertBefore(divIndent.cloneNode(true), folder);
   });
+};
+
+export const createNewFolder = (): void => {
+  const newFolder = {
+    name: "New folder",
+    dateCreated: fullDate,
+    content: [],
+    type: "folder",
+    depth: defaultFolder.folderDepth,
+    id: generateRandomId(12),
+    parentId: defaultFolder.folderId ? defaultFolder.folderId : "",
+    new: true,
+  };
+  defaultFolder.selectedFolder(
+    "New Folder",
+    newFolder.id,
+    newFolder.parentId,
+    newFolder.depth,
+    []
+  );
+  console.log(defaultFolder.folderId);
+  projectStore.set("createNewFolder", true);
+  userProjects.addNewFolder(newFolder, newFolder.parentId, "add");
+
+  reRenderAllFolderContainer();
+};
+
+const removableCreateFolderListener = (e: Event): void => {
+  const target = e.target as HTMLElement;
+  const isTargetNewFolder = target.closest("[newFolder]");
+
+  if (isTargetNewFolder) {
+  } else {
+    if (defaultFolder.folderName === "New Folder") {
+    } else {
+      saveNewlyAddedFolder();
+      window.removeEventListener("click", removableCreateFolderListener);
+      projectStore.set("createNewFolder", false);
+    }
+  }
+};
+
+const saveNewlyAddedFolder = (): void => {
+  const createNewFolder = projectStore.get("createNewFolder");
+  if (createNewFolder) {
+    userProjects.addNewFolder(
+      defaultFolder,
+      defaultFolder.folderParentId,
+      "save"
+    );
+    reRenderAllFolderContainer();
+  }
+};
+
+export const isCreateNewFolderVisible = (): void => {
+  const createNewFolderVisible = projectStore.get("createNewFolder");
+  if (createNewFolderVisible) {
+    createNewFolder();
+    window.addEventListener("click", removableCreateFolderListener);
+  } else {
+    window.removeEventListener("click", removableCreateFolderListener);
+    userProjects.removeFolderFromProjects(defaultFolder.folderId);
+    projectService.addNewFolder(
+      defaultUser.id,
+      defaultFolder.folderName,
+      "",
+      fullDate
+    );
+    defaultFolder.selectedFolder("", "", "", 0, []);
+    reRenderAllFolderContainer();
+  }
 };
