@@ -55,24 +55,13 @@ class ProjectStore {
 }
 
 class Folder {
-  folderName;
-  folderId;
-  folderParentId;
-  folderDepth;
-  folderContent;
   constructor(
-    folderName: string = "",
-    folderId: string = "",
-    folderParentId: string = "",
-    folderDepth: number = 0,
-    folderContent: FolderInterface[] = []
-  ) {
-    (this.folderName = folderName),
-      (this.folderId = folderId),
-      (this.folderParentId = folderParentId),
-      (this.folderDepth = folderDepth),
-      (this.folderContent = folderContent);
-  }
+    public folderName: string = "",
+    public folderId: string = "",
+    public folderParentId: string = "",
+    public folderDepth: number = 0,
+    public folderContent: FolderInterface[] = []
+  ) {}
 
   selectedFolder(
     folderName: string,
@@ -96,10 +85,7 @@ class Folder {
 }
 
 class UserProjects {
-  projects: FolderInterface[];
-  constructor(projects: FolderInterface[] = []) {
-    this.projects = projects;
-  }
+  constructor(public projects: FolderInterface[] = []) {}
 
   setProjects(projects: FolderInterface[]) {
     this.projects = projects;
@@ -135,11 +121,22 @@ class UserProjects {
       }
     }
   }
-  removeFolderFromProjects(id: string) {
-    console.log(this.projects);
-    const newArray = this.projects.filter((folder) => !folder.new);
-    console.log(newArray);
-    this.projects = newArray;
+  deleteFolder(
+    folderContent: FolderInterface[],
+    id: string,
+    folder: FolderInterface
+  ) {
+    if (folderContent.length > 0) {
+      let newContentArray = folderContent.filter((folder) => folder._id !== id);
+      folder.contet = newContentArray;
+    } else {
+      console.log(this.projects, id);
+      const newProjectArray = this.projects.filter(
+        (folder) => folder._id !== id
+      );
+      console.log(newProjectArray);
+      this.projects = newProjectArray;
+    }
   }
 
   /*setNewFolderTitle(id: string, newFolderName: string) {

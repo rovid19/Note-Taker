@@ -1,8 +1,5 @@
 import { generateNavbar } from "../../Components/Navbar/Navbar";
-import {
-  isSidebarVisible,
-  openSelectedFolder,
-} from "../../Components/Sidebar/SidebarLogic";
+import { isSidebarVisible } from "../../Components/Sidebar/SidebarLogic";
 import {
   fetchExistingNote,
   isNoteEditorVisible,
@@ -26,7 +23,10 @@ import { todoStore } from "../../Stores/TodoStore";
 import { setActiveLinkCss } from "../../Utils/Router/RouterLogic";
 import { isHomeVisible } from "../../Components/Home/HomeLogic";
 import { projectStore } from "../../Stores/ProjectStore";
-import { isCreateNewFolderVisible } from "../../Components/Sidebar/SidebarLogic";
+import {
+  isCreateNewFolderVisible,
+  openSelectedFolder,
+} from "../../Components/Sidebar/SidebarFolderLogic";
 import { projectService } from "../../Services/ProjectService";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
