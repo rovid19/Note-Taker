@@ -2,7 +2,7 @@ import globalStore from "../../Stores/GlobalStore";
 import { generateSidebar } from "./Sidebar";
 import { router } from "../../Utils/Router/Router";
 import { extractProjectFromUrl } from "../../Utils/Router/RouterLogic";
-import { userProjects } from "../../Stores/ProjectStore";
+import { folderObject, userProjects } from "../../Stores/ProjectStore";
 import { FolderInterface } from "../../Utils/TsTypes";
 import {
   closeRightClickMenuIfOpen,
@@ -94,9 +94,9 @@ const mapOverAllUserProjects = (
   } else {
     userFolders.map((folder) => {
       return (div.innerHTML += `
-      <article class="sidebarArticle" data-id=${folder._id} data-mainfolder=${
-        folder._id
-      }>  
+      <article class="sidebarArticle" data-id=${
+        folder.frontendId
+      } data-mainfolder=${folder._id}>  
         <div class="articleInnerDiv1">
           <div class="svgHolder"> 
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
@@ -154,7 +154,9 @@ const createSidebar = (
 export const sidebarEventListeners = (): void => {
   const addFolder = document.querySelector(".addFolderSvg") as HTMLElement;
 
-  addFolder.addEventListener("click", (): void => {
+  addFolder.addEventListener("click", (e: Event): void => {
+    e.stopPropagation();
+    projectStore.set("createMainFolder", true);
     projectStore.set("createNewFolder", true);
   });
 };

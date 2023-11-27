@@ -17,6 +17,7 @@ export interface FolderInterface {
   type: string;
   depth: number;
   _id: string;
+  frontendId: string;
   parentId?: string;
   new?: boolean;
   id?: string;

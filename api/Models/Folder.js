@@ -6,6 +6,7 @@ const folderSchema = new mongoose.Schema({
   content: [{ type: mongoose.Schema.Types.ObjectId, ref: "folder" }],
   type: String,
   depth: Number,
+  frontendId: String,
 });
 
 const folderModel = mongoose.model("folder", folderSchema);

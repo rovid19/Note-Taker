@@ -1,12 +1,18 @@
 import { FolderInterface } from "../Components/Sidebar/SidebarLogic";
-import { loopThroughArrayReturnFoundFolderAndPushNewFolderInside } from "../Utils/GeneralFunctions";
+import {
+  loopThroughArrayAndSaveNewFolder,
+  loopThroughArrayReturnFoundFolderAndPushNewFolderInside,
+} from "../Utils/GeneralFunctions";
 
 interface InitialState {
   isCreateNewFolderVisible: boolean;
   newFolderTitle: string;
-  subFolderVisible: boolean;
+  rightClickVisible: boolean;
   [key: string]: any;
   createNewFolder: boolean;
+  subfolderVisible: boolean;
+  selectedFolderElement: HTMLElement;
+  createMainFolder: boolean;
 }
 
 type Listener = (key: any, value: any) => void;
@@ -14,9 +20,12 @@ type Listener = (key: any, value: any) => void;
 const initialState = {
   isCreateNewFolderVisible: false,
   newFolderTitle: "",
-  subFolderVisible: false,
+  rightClickVisible: false,
   selectedFolder: false,
   createNewFolder: false,
+  subfolderVisible: false,
+  selectedFolderElement: <HTMLElement>{},
+  createMainFolder: false,
 };
 
 class ProjectStore {
@@ -28,7 +37,7 @@ class ProjectStore {
     this.listeners = {};
   }
 
-  get(key: string): string | undefined | number | boolean {
+  get(key: string): string | undefined | number | boolean | HTMLElement {
     return this.state[key];
   }
 
@@ -38,7 +47,6 @@ class ProjectStore {
       this.notify(key, value);
     }
   }
-
   notify(key: string, value: string | number | boolean | null | Element): void {
     if (this.listeners[key]) {
       this.listeners[key].forEach((listener) => listener(key, value));
@@ -59,6 +67,7 @@ class Folder {
     public folderName: string = "",
     public folderId: string = "",
     public folderParentId: string = "",
+    public folderFrontendId: string = "",
     public folderDepth: number = 0,
     public folderContent: FolderInterface[] = []
   ) {}
@@ -67,12 +76,14 @@ class Folder {
     folderName: string,
     folderId: string,
     folderParentId: string,
+    folderFrontendId: string,
     folderDepth: number,
     folderContent: FolderInterface[]
   ) {
     (this.folderName = folderName),
       (this.folderId = folderId),
       (this.folderParentId = folderParentId),
+      (this.folderFrontendId = folderFrontendId),
       (this.folderDepth = folderDepth),
       (this.folderContent = folderContent);
   }
@@ -91,35 +102,33 @@ class UserProjects {
     this.projects = projects;
   }
 
-  addNewFolder(folder: FolderInterface, parentId: string, purpose: string) {
-    if (purpose === "add") {
-      if (parentId.length > 0) {
-        loopThroughArrayReturnFoundFolderAndPushNewFolderInside(
-          this.projects,
-          parentId,
-          folder
-        );
-      } else {
-        this.projects.push(folder);
-      }
+  addNewFolder(folder: FolderInterface, parentId: string) {
+    console.log(parentId, folder);
+    if (parentId.length > 0) {
+      loopThroughArrayReturnFoundFolderAndPushNewFolderInside(
+        this.projects,
+        parentId,
+        folder
+      );
     } else {
-      const newFolder = {
-        name: folder.folderName,
-        dateCreated: folder.dateCreated,
-        id: folder.folderId,
-        parentId: folder.parentId,
-        content: [],
-      };
-      if (parentId.length > 0) {
-        loopThroughArrayReturnFoundFolderAndPushNewFolderInside(
-          this.projects,
-          parentId,
-          folder
-        );
-      } else {
-        this.projects.push(newFolder);
-      }
+      console.log(this.projects);
+      this.projects.push(folder);
     }
+  }
+
+  saveNewFolder(parentId: string) {
+    console.log(parentId, folderObject.folder);
+    delete folderObject.folder.new;
+    if (parentId.length > 0) {
+      loopThroughArrayAndSaveNewFolder(this.projects, parentId);
+    } else {
+      const index = this.projects.findIndex(
+        (folder) => folder.frontendId === folderObject.folder.frontendId
+      );
+      this.projects[index] = folderObject.folder;
+    }
+
+    console.log(this.projects);
   }
   deleteFolder(
     folderContent: FolderInterface[],
@@ -130,20 +139,29 @@ class UserProjects {
       let newContentArray = folderContent.filter((folder) => folder._id !== id);
       folder.contet = newContentArray;
     } else {
-      console.log(this.projects, id);
+      console.log(this.projects);
       const newProjectArray = this.projects.filter(
-        (folder) => folder._id !== id
+        (folder) => folder.frontendId !== id
       );
       console.log(newProjectArray);
       this.projects = newProjectArray;
     }
   }
-
-  /*setNewFolderTitle(id: string, newFolderName: string) {
-  defaultFolder.selectedFolder(newFolderName, "",[])
-  }*/
 }
 
+class FolderObject {
+  constructor(public folder: FolderInterface = {}) {}
+
+  setSelectedFolder(folder: FolderInterface) {
+    this.folder = folder;
+  }
+
+  setNewFolderTitle(title: string) {
+    this.folder.name = title;
+  }
+}
+
+export const folderObject = new FolderObject();
 export const defaultFolder = new Folder();
 export const userProjects = new UserProjects();
 export const projectStore = new ProjectStore();

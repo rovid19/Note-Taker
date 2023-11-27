@@ -15,14 +15,22 @@ class ProjectService extends Base {
     userId: string,
     folderName: string,
     folderId: string,
-    fullDate: string
+    folderParentId: string,
+    fullDate: string,
+    isMainFolder: boolean
   ) {
     await this.post("/create-new-folder", {
       userId,
       folderName,
       folderId,
+      folderParentId,
       fullDate,
+      isMainFolder,
     });
+  }
+
+  async deleteFolder(userId: string, frontendFolderId: string) {
+    await this.put("/delete-folder", { userId, frontendFolderId });
   }
 }
 

@@ -1,4 +1,5 @@
 import { loopThroughArray } from "../Components/Sidebar/SidebarFolderLogic";
+import { folderObject } from "../Stores/ProjectStore";
 import { FolderInterface, Item } from "./TsTypes";
 
 export const generateRandomId = (idLength: number): string => {
@@ -7,7 +8,6 @@ export const generateRandomId = (idLength: number): string => {
   for (let i = 0; i < idLength; i++) {
     results += chars.charAt(Math.floor(Math.random() * idLength));
   }
-  console.log(results);
   return results;
 };
 
@@ -15,10 +15,22 @@ export const loopThroughArrayReturnFoundFolderAndPushNewFolderInside = (
   projects: FolderInterface[],
   id: string,
   folder: FolderInterface
-) => {
-  console.log(projects);
+): void => {
   const foundFolder = loopThroughArray(projects, id, "newFolder");
   foundFolder.content.push(folder);
+};
+
+export const loopThroughArrayAndSaveNewFolder = (
+  projects: FolderInterface[],
+  parentId: string
+): void => {
+  const foundFolder = loopThroughArray(projects, parentId, "newFolder");
+  console.log(folderObject.folder);
+  const index = foundFolder.content.findIndex(
+    (folder) => folder.frontendId === folderObject.folder.frontendId
+  );
+  foundFolder.content[index] = folderObject.folder;
+  folderObject.setSelectedFolder(foundFolder);
 };
 
 export const addIcon = (item: Item): string => {

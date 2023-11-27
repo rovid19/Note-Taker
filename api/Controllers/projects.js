@@ -41,16 +41,25 @@ export const fetchAllUserFolders = async (req, res) => {
 };
 
 export const createNewFolder = async (req, res) => {
-  const { userId, folderName, folderId, fullDate } = req.body;
+  const {
+    userId,
+    folderName,
+    folderId,
+    folderParentId,
+    fullDate,
+    isMainFolder,
+  } = req.body;
 
-  if (!folderId) {
+  if (isMainFolder) {
     try {
+      console.log("1");
       const user = await User.findById(userId);
       const newFolder = await Folder.create({
         name: folderName,
         dateCreated: fullDate,
         type: "folder",
         depth: 0,
+        frontendId: folderId,
       });
 
       user.folder.push(newFolder._id);
@@ -62,13 +71,17 @@ export const createNewFolder = async (req, res) => {
     }
   } else {
     try {
-      const folder = await Folder.findById(folderId);
+      console.log("2");
+      console.log(folderId, folderParentId);
+      const folder = await Folder.findOne({ frontendId: folderId });
+      console.log(folder);
       const addLayerToDepth = folder.depth + 1;
       const newSubFolder = await Folder.create({
         name: folderName,
         dateCreated: fullDate,
         type: "folder",
         depth: addLayerToDepth,
+        frontendId: folderId,
       });
 
       folder.content.push(newSubFolder._id);
@@ -79,4 +92,13 @@ export const createNewFolder = async (req, res) => {
       throw e;
     }
   }
+};
+
+export const deleteFolder = async (req, res) => {
+  const { userId, frontendFolderId } = req.body;
+  console.log(frontendFolderId);
+
+  const findFolder = await Folder.deleteOne({ frontendId: frontendFolderId });
+
+  res.json(findFolder);
 };
