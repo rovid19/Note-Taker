@@ -52,7 +52,6 @@ export const createNewFolder = async (req, res) => {
 
   if (isMainFolder) {
     try {
-      console.log("1");
       const user = await User.findById(userId);
       const newFolder = await Folder.create({
         name: folderName,
@@ -71,10 +70,7 @@ export const createNewFolder = async (req, res) => {
     }
   } else {
     try {
-      console.log("2");
-      console.log(folderId, folderParentId);
-      const folder = await Folder.findOne({ frontendId: folderId });
-      console.log(folder);
+      const folder = await Folder.findOne({ frontendId: folderParentId });
       const addLayerToDepth = folder.depth + 1;
       const newSubFolder = await Folder.create({
         name: folderName,
@@ -82,6 +78,7 @@ export const createNewFolder = async (req, res) => {
         type: "folder",
         depth: addLayerToDepth,
         frontendId: folderId,
+        parentId: folderParentId.length > 0 ? folderParentId : "",
       });
 
       folder.content.push(newSubFolder._id);
@@ -95,8 +92,7 @@ export const createNewFolder = async (req, res) => {
 };
 
 export const deleteFolder = async (req, res) => {
-  const { userId, frontendFolderId } = req.body;
-  console.log(frontendFolderId);
+  const { frontendFolderId } = req.body;
 
   const findFolder = await Folder.deleteOne({ frontendId: frontendFolderId });
 

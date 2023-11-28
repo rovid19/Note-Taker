@@ -155,8 +155,13 @@ export const sidebarEventListeners = (): void => {
   const addFolder = document.querySelector(".addFolderSvg") as HTMLElement;
 
   addFolder.addEventListener("click", (e: Event): void => {
-    e.stopPropagation();
-    projectStore.set("createMainFolder", true);
-    projectStore.set("createNewFolder", true);
+    createNewFolderLogic(e);
   });
+};
+
+export const createNewFolderLogic = (e: Event) => {
+  e.stopPropagation();
+  folderObject.setSelectedFolder({});
+  projectStore.set("createMainFolder", true);
+  projectStore.set("createNewFolder", true);
 };

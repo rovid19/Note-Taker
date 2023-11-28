@@ -1,7 +1,7 @@
 import { FolderInterface } from "../Components/Sidebar/SidebarLogic";
 import {
   loopThroughArrayAndSaveNewFolder,
-  loopThroughArrayReturnFoundFolderAndPushNewFolderInside,
+  loopThroughArrayAndPushOrDeleteFolder,
 } from "../Utils/GeneralFunctions";
 
 interface InitialState {
@@ -13,6 +13,7 @@ interface InitialState {
   subfolderVisible: boolean;
   selectedFolderElement: HTMLElement;
   createMainFolder: boolean;
+  subfolderFolderObject: FolderInterface;
 }
 
 type Listener = (key: any, value: any) => void;
@@ -26,6 +27,7 @@ const initialState = {
   subfolderVisible: false,
   selectedFolderElement: <HTMLElement>{},
   createMainFolder: false,
+  subfolderFolderObject: {},
 };
 
 class ProjectStore {
@@ -103,21 +105,19 @@ class UserProjects {
   }
 
   addNewFolder(folder: FolderInterface, parentId: string) {
-    console.log(parentId, folder);
     if (parentId.length > 0) {
-      loopThroughArrayReturnFoundFolderAndPushNewFolderInside(
+      loopThroughArrayAndPushOrDeleteFolder(
         this.projects,
         parentId,
-        folder
+        folder,
+        "add"
       );
     } else {
-      console.log(this.projects);
       this.projects.push(folder);
     }
   }
 
   saveNewFolder(parentId: string) {
-    console.log(parentId, folderObject.folder);
     delete folderObject.folder.new;
     if (parentId.length > 0) {
       loopThroughArrayAndSaveNewFolder(this.projects, parentId);
@@ -127,23 +127,30 @@ class UserProjects {
       );
       this.projects[index] = folderObject.folder;
     }
-
-    console.log(this.projects);
   }
   deleteFolder(
     folderContent: FolderInterface[],
     id: string,
     folder: FolderInterface
   ) {
-    if (folderContent.length > 0) {
-      let newContentArray = folderContent.filter((folder) => folder._id !== id);
+    console.log("da", folder);
+    if (folder.depth > 0) {
+      console.log("da1");
+      /*let newContentArray = folderContent.filter((folder) => folder._id !== id);
       folder.contet = newContentArray;
+      console.log(this.projects);*/
+      loopThroughArrayAndPushOrDeleteFolder(
+        this.projects,
+        folderObject.folder.parentId,
+        folder,
+        "delete",
+        folderObject.folder.frontendId
+      );
     } else {
-      console.log(this.projects);
+      console.log("da2");
       const newProjectArray = this.projects.filter(
         (folder) => folder.frontendId !== id
       );
-      console.log(newProjectArray);
       this.projects = newProjectArray;
     }
   }

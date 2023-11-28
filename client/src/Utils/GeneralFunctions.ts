@@ -1,5 +1,5 @@
 import { loopThroughArray } from "../Components/Sidebar/SidebarFolderLogic";
-import { folderObject } from "../Stores/ProjectStore";
+import { folderObject, projectStore } from "../Stores/ProjectStore";
 import { FolderInterface, Item } from "./TsTypes";
 
 export const generateRandomId = (idLength: number): string => {
@@ -11,13 +11,24 @@ export const generateRandomId = (idLength: number): string => {
   return results;
 };
 
-export const loopThroughArrayReturnFoundFolderAndPushNewFolderInside = (
+export const loopThroughArrayAndPushOrDeleteFolder = (
   projects: FolderInterface[],
-  id: string,
-  folder: FolderInterface
+  parentId: string,
+  folder: FolderInterface,
+  purpose: string,
+  frontendId?: string
 ): void => {
-  const foundFolder = loopThroughArray(projects, id, "newFolder");
-  foundFolder.content.push(folder);
+  const foundFolder = loopThroughArray(projects, parentId, "newFolder");
+  if (purpose === "add") {
+    foundFolder.content.push(folder);
+  } else {
+    console.log(foundFolder);
+    const newArray = foundFolder.content.filter(
+      (folder) => folder.frontendId !== frontendId
+    );
+    console.log(newArray);
+    foundFolder.content = newArray;
+  }
 };
 
 export const loopThroughArrayAndSaveNewFolder = (
@@ -25,11 +36,13 @@ export const loopThroughArrayAndSaveNewFolder = (
   parentId: string
 ): void => {
   const foundFolder = loopThroughArray(projects, parentId, "newFolder");
-  console.log(folderObject.folder);
-  const index = foundFolder.content.findIndex(
-    (folder) => folder.frontendId === folderObject.folder.frontendId
-  );
+  const index = foundFolder.content.findIndex((folder) => {
+    if ("frontendId" in foundFolder) {
+      folder.frontendId === folderObject.folder.frontendId;
+    }
+  });
   foundFolder.content[index] = folderObject.folder;
+  projectStore.set("subfolderFolderObject", folderObject.folder);
   folderObject.setSelectedFolder(foundFolder);
 };
 

@@ -5,7 +5,11 @@ import { FolderInterface } from "../../Utils/TsTypes";
 import { userProjects } from "../../Stores/ProjectStore";
 import { addIcon, generateRandomId } from "../../Utils/GeneralFunctions";
 import { fullDate } from "../../Utils/Date";
-import { reRenderAllFolderContainer } from "./SidebarLogic";
+import {
+  createNewFolderLogic,
+  reRenderAllFolderContainer,
+  renderTotalNumberOfUserProjects,
+} from "./SidebarLogic";
 import { projectService } from "../../Services/ProjectService";
 import { defaultUser } from "../../Stores/UserStore";
 
@@ -20,7 +24,7 @@ export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
     const isParentFolder = target.closest("[data-id]") as HTMLElement;
 
     if (parentElementCreateNewFolder) {
-      projectStore.set("isCreateNewFolderVisible", true);
+      createNewFolderLogic(e);
     } else if (isParentFolder) {
       /*autoSaveNote();
         setNoteIdToOpenNote(allArticles, parentElementOpen);
@@ -29,7 +33,7 @@ export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
         noteStore.set("existingNote", true);
         globalStore.set("noteEditorVisible", true);*/
       const selectedFolder = selectFolder(allArticles, isParentFolder);
-      isFolderOpenOrClosed(selectedFolder);
+      isFolderOpenOrClosed(selectedFolder, "");
     }
   });
   sidebarDiv2?.addEventListener("contextmenu", (e: Event): void => {
@@ -82,6 +86,7 @@ const selectFolder = (
         const folderId = isParentFolder.dataset.id as string;
         loopThroughProjectArrayAndSetSelectedFolder(folderId);
         projectStore.set("selectedFolderElement", folder);
+        console.log(folderObject.folder);
       }
     });
   }
@@ -89,12 +94,27 @@ const selectFolder = (
   return selectedFolderElement;
 };
 
-const isFolderOpenOrClosed = (selectedFolder: HTMLElement): void => {
+const isFolderOpenOrClosed = (
+  selectedFolder: HTMLElement,
+  purpose: string
+): void => {
   isAnySubfolderOpen();
   if (selectedFolder.id === "opened") {
-    closeSelectedFolder(selectedFolder);
+    checkIfThisFunctionIsRanByRightClickMenu(selectedFolder, purpose);
   } else {
     openSelectedFolder(selectedFolder);
+  }
+};
+
+const checkIfThisFunctionIsRanByRightClickMenu = (
+  selectedFolder: HTMLElement,
+  purpose: string
+) => {
+  if (purpose === "rightClick") {
+    closeSelectedFolder(selectedFolder);
+    openSelectedFolder(selectedFolder);
+  } else {
+    closeSelectedFolder(selectedFolder);
   }
 };
 
@@ -131,7 +151,6 @@ const closeSelectedFolder = (selectedFolder: HTMLElement): void => {
     ".folderSubmenu"
   ) as HTMLElement;
 
-  console.log(selectedFolder, selectedFolder.id);
   if (selectedFolderSubmenu) {
     selectedFolderSubmenu.remove();
   }
@@ -160,13 +179,16 @@ export const loopThroughArray = (
         setSelectedFolder(folder);
       }
     } else {
-      if (folder.content.length > 0)
-        loopThroughArray(folder.content, folderId, purpose);
+      if (folder.content.length > 0) {
+        const result = loopThroughArray(folder.content, folderId, purpose);
+        if (result.frontendId) {
+          return result;
+        }
+      }
     }
   }
   return newFolder;
 };
-
 const setSelectedFolder = (folder: FolderInterface): void => {
   defaultFolder.selectedFolder(
     folder.name,
@@ -235,7 +257,7 @@ const rightClickMenuEventListeners = (): void => {
 
     if (parentElementAddFolder) {
       projectStore.set("createNewFolder", true);
-      isFolderOpenOrClosed(selectedFolderElement);
+      isFolderOpenOrClosed(selectedFolderElement, "rightClick");
       closeRightClickMenuIfOpen();
     } else if (parentElementAddNote) globalStore.set("noteEditorVisible", true);
     else if (parentElementAddTask) globalStore.set("todoListVisible", true);
@@ -245,6 +267,7 @@ const rightClickMenuEventListeners = (): void => {
     }
   });
 };
+
 /*const findIndexToDeleteNote = (
     allSvgs: NodeListOf<Element>,
     parentElement: Element
@@ -281,28 +304,26 @@ export const closeRightClickMenuIfOpen = (): void => {
 // CREATING SUBFOLDERS AND ATTACHING ITS EVENT LISTENERS **************************
 // ˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘
 const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
-  console.log(folderObject.folder);
-  if (folderObject.folder.content.length > 0) {
-    console.log("okasd");
+  if (folderObject.folder.content === undefined) {
+  } else if (folderObject.folder.content.length > 0) {
     const menu = document.createElement("div");
     menu.className = "folderSubmenu";
 
-    folderObject.folder.content.map((item) => {
+    folderObject.folder.content.map((folder) => {
       menu.innerHTML += `
-          <article class="submenuArticle" id=${item.type} data-id=${
-        item._id
+          <article class="submenuArticle" id=${folder.type} data-id=${
+        folder.frontendId
       }> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
-        item
+        folder
       )}</div> ${
-        !item.new
-          ? `<h2 class="articleTitle" > ${item.name} </h2>`
+        !folder.new
+          ? `<h2 class="articleTitle2" > ${folder.name} </h2>`
           : `<input class="addNewFolderInput" newFolder="new" placeholder="Enter new folder name"/>`
       } </article></div>
         `;
     });
 
     selectedFolder.appendChild(menu);
-    console.log(menu);
     const selectedFolderSubmenu = selectedFolder.querySelector(
       ".folderSubmenu"
     ) as HTMLElement;
@@ -325,7 +346,7 @@ const subfolderEventDelegations = (folder: HTMLElement): void => {
     if (isParentFolder) {
       e.stopPropagation();
       const selectedFolder = selectFolder(allSubfolders, isParentFolder);
-      if (selectedFolder) isFolderOpenOrClosed(selectedFolder);
+      if (selectedFolder) isFolderOpenOrClosed(selectedFolder, "");
     }
   });
 
@@ -337,6 +358,7 @@ const subfolderEventDelegations = (folder: HTMLElement): void => {
     e.preventDefault();
     projectStore.set("createMainFolder", false);
     selectFolder(allSubfolders, isParentFolder);
+    closeRightClickMenuIfOpen();
     createFolderRightClickMenu(isParentFolder, allSubfolders);
   });
 
@@ -408,17 +430,32 @@ export const isCreateNewFolderVisible = (): void => {
 
 const saveFolderToDatabase = (): void => {
   const createMainFolder = projectStore.get("createMainFolder") as boolean;
-  projectService.addNewFolder(
-    defaultUser.id,
-    folderObject.folder.name,
-    folderObject.folder.frontendId,
-    folderObject.folder.parentId,
-    fullDate,
-    createMainFolder
-  );
+  const subfolderFolderObject = projectStore.get(
+    "subfolderFolderObject"
+  ) as unknown as FolderInterface;
+  if (createMainFolder) {
+    projectService.addNewFolder(
+      defaultUser.id,
+      folderObject.folder.name,
+      folderObject.folder.frontendId,
+      folderObject.folder.parentId,
+      fullDate,
+      createMainFolder
+    );
+  } else {
+    projectService.addNewFolder(
+      defaultUser.id,
+      subfolderFolderObject.name,
+      subfolderFolderObject.frontendId,
+      subfolderFolderObject.parentId,
+      fullDate,
+      createMainFolder
+    );
+  }
 };
 
 export const createNewFolder = (): void => {
+  console.log(folderObject.folder.depth);
   const createMainFolder = projectStore.get("createMainFolder");
   const newFolder = {
     name: "New folder",
@@ -431,14 +468,16 @@ export const createNewFolder = (): void => {
       Object.keys(folderObject.folder).length > 0
         ? folderObject.folder.frontendId
         : "",
-    depth: folderObject.folder.depth ? folderObject.folder.depth + 1 : 0,
+    depth: folderObject.folder.depth >= 0 ? folderObject.folder.depth + 1 : 0,
     new: true,
   };
   const newFolderWithFrontendId = {
     ...newFolder,
     frontendId: newFolder._id,
   };
+  console.log(newFolderWithFrontendId);
   userProjects.addNewFolder(newFolderWithFrontendId, newFolder.parentId);
+  renderTotalNumberOfUserProjects();
   //reRenderAllFolderContainer treba postojati u ovom slucaju samo ak dodajem main folder
   //ako ne dodajem mainfolder onda se ne smiju svi folderi rerenderati jer tom logikom
   //se nece otvoriti subfolder unutar foldera kojem dodajem subfolder
@@ -474,6 +513,7 @@ const saveNewlyAddedFolder = (): void => {
     "selectedFolderElement"
   ) as HTMLElement;
   const parent = selectedFolderElement.parentNode?.parentNode as HTMLElement;
+
   if (createNewFolder) {
     if (createMainFolder) {
       userProjects.saveNewFolder(folderObject.folder.parentId);
@@ -491,12 +531,18 @@ const saveNewlyAddedFolder = (): void => {
 
 const deleteFolder = (folder: FolderInterface, folderId: string): void => {
   const subfolderVisible = projectStore.get("subfolderVisible");
+  const selectedFolderElement = projectStore.get(
+    "selectedFolderElement"
+  ) as HTMLElement;
+  const parent = selectedFolderElement.parentNode?.parentNode as HTMLElement;
   if (folder._id === folderId) {
     userProjects.deleteFolder([], folderObject.folder.frontendId, folder);
     projectService.deleteFolder(defaultUser.id, folderObject.folder.frontendId);
-
+    renderTotalNumberOfUserProjects();
     folderObject.setSelectedFolder({});
     if (subfolderVisible) {
+      closeSelectedFolder(parent);
+      openSelectedFolder(parent);
     } else {
       reRenderAllFolderContainer();
     }
