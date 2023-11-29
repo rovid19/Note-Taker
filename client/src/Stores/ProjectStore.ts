@@ -3,6 +3,7 @@ import {
   loopThroughArrayAndSaveNewFolder,
   loopThroughArrayAndPushOrDeleteFolder,
 } from "../Utils/GeneralFunctions";
+import { Note } from "../Utils/TsTypes";
 
 interface InitialState {
   isCreateNewFolderVisible: boolean;
@@ -104,7 +105,8 @@ class UserProjects {
     this.projects = projects;
   }
 
-  addNewFolder(folder: FolderInterface, parentId: string) {
+  addNewFolder(folder: FolderInterface | Note, parentId: string) {
+    console.log(folder, parentId);
     if (parentId.length > 0) {
       loopThroughArrayAndPushOrDeleteFolder(
         this.projects,

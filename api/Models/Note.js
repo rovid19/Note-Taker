@@ -5,6 +5,8 @@ const noteSchema = new mongoose.Schema({
   noteText: String,
   dateCreated: String,
   type: String,
+  folderParentId: String,
+  defaultSchemaType: { default: "note", type: String },
 });
 
 const noteModel = mongoose.model("note", noteSchema);

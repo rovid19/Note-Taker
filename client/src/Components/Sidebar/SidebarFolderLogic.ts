@@ -12,6 +12,8 @@ import {
 } from "./SidebarLogic";
 import { projectService } from "../../Services/ProjectService";
 import { defaultUser } from "../../Stores/UserStore";
+import { createNewNote } from "../NoteEditor/NoteEditorLogic";
+import { noteObjectChanges } from "../../Stores/NoteStore";
 
 export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
   const allArticles = document.querySelectorAll(".sidebarArticle");
@@ -254,16 +256,23 @@ const rightClickMenuEventListeners = (): void => {
     const selectedFolderElement = projectStore.get(
       "selectedFolderElement"
     ) as HTMLElement;
-
+    console.log(folderObject.folder);
     if (parentElementAddFolder) {
       projectStore.set("createNewFolder", true);
       isFolderOpenOrClosed(selectedFolderElement, "rightClick");
       closeRightClickMenuIfOpen();
-    } else if (parentElementAddNote) globalStore.set("noteEditorVisible", true);
-    else if (parentElementAddTask) globalStore.set("todoListVisible", true);
+    } else if (parentElementAddNote) {
+      createNewNote(folderObject.folder.frontendId);
+      userProjects.addNewFolder(noteObjectChanges, noteObjectChanges.parentId);
+    } else if (parentElementAddTask) globalStore.set("todoListVisible", true);
     else {
       //loopThroughArray(userProjects.projects, defaultFolder.folderId, "delete");
-      deleteFolder(folderObject.folder, folderObject.folder._id);
+      if (folderObject.folder.parentId) {
+        deleteFolder(folderObject.folder, folderObject.folder._id);
+      } else {
+        deleteFolder(folderObject.folder, folderObject.folder._id);
+        reRenderAllFolderContainer();
+      }
     }
   });
 };
@@ -309,7 +318,7 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
     const menu = document.createElement("div");
     menu.className = "folderSubmenu";
 
-    folderObject.folder.content.map((folder) => {
+    folderObject.folder.content.map((folder: FolderInterface) => {
       menu.innerHTML += `
           <article class="submenuArticle" id=${folder.type} data-id=${
         folder.frontendId
@@ -537,7 +546,11 @@ const deleteFolder = (folder: FolderInterface, folderId: string): void => {
   const parent = selectedFolderElement.parentNode?.parentNode as HTMLElement;
   if (folder._id === folderId) {
     userProjects.deleteFolder([], folderObject.folder.frontendId, folder);
-    projectService.deleteFolder(defaultUser.id, folderObject.folder.frontendId);
+    projectService.deleteFolder(
+      defaultUser.id,
+      folderObject.folder.frontendId,
+      folderObject.folder.depth
+    );
     renderTotalNumberOfUserProjects();
     folderObject.setSelectedFolder({});
     if (subfolderVisible) {

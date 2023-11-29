@@ -6,7 +6,12 @@ import { fullDate } from "../../Utils/Date";
 import { reRenderAllFolderContainer } from "../Sidebar/SidebarLogic";
 import { createWarning } from "../PopupWindows/WarningMessage/WarningLogic";
 import { defaultUser } from "../../Stores/UserStore";
-import { noteStore } from "../../Stores/NoteStore";
+import {
+  noteObject,
+  noteObjectChanges,
+  noteStore,
+} from "../../Stores/NoteStore";
+import { generateRandomId } from "../../Utils/GeneralFunctions";
 
 type NoteArray = {
   _id: string;
@@ -31,39 +36,46 @@ const createNoteEditor = (): void => {
   document.body.appendChild(div);
   document.getElementById("note-container")?.appendChild(generateNewNote());
 
-  saveNewNoteTitle();
-  noteTextInput();
+  noteEventListeners();
+  console.log(noteObject, noteObjectChanges);
+  noteService.createNewNote(fullDate, defaultUser.id, noteObject.parentId);
 };
 
 const isNewNoteOrExistingNote = async (existingNote: boolean) => {
   const sidebarVisible = globalStore.get("sidebarVisible");
   if (existingNote) {
   } else {
-    await noteService.createNewNote(fullDate, defaultUser.id);
-    await noteService.fetchAllUserNotes(defaultUser.id);
+    //await noteService.createNewNote(fullDate, defaultUser.id);
+    //await noteService.fetchAllUserNotes(defaultUser.id);
     if (sidebarVisible) reRenderAllFolderContainer();
     reRenderNoteFields();
   }
 };
 
-const saveNewNoteTitle = (): void => {
+const noteEventListeners = () => {
   const noteTitleElement = document.querySelector(
     ".newNoteInput"
   ) as HTMLElement;
   const noteTextElement = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
-  let oldNoteTitle = noteStore.get("noteTitle") as string;
 
-  addNewNoteTitle(noteTitleElement);
-  saveTitleAfterClickingOnNoteText(noteTextElement, oldNoteTitle);
-};
-
-const addNewNoteTitle = (noteTitleElement: HTMLElement) => {
   noteTitleElement.addEventListener("input", (e: Event) => {
     const target = e.target as HTMLInputElement;
-    const value = target.value;
-    defaultNote.setNoteTitle(value);
+    noteObjectChanges.setTitle(target.value);
+  });
+
+  noteTextElement.addEventListener("input", (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    noteObjectChanges.setText(target.value);
+  });
+
+  window.addEventListener("click", (e: Event): void => {
+    if (noteObject.title !== noteObjectChanges.title) {
+    }
+
+    if (noteObject.noteText !== noteObjectChanges.noteText) {
+    }
   });
 };
 
@@ -136,14 +148,14 @@ export const autoSaveNote = async () => {
   }
 };
 
-export const noteTextInput = (): void => {
+/*export const noteTextInput = (): void => {
   const noteText = document.querySelector(".newNoteInputText") as HTMLElement;
 
   noteText.addEventListener("input", (e: Event) => {
     const target = e.target as HTMLInputElement;
     defaultNote.setNoteText(target.value);
   });
-};
+};*/
 
 const isNoteBeingDeletedOpen = () => {
   const params = new URLSearchParams(window.location.search);
@@ -158,4 +170,16 @@ const isNoteBeingDeletedOpen = () => {
   } else {
     deleteNote();
   }
+};
+
+export const createNewNote = (folderParentId: string) => {
+  noteObject.setNote("New Note", "", generateRandomId(20), folderParentId);
+  noteObjectChanges.setNote(
+    noteObject.title,
+    noteObject.noteText,
+    noteObject.id,
+    noteObject.parentId
+  );
+
+  globalStore.set("noteEditorVisible", true);
 };

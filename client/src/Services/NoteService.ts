@@ -8,9 +8,13 @@ class ProjectService extends Base {
   constructor() {
     super("http://localhost:3000/api/notes");
   }
-  async createNewNote(fullDate: string, userId: string) {
-    const newNote = await this.post("/create-new-note", { fullDate, userId });
-    defaultNote.setNote(
+  async createNewNote(fullDate: string, userId: string, folderId: string) {
+    const newNote = await this.post("/create-new-note", {
+      fullDate,
+      userId,
+      folderId,
+    });
+    /*defaultNote.setNote(
       newNote.title,
       newNote.title,
       newNote.dateCreated,
@@ -18,7 +22,7 @@ class ProjectService extends Base {
       newNote.noteText,
       newNote._id
     );
-    router.navigateTo(`/notes/noteId=${defaultNote.id}`);
+    router.navigateTo(`/notes/noteId=${defaultNote.id}`);*/
   }
   async saveNewNoteTitle(noteTitle: string | number | boolean, noteId: string) {
     await this.put("/save-note-title", {

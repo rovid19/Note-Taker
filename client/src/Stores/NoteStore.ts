@@ -54,4 +54,28 @@ class NoteStore {
   }
 }
 
+class NoteObject {
+  constructor(
+    public title: string = "",
+    public noteText: string = "",
+    public id: string = "",
+    public parentId: string = ""
+  ) {}
+
+  setNote(title: string, noteText: string, id: string, parentId: string) {
+    (this.title = title),
+      (this.noteText = noteText),
+      (this.id = id),
+      (this.parentId = parentId);
+  }
+  setTitle(newTitle: string) {
+    this.title = newTitle;
+  }
+  setText(newText: string) {
+    this.noteText = newText;
+  }
+}
+
 export const noteStore = new NoteStore();
+export const noteObject = new NoteObject();
+export const noteObjectChanges = new NoteObject();

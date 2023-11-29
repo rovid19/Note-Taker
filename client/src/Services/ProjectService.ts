@@ -29,8 +29,8 @@ class ProjectService extends Base {
     });
   }
 
-  async deleteFolder(userId: string, frontendFolderId: string) {
-    await this.put("/delete-folder", { userId, frontendFolderId });
+  async deleteFolder(userId: string, frontendFolderId: string, depth: number) {
+    await this.put("/delete-folder", { userId, frontendFolderId, depth });
   }
 }
 

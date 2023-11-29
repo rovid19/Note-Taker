@@ -3,14 +3,15 @@ import User from "../Models/User.js";
 import Folder from "../Models/Folder.js";
 
 export const createNewNote = async (req, res) => {
-  const { fullDate, folderId } = req.body;
-
+  const { fullDate, userId, folderId } = req.body;
+  console.log(folderId);
   try {
-    const folder = await Folder.findById(folderId);
+    const folder = await Folder.findOne({ frontendId: folderId });
     const newNote = await Note.create({
       title: "New Note",
       dateCreated: fullDate,
       noteText: "",
+      folderParentId: folderId,
     });
 
     folder.content.push(newNote._id);
