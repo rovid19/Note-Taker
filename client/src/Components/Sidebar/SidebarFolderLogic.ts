@@ -1,7 +1,7 @@
 import { projectStore, folderObject } from "../../Stores/ProjectStore";
 import { defaultFolder } from "../../Stores/ProjectStore";
 import globalStore from "../../Stores/GlobalStore";
-import { FolderInterface } from "../../Utils/TsTypes";
+import { FolderInterface, Note } from "../../Utils/TsTypes";
 import { userProjects } from "../../Stores/ProjectStore";
 import { addIcon, generateRandomId } from "../../Utils/GeneralFunctions";
 import { fullDate } from "../../Utils/Date";
@@ -12,8 +12,17 @@ import {
 } from "./SidebarLogic";
 import { projectService } from "../../Services/ProjectService";
 import { defaultUser } from "../../Stores/UserStore";
-import { createNewNote } from "../NoteEditor/NoteEditorLogic";
-import { noteObjectChanges } from "../../Stores/NoteStore";
+import {
+  createNewNote,
+  fetchSelectedNoteAndNavigateToIt,
+} from "../NoteEditor/NoteEditorLogic";
+import {
+  noteObject,
+  noteObjectChanges,
+  noteStore,
+} from "../../Stores/NoteStore";
+import { router } from "../../Utils/Router/Router";
+import noteService from "../../Services/NoteService";
 
 export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
   const allArticles = document.querySelectorAll(".sidebarArticle");
@@ -34,7 +43,11 @@ export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
         router.navigateTo(`/notes/noteId=${noteId}`);
         noteStore.set("existingNote", true);
         globalStore.set("noteEditorVisible", true);*/
-      const selectedFolder = selectFolder(allArticles, isParentFolder);
+      const selectedFolder = selectFolder(
+        allArticles,
+        isParentFolder,
+        "folder"
+      );
       isFolderOpenOrClosed(selectedFolder, "");
     }
   });
@@ -48,7 +61,7 @@ export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
     if (parentElementArticle) {
       projectStore.set("createMainFolder", false);
       closeRightClickMenuIfOpen();
-      selectFolder(allArticles, isParentFolder);
+      selectFolder(allArticles, isParentFolder, "folder");
       createFolderRightClickMenu(parentElementArticle, allArticles);
     }
   });
@@ -77,20 +90,29 @@ export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
 // ˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘
 const selectFolder = (
   allFolders: NodeListOf<Element>,
-  isParentFolder: HTMLElement
+  isParentFolder: HTMLElement,
+  target: string
 ): HTMLElement => {
   const array = [...allFolders];
   let selectedFolderElement = {} as HTMLElement;
-  if (isParentFolder) {
-    array.forEach((folder) => {
-      if (folder === isParentFolder) {
-        selectedFolderElement = folder as HTMLElement;
-        const folderId = isParentFolder.dataset.id as string;
-        loopThroughProjectArrayAndSetSelectedFolder(folderId);
-        projectStore.set("selectedFolderElement", folder);
-        console.log(folderObject.folder);
-      }
-    });
+  if (target === "folder") {
+    console.log("folder");
+    if (isParentFolder) {
+      array.forEach((folder) => {
+        if (folder === isParentFolder) {
+          selectedFolderElement = folder as HTMLElement;
+          const folderId = isParentFolder.dataset.id as string;
+          loopThroughProjectArrayAndSetSelectedFolder(folderId);
+          projectStore.set("selectedFolderElement", folder);
+        }
+      });
+    }
+  } else if (target === "note") {
+    const sidebarVisible = globalStore.get("sidebarVisible") as boolean;
+    const noteId = isParentFolder.dataset.id as string;
+    noteObject.setId(noteId);
+    noteStore.set("existingNote", true);
+    fetchSelectedNoteAndNavigateToIt(sidebarVisible);
   }
 
   return selectedFolderElement;
@@ -142,7 +164,7 @@ export const openSelectedFolder = (selectedFolder: HTMLElement): void => {
   createSelectedFolderSubmenu(selectedFolder);
 };
 
-const closeSelectedFolder = (selectedFolder: HTMLElement): void => {
+export const closeSelectedFolder = (selectedFolder: HTMLElement): void => {
   const elementIcon = selectedFolder.querySelector(".svgHolder") as HTMLElement;
   elementIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">
     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -256,17 +278,16 @@ const rightClickMenuEventListeners = (): void => {
     const selectedFolderElement = projectStore.get(
       "selectedFolderElement"
     ) as HTMLElement;
-    console.log(folderObject.folder);
     if (parentElementAddFolder) {
       projectStore.set("createNewFolder", true);
       isFolderOpenOrClosed(selectedFolderElement, "rightClick");
       closeRightClickMenuIfOpen();
     } else if (parentElementAddNote) {
       createNewNote(folderObject.folder.frontendId);
-      userProjects.addNewFolder(noteObjectChanges, noteObjectChanges.parentId);
+      router.navigateTo(`/projects/notes/${noteObject.id}`);
+      userProjects.addNewItem(noteObjectChanges, noteObjectChanges.parentId);
     } else if (parentElementAddTask) globalStore.set("todoListVisible", true);
     else {
-      //loopThroughArray(userProjects.projects, defaultFolder.folderId, "delete");
       if (folderObject.folder.parentId) {
         deleteFolder(folderObject.folder, folderObject.folder._id);
       } else {
@@ -313,11 +334,10 @@ export const closeRightClickMenuIfOpen = (): void => {
 // CREATING SUBFOLDERS AND ATTACHING ITS EVENT LISTENERS **************************
 // ˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘
 const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
+  const menu = document.createElement("div");
+  menu.className = "folderSubmenu";
   if (folderObject.folder.content === undefined) {
   } else if (folderObject.folder.content.length > 0) {
-    const menu = document.createElement("div");
-    menu.className = "folderSubmenu";
-
     folderObject.folder.content.map((folder: FolderInterface) => {
       menu.innerHTML += `
           <article class="submenuArticle" id=${folder.type} data-id=${
@@ -331,6 +351,22 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
       } </article></div>
         `;
     });
+  }
+
+  if (folderObject.folder.notes) {
+    folderObject.folder.notes.map((note: Note) => {
+      menu.innerHTML += `
+            <article class="submenuArticle" data-note="" data-id=${
+              note.frontendId
+            } data-type="note"> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
+        note
+      )}</div> ${
+        !note.new
+          ? `<h2 class="articleTitle2" > ${note.title} </h2>`
+          : `<input class="addNewFolderInput" newFolder="new" placeholder="Enter new folder name"/>`
+      } </article></div>
+          `;
+    });
 
     selectedFolder.appendChild(menu);
     const selectedFolderSubmenu = selectedFolder.querySelector(
@@ -343,18 +379,27 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
 };
 
 const subfolderEventDelegations = (folder: HTMLElement): void => {
-  const allSubfolders = folder.querySelectorAll(".submenuArticle");
+  const allFolderItems = folder.querySelectorAll(".submenuArticle");
   const newlyAddedFolderInput = document.querySelector(
     ".addNewFolderInput"
   ) as HTMLElement;
 
   folder.addEventListener("click", (e: Event): void => {
     const target = e.target as HTMLElement;
-    const isParentFolder = target.closest("[data-id]") as HTMLElement;
+    const isTargetFolder = target.closest("[data-id]") as HTMLElement;
+    const isTargetNote = target.closest("[data-note]") as HTMLElement;
 
-    if (isParentFolder) {
+    if (isTargetNote) {
       e.stopPropagation();
-      const selectedFolder = selectFolder(allSubfolders, isParentFolder);
+      noteStore.set("existingNote", true);
+      selectFolder(allFolderItems, isTargetNote, "note");
+    } else if (isTargetFolder) {
+      e.stopPropagation();
+      const selectedFolder = selectFolder(
+        allFolderItems,
+        isTargetFolder,
+        "folder"
+      );
       if (selectedFolder) isFolderOpenOrClosed(selectedFolder, "");
     }
   });
@@ -366,9 +411,9 @@ const subfolderEventDelegations = (folder: HTMLElement): void => {
     e.stopPropagation();
     e.preventDefault();
     projectStore.set("createMainFolder", false);
-    selectFolder(allSubfolders, isParentFolder);
+    selectFolder(allFolderItems, isParentFolder, "folder");
     closeRightClickMenuIfOpen();
-    createFolderRightClickMenu(isParentFolder, allSubfolders);
+    createFolderRightClickMenu(isParentFolder, allFolderItems);
   });
 
   folder.addEventListener("mouseover", (e: Event): void => {
@@ -464,12 +509,12 @@ const saveFolderToDatabase = (): void => {
 };
 
 export const createNewFolder = (): void => {
-  console.log(folderObject.folder.depth);
   const createMainFolder = projectStore.get("createMainFolder");
   const newFolder = {
     name: "New folder",
     dateCreated: fullDate,
     content: [],
+    notes: [],
     type: "folder",
     _id: generateRandomId(12),
     //parentId postoji samo ako klinkem desnim klikom na folder, addFolder button ne daje parentId
@@ -484,12 +529,8 @@ export const createNewFolder = (): void => {
     ...newFolder,
     frontendId: newFolder._id,
   };
-  console.log(newFolderWithFrontendId);
-  userProjects.addNewFolder(newFolderWithFrontendId, newFolder.parentId);
+  userProjects.addNewItem(newFolderWithFrontendId, newFolder.parentId);
   renderTotalNumberOfUserProjects();
-  //reRenderAllFolderContainer treba postojati u ovom slucaju samo ak dodajem main folder
-  //ako ne dodajem mainfolder onda se ne smiju svi folderi rerenderati jer tom logikom
-  //se nece otvoriti subfolder unutar foldera kojem dodajem subfolder
   if (createMainFolder) reRenderAllFolderContainer();
 };
 
@@ -525,10 +566,10 @@ const saveNewlyAddedFolder = (): void => {
 
   if (createNewFolder) {
     if (createMainFolder) {
-      userProjects.saveNewFolder(folderObject.folder.parentId);
+      userProjects.saveNewFolderItem(folderObject.folder.parentId, "folder");
       reRenderAllFolderContainer();
     } else {
-      userProjects.saveNewFolder(folderObject.folder.parentId);
+      userProjects.saveNewFolderItem(folderObject.folder.parentId, "folder");
       closeSelectedFolder(parent);
       openSelectedFolder(parent);
     }
@@ -545,7 +586,7 @@ const deleteFolder = (folder: FolderInterface, folderId: string): void => {
   ) as HTMLElement;
   const parent = selectedFolderElement.parentNode?.parentNode as HTMLElement;
   if (folder._id === folderId) {
-    userProjects.deleteFolder([], folderObject.folder.frontendId, folder);
+    userProjects.deleteFolder(folderObject.folder.frontendId, folder);
     projectService.deleteFolder(
       defaultUser.id,
       folderObject.folder.frontendId,
@@ -561,6 +602,6 @@ const deleteFolder = (folder: FolderInterface, folderId: string): void => {
     }
   }
   if (folder.content.includes(folderId)) {
-    userProjects.deleteFolder(folder.content, folderId, folder);
+    userProjects.deleteFolder(folderId, folder);
   }
 };

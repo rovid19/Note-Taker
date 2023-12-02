@@ -96,7 +96,7 @@ const mapOverAllUserProjects = (
       return (div.innerHTML += `
       <article class="sidebarArticle" data-id=${
         folder.frontendId
-      } data-mainfolder=${folder._id}>  
+      } data-mainfolder=${folder._id} data-type="folder">  
         <div class="articleInnerDiv1">
           <div class="svgHolder"> 
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="15">

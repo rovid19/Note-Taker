@@ -5,7 +5,9 @@ export const setComponentsToTrueOrFalseAccordingly = (
   component: string
 ): void => {
   if (component.includes("/projects")) {
-    if (component === "/projects/note") {
+    const regex = /^\/projects\/notes\/([^/]+)/;
+    const match = window.location.pathname.match(regex);
+    if (match) {
       globalStore.set("noteEditorVisible", true);
       globalStore.set("todoListVisible", false);
       globalStore.set("homeVisible", false);

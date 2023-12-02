@@ -1,14 +1,13 @@
 import { generateNavbar } from "../../Components/Navbar/Navbar";
 import { isSidebarVisible } from "../../Components/Sidebar/SidebarLogic";
 import {
-  fetchExistingNote,
   isNoteEditorVisible,
   findNoteIdToDeleteNote,
 } from "../../Components/NoteEditor/NoteEditorLogic";
 import { navbarNavigationLogic } from "../../Components/Navbar/NavbarLogic";
 import globalStore from "../../Stores/GlobalStore";
 import { router } from "../../Utils/Router/Router";
-import { defaultNote } from "../../Components/NoteEditor/NoteEditor";
+
 import {
   isLoginVisible,
   isUserLoggedIn,
@@ -36,7 +35,7 @@ globalStore.subscribe("url", router.redirectToRoute);
 globalStore.subscribe("sidebarVisible", isSidebarVisible);
 globalStore.subscribe("noteEditorVisible", isNoteEditorVisible);
 globalStore.subscribe("deleteNote", findNoteIdToDeleteNote);
-globalStore.subscribe("existingNote", fetchExistingNote);
+//globalStore.subscribe("existingNote", fetchExistingNote);
 globalStore.subscribe("loginVisible", isLoginVisible);
 globalStore.subscribe("todoListVisible", isTodoListVisible);
 globalStore.subscribe("activeLink", setActiveLinkCss);
@@ -50,7 +49,7 @@ projectStore.subscribe("isCreateNewFolderVisible", isCreateNewFolderVisible);
 projectStore.subscribe("selectedFolder", openSelectedFolder);
 projectStore.subscribe("createNewFolder", isCreateNewFolderVisible);
 
-window.addEventListener("beforeunload", function (e) {
+/*window.addEventListener("beforeunload", function (e) {
   if (
     defaultNote.fetchedNoteText !== defaultNote.noteText ||
     defaultNote.fetchedNoteTitle !== defaultNote.noteTitle
@@ -58,7 +57,7 @@ window.addEventListener("beforeunload", function (e) {
     e.preventDefault();
     e.returnValue = "";
   }
-});
+});*/
 
 await userApiRequest.getUser();
 if (defaultUser.id.length > 2)

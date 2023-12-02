@@ -2,7 +2,7 @@ import { userApiRequest } from "../../Services/UserService";
 import globalStore from "../../Stores/GlobalStore";
 import { defaultUser, userStore } from "../../Stores/UserStore";
 import { router } from "../../Utils/Router/Router";
-import { autoSaveNote } from "../NoteEditor/NoteEditorLogic";
+//import { autoSaveNote } from "../NoteEditor/NoteEditorLogic";
 
 export const navbarNavigationLogic = (): void => {
   const newNoteLi = document.querySelector(".nbcInnerDiv1Con2") as HTMLElement;
@@ -22,7 +22,7 @@ const toggleSidebar = (liItem: HTMLElement): void => {
     const url = window.location.pathname;
     if (url.includes("/projects")) {
     } else router.navigateTo("/projects");
-    autoSaveNote();
+    //autoSaveNote();
   });
 };
 
@@ -30,7 +30,7 @@ const openNoteEditor = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (e: Event): void => {
     e.preventDefault();
     router.navigateTo("/note");
-    autoSaveNote();
+    //autoSaveNote();
   });
 };
 
@@ -39,7 +39,7 @@ const openHome = (liItem: HTMLElement): void => {
     const sidebarVisible = globalStore.get("sidebarVisible");
     if (sidebarVisible) router.navigateTo("/projects/home");
     else router.navigateTo("/home ");
-    autoSaveNote();
+    //autoSaveNote();
   });
 };
 
@@ -48,7 +48,7 @@ const openTodoList = (liItem: HTMLElement): void => {
     const sidebarVisible = globalStore.get("sidebarVisible");
     if (sidebarVisible) router.navigateTo("/projects/dailytodo");
     else router.navigateTo("/dailytodo");
-    autoSaveNote();
+    //autoSaveNote();
   });
 };
 
@@ -75,11 +75,11 @@ export const reRenderPicture = (): void => {
 
 const handleLogin = (): void => {
   globalStore.set("loginVisible", true);
-  autoSaveNote();
+  //autoSaveNote();
 };
 
 const handleLogout = (): void => {
   userApiRequest.logoutUser();
   globalStore.set("loginVisible", false);
-  autoSaveNote();
+  //autoSaveNote();
 };

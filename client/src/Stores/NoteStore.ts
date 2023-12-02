@@ -1,5 +1,6 @@
+import { Note } from "../Utils/TsTypes";
+
 interface InitialState {
-  noteId: string;
   noteTitle: string;
   userNotes: string[];
   deleteNote: number | null;
@@ -11,7 +12,6 @@ interface InitialState {
 type Listener = (key: any, value: any) => void;
 
 const initialState = {
-  noteId: "",
   noteTitle: "",
   userNotes: [],
   notesLength: 0,
@@ -32,14 +32,14 @@ class NoteStore {
     return this.state[key];
   }
 
-  set(key: string, value: string | number | boolean | null): void {
+  set(key: string, value: string | number | boolean | null | Note): void {
     if (this.state[key] !== value) {
       this.state[key] = value;
       this.notify(key, value);
     }
   }
 
-  notify(key: string, value: string | number | boolean | null): void {
+  notify(key: string, value: string | number | boolean | null | Note): void {
     if (this.listeners[key]) {
       this.listeners[key].forEach((listener) => listener(key, value));
     }
@@ -59,6 +59,7 @@ class NoteObject {
     public title: string = "",
     public noteText: string = "",
     public id: string = "",
+    public type: string = "note",
     public parentId: string = ""
   ) {}
 
@@ -73,6 +74,9 @@ class NoteObject {
   }
   setText(newText: string) {
     this.noteText = newText;
+  }
+  setId(newId: string) {
+    this.id = newId;
   }
 }
 

@@ -1,28 +1,24 @@
-import { defaultNote } from "../Components/NoteEditor/NoteEditor";
 import Base from "./BaseService";
 import globalStore from "../Stores/GlobalStore";
-import { router } from "../Utils/Router/Router";
-import { noteStore } from "../Stores/NoteStore";
+import { noteObject, noteObjectChanges } from "../Stores/NoteStore";
 
 class ProjectService extends Base {
   constructor() {
     super("http://localhost:3000/api/notes");
   }
-  async createNewNote(fullDate: string, userId: string, folderId: string) {
+  async createNewNote(
+    fullDate: string,
+    userId: string,
+    folderId: string,
+    frontendNoteId: string
+  ) {
     const newNote = await this.post("/create-new-note", {
       fullDate,
       userId,
       folderId,
+      frontendNoteId,
     });
-    /*defaultNote.setNote(
-      newNote.title,
-      newNote.title,
-      newNote.dateCreated,
-      newNote.noteText,
-      newNote.noteText,
-      newNote._id
-    );
-    router.navigateTo(`/notes/noteId=${defaultNote.id}`);*/
+    console.log(newNote);
   }
   async saveNewNoteTitle(noteTitle: string | number | boolean, noteId: string) {
     await this.put("/save-note-title", {
@@ -39,16 +35,14 @@ class ProjectService extends Base {
     await this.delete("/delete-note", { noteId });
   }
 
-  async getNote() {
-    const noteId = noteStore.get("noteId") as string;
+  async getNote(noteId: string) {
     const note = await this.get("/get-specific-note", { noteId });
-    defaultNote.setNote(
+    noteObject.setNote(note.title, note.noteText, note.frontendId, "note");
+    noteObjectChanges.setNote(
       note.title,
-      note.title,
-      note.dateCreated,
       note.noteText,
-      note.noteText,
-      note._id
+      note.frontendId,
+      note.folderParentId
     );
   }
 
@@ -58,14 +52,6 @@ class ProjectService extends Base {
       noteTitle,
       noteText,
     });
-    defaultNote.setNote(
-      note.title,
-      note.title,
-      note.dateCreated,
-      note.noteText,
-      note.noteText,
-      note._id
-    );
   }
 }
 

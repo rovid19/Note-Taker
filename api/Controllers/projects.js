@@ -1,6 +1,6 @@
 import User from "../Models/User.js";
 import Folder from "../Models/Folder.js";
-import noteModel from "../Models/Note.js";
+import Note from "../Models/Note.js";
 
 /*export const fetchAllUserFolders = async (req, res) => {
   const { userId } = req.query;
@@ -20,25 +20,26 @@ export const fetchAllUserFolders = async (req, res) => {
     const { userId } = req.query;
 
     const user = await User.findById(userId).populate("folder");
-    console.log(user.folder);
     const populateProjects = async (array) => {
       for (let i = 0; i < array.length; i++) {
         const folderItem = array[i];
+        const popFolder = await Folder.findById(folderItem._id).populate(
+          "content"
+        );
 
-        if (folderItem.defaultSchemaType === "folder") {
-          const popFolder = await Folder.findById(folderItem._id).populate(
-            "content"
-          );
+        if (popFolder.notes.length > 0) {
+          const notesPromises = popFolder.notes.map(async (noteItem) => {
+            const populatedNote = await Note.findById(noteItem);
+            return populatedNote;
+          });
 
-          if (popFolder.content.length > 0) {
-            await populateProjects(popFolder.content);
-          }
-
-          array[i] = popFolder;
-        } else if (folderItem.defaultSchemaType === "note") {
-          await noteModel.findById(folderItem._id).populate("");
-        } else {
+          popFolder.notes = await Promise.all(notesPromises);
         }
+        if (popFolder.content.length > 0) {
+          await populateProjects(popFolder.content);
+        }
+
+        array[i] = popFolder;
       }
     };
 
@@ -106,13 +107,11 @@ export const deleteFolder = async (req, res) => {
 
   const folder = await Folder.findOne({ frontendId: frontendFolderId });
   const deleteArray = [folder._id];
-
   const recursivePopulate = async (content) => {
     for (let folder of content) {
       const foundFolder = await Folder.findById(folder._id).populate("content");
       deleteArray.push(foundFolder._id);
       if (foundFolder.content.length > 0) {
-        console.log("da");
         await recursivePopulate(foundFolder.content);
       }
     }

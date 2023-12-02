@@ -13,7 +13,8 @@ export type todo = {
 export interface FolderInterface {
   name: string;
   dateCreated: string;
-  content: (FolderInterface | todo | string | Note)[];
+  content: (FolderInterface | string)[];
+  notes: Note[];
   type: string;
   depth: number;
   _id: string;
@@ -29,9 +30,12 @@ export type UserNotes = {
 
 export type Note = {
   title: string;
+  id: string;
   noteText: string;
   dateCreated: string;
   type: string;
+  new?: boolean;
+  frontendId?: string;
 };
 
 export type Item = todo & FolderInterface & Note;

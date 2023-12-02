@@ -1,8 +1,8 @@
 import globalStore from "../../Stores/GlobalStore";
 import noteService from "../../Services/NoteService";
-import { defaultNote, generateNewNote } from "./NoteEditor";
+import { generateNewNote } from "./NoteEditor";
 import { fullDate } from "../../Utils/Date";
-
+import { Note } from "../../Utils/TsTypes";
 import { reRenderAllFolderContainer } from "../Sidebar/SidebarLogic";
 import { createWarning } from "../PopupWindows/WarningMessage/WarningLogic";
 import { defaultUser } from "../../Stores/UserStore";
@@ -12,6 +12,12 @@ import {
   noteStore,
 } from "../../Stores/NoteStore";
 import { generateRandomId } from "../../Utils/GeneralFunctions";
+import { router } from "../../Utils/Router/Router";
+import { projectStore, userProjects } from "../../Stores/ProjectStore";
+import {
+  closeSelectedFolder,
+  openSelectedFolder,
+} from "../Sidebar/SidebarFolderLogic";
 
 type NoteArray = {
   _id: string;
@@ -20,7 +26,7 @@ type NoteArray = {
 
 export const isNoteEditorVisible = async () => {
   const noteEditorVisible = globalStore.get("noteEditorVisible");
-  const existingNote = noteStore.get("existingNote") as boolean;
+  const existingNote = noteStore.get("existingNote") as unknown as Note;
 
   if (noteEditorVisible) {
     createNoteEditor();
@@ -30,6 +36,8 @@ export const isNoteEditorVisible = async () => {
   }
 };
 
+export const openSelectedNote = async (noteId: string) => {};
+
 const createNoteEditor = (): void => {
   let div = document.createElement("div");
   div.id = "note-container";
@@ -37,18 +45,20 @@ const createNoteEditor = (): void => {
   document.getElementById("note-container")?.appendChild(generateNewNote());
 
   noteEventListeners();
-  console.log(noteObject, noteObjectChanges);
-  noteService.createNewNote(fullDate, defaultUser.id, noteObject.parentId);
 };
 
-const isNewNoteOrExistingNote = async (existingNote: boolean) => {
-  const sidebarVisible = globalStore.get("sidebarVisible");
+const isNewNoteOrExistingNote = async (existingNote: Note) => {
+  const sidebarVisible = globalStore.get("sidebarVisible") as boolean;
   if (existingNote) {
+    renderNoteFields();
   } else {
-    //await noteService.createNewNote(fullDate, defaultUser.id);
-    //await noteService.fetchAllUserNotes(defaultUser.id);
+    await noteService.createNewNote(
+      fullDate,
+      defaultUser.id,
+      noteObject.parentId,
+      noteObject.id
+    );
     if (sidebarVisible) reRenderAllFolderContainer();
-    reRenderNoteFields();
   }
 };
 
@@ -63,23 +73,64 @@ const noteEventListeners = () => {
   noteTitleElement.addEventListener("input", (e: Event) => {
     const target = e.target as HTMLInputElement;
     noteObjectChanges.setTitle(target.value);
+    console.log(noteObjectChanges.title);
   });
 
   noteTextElement.addEventListener("input", (e: Event) => {
     const target = e.target as HTMLInputElement;
     noteObjectChanges.setText(target.value);
+    console.log(noteObjectChanges.noteText);
   });
 
   window.addEventListener("click", (e: Event): void => {
+    const selectedFolderElement = projectStore.get(
+      "selectedFolderElement"
+    ) as HTMLElement;
+    const parent = selectedFolderElement.parentNode?.parentNode as HTMLElement;
+    console.log(parent);
     if (noteObject.title !== noteObjectChanges.title) {
+      noteObject.setTitle(noteObjectChanges.title);
+      userProjects.saveNewFolderItem(noteObjectChanges.parentId, "note");
+      closeSelectedFolder(parent);
+      openSelectedFolder(parent);
+      noteService.autoSaveNote(
+        noteObjectChanges.id,
+        noteObjectChanges.title,
+        noteObjectChanges.noteText
+      );
     }
 
     if (noteObject.noteText !== noteObjectChanges.noteText) {
+      noteObject.setText(noteObjectChanges.noteText);
+      noteService.autoSaveNote(
+        noteObjectChanges.id,
+        noteObjectChanges.title,
+        noteObjectChanges.noteText
+      );
     }
   });
 };
 
-const saveTitleAfterClickingOnNoteText = (
+const renderNoteFields = () => {
+  const noteTitleElement = document.querySelector(
+    ".newNoteInput"
+  ) as HTMLElement;
+  const noteTextElement = document.querySelector(
+    ".newNoteInputText"
+  ) as HTMLElement;
+
+  noteTitleElement.textContent = noteObject.title;
+};
+
+export const fetchSelectedNoteAndNavigateToIt = async (
+  sidebarVisible: boolean
+) => {
+  await noteService.getNote(noteObject.id);
+  if (sidebarVisible) router.navigateTo(`/projects/notes/${noteObject.id}`);
+  else router.navigateTo(`/notes/${noteObject.id}`);
+};
+
+/*const saveTitleAfterClickingOnNoteText = (
   noteTextElement: HTMLElement,
   oldNoteTitle: string
 ) => {
@@ -93,7 +144,7 @@ const saveTitleAfterClickingOnNoteText = (
     }
   });
 };
-
+*/
 export const deleteNote = async () => {
   const noteIndex = noteStore.get("deleteNote") as number;
   const noteId = noteStore.get("noteId") as string;
@@ -115,7 +166,7 @@ export const findNoteIdToDeleteNote = (): void => {
   }
 };
 
-export const fetchExistingNote = async () => {
+/*export const fetchExistingNote = async () => {
   const existingNote = globalStore.get("existingNote");
   if (existingNote) {
     await noteService.getNote();
@@ -148,7 +199,7 @@ export const autoSaveNote = async () => {
   }
 };
 
-/*export const noteTextInput = (): void => {
+export const noteTextInput = (): void => {
   const noteText = document.querySelector(".newNoteInputText") as HTMLElement;
 
   noteText.addEventListener("input", (e: Event) => {

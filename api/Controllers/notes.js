@@ -1,10 +1,8 @@
 import Note from "../Models/Note.js";
-import User from "../Models/User.js";
 import Folder from "../Models/Folder.js";
 
 export const createNewNote = async (req, res) => {
-  const { fullDate, userId, folderId } = req.body;
-  console.log(folderId);
+  const { fullDate, userId, folderId, frontendNoteId } = req.body;
   try {
     const folder = await Folder.findOne({ frontendId: folderId });
     const newNote = await Note.create({
@@ -12,9 +10,11 @@ export const createNewNote = async (req, res) => {
       dateCreated: fullDate,
       noteText: "",
       folderParentId: folderId,
+      frontendId: frontendNoteId,
+      type: "note",
     });
 
-    folder.content.push(newNote._id);
+    folder.notes.push(newNote._id);
 
     await folder.save();
 
@@ -71,14 +71,14 @@ export const deleteNote = async (req, res) => {
 export const fetchExistingNote = async (req, res) => {
   const { noteId } = req.query;
 
-  const note = await Note.findById(noteId);
+  const note = await Note.findOne({ frontendId: noteId });
   res.json(note);
 };
 
 export const autoSaveNote = async (req, res) => {
   const { noteId, noteText, noteTitle } = req.body;
 
-  const findNote = await Note.findById(noteId);
+  const findNote = await Note.findOne({ frontendId: noteId });
 
   findNote.set({
     title: noteTitle,

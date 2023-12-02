@@ -1,7 +1,7 @@
 import { FolderInterface } from "../Components/Sidebar/SidebarLogic";
 import {
-  loopThroughArrayAndSaveNewFolder,
   loopThroughArrayAndPushOrDeleteFolder,
+  loopThroughArrayAndSaveNewFolderItem,
 } from "../Utils/GeneralFunctions";
 import { Note } from "../Utils/TsTypes";
 
@@ -105,8 +105,7 @@ class UserProjects {
     this.projects = projects;
   }
 
-  addNewFolder(folder: FolderInterface | Note, parentId: string) {
-    console.log(folder, parentId);
+  addNewItem(folder: FolderInterface | Note, parentId: string) {
     if (parentId.length > 0) {
       loopThroughArrayAndPushOrDeleteFolder(
         this.projects,
@@ -119,28 +118,24 @@ class UserProjects {
     }
   }
 
-  saveNewFolder(parentId: string) {
-    delete folderObject.folder.new;
-    if (parentId.length > 0) {
-      loopThroughArrayAndSaveNewFolder(this.projects, parentId);
+  saveNewFolderItem(parentId: string, purpose: string) {
+    if (purpose === "folder") {
+      delete folderObject.folder.new;
+      if (parentId.length > 0) {
+        loopThroughArrayAndSaveNewFolderItem(this.projects, parentId, "folder");
+      } else {
+        const index = this.projects.findIndex(
+          (folder) => folder.frontendId === folderObject.folder.frontendId
+        );
+        this.projects[index] = folderObject.folder;
+      }
     } else {
-      const index = this.projects.findIndex(
-        (folder) => folder.frontendId === folderObject.folder.frontendId
-      );
-      this.projects[index] = folderObject.folder;
+      console.log(parentId);
+      loopThroughArrayAndSaveNewFolderItem(this.projects, parentId, "note");
     }
   }
-  deleteFolder(
-    folderContent: FolderInterface[],
-    id: string,
-    folder: FolderInterface
-  ) {
-    console.log("da", folder);
+  deleteFolder(id: string, folder: FolderInterface) {
     if (folder.depth > 0) {
-      console.log("da1");
-      /*let newContentArray = folderContent.filter((folder) => folder._id !== id);
-      folder.contet = newContentArray;
-      console.log(this.projects);*/
       loopThroughArrayAndPushOrDeleteFolder(
         this.projects,
         folderObject.folder.parentId,
@@ -149,7 +144,6 @@ class UserProjects {
         folderObject.folder.frontendId
       );
     } else {
-      console.log("da2");
       const newProjectArray = this.projects.filter(
         (folder) => folder.frontendId !== id
       );
