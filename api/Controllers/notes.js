@@ -10,7 +10,7 @@ export const createNewNote = async (req, res) => {
       dateCreated: fullDate,
       noteText: "",
       folderParentId: folderId,
-      frontendId: frontendNoteId,
+      id: frontendNoteId,
       type: "note",
     });
 
@@ -71,15 +71,15 @@ export const deleteNote = async (req, res) => {
 export const fetchExistingNote = async (req, res) => {
   const { noteId } = req.query;
 
-  const note = await Note.findOne({ frontendId: noteId });
+  const note = await Note.findOne({ id: noteId });
   res.json(note);
 };
 
 export const autoSaveNote = async (req, res) => {
   const { noteId, noteText, noteTitle } = req.body;
 
-  const findNote = await Note.findOne({ frontendId: noteId });
-
+  const findNote = await Note.findOne({ id: noteId });
+  console.log(findNote, noteId);
   findNote.set({
     title: noteTitle,
     noteText: noteText,

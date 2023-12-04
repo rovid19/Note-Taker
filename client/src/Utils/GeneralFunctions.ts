@@ -23,7 +23,7 @@ export const loopThroughArrayAndPushOrDeleteFolder = (
   if ("content" in folderItem) {
     foundFolder.content.push(folderItem);
   } else {
-    foundFolder.notes.push(folderItem);
+    foundFolder.notes.push({ ...folderItem });
   }
   if (purpose === "delete") {
     const newArray = foundFolder.content.filter(
@@ -47,12 +47,11 @@ export const loopThroughArrayAndSaveNewFolderItem = (
     projectStore.set("subfolderFolderObject", folderObject.folder);
     folderObject.setSelectedFolder(foundFolder);
   } else {
-    console.log(parentId);
     const foundFolder = loopThroughArray(projects, parentId, "newFolder");
-    console.log(foundFolder);
     const index = foundFolder.notes.findIndex(
-      (note) => note.frontendId === noteObjectChanges.id
+      (note) => note.id === noteObjectChanges.id
     );
+    console.log(noteObjectChanges, foundFolder.notes, index);
     foundFolder.notes[index].title = noteObjectChanges.title;
   }
 };

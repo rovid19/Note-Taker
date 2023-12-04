@@ -5,7 +5,7 @@ interface InitialState {
   userNotes: string[];
   deleteNote: number | null;
   notesLength: number;
-  existingNote: boolean;
+  isNewNote: boolean;
   [key: string]: any;
 }
 
@@ -15,7 +15,7 @@ const initialState = {
   noteTitle: "",
   userNotes: [],
   notesLength: 0,
-  existingNote: false,
+  isNewNote: false,
   deleteNote: null,
 };
 

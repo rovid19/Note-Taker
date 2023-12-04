@@ -6,7 +6,7 @@ const noteSchema = new mongoose.Schema({
   dateCreated: String,
   type: String,
   folderParentId: String,
-  frontendId: String,
+  id: String,
 });
 
 const noteModel = mongoose.model("note", noteSchema);

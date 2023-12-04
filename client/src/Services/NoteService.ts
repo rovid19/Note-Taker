@@ -18,7 +18,6 @@ class ProjectService extends Base {
       folderId,
       frontendNoteId,
     });
-    console.log(newNote);
   }
   async saveNewNoteTitle(noteTitle: string | number | boolean, noteId: string) {
     await this.put("/save-note-title", {
@@ -37,11 +36,11 @@ class ProjectService extends Base {
 
   async getNote(noteId: string) {
     const note = await this.get("/get-specific-note", { noteId });
-    noteObject.setNote(note.title, note.noteText, note.frontendId, "note");
+    noteObject.setNote(note.title, note.noteText, note.id, "note");
     noteObjectChanges.setNote(
       note.title,
       note.noteText,
-      note.frontendId,
+      note.id,
       note.folderParentId
     );
   }

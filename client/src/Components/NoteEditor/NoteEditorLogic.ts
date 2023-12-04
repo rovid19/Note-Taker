@@ -25,18 +25,17 @@ type NoteArray = {
 };
 
 export const isNoteEditorVisible = async () => {
+  console.log("noteed");
   const noteEditorVisible = globalStore.get("noteEditorVisible");
-  const existingNote = noteStore.get("existingNote") as unknown as Note;
+  const isNewNote = noteStore.get("isNewNote") as unknown as Note;
 
   if (noteEditorVisible) {
     createNoteEditor();
-    isNewNoteOrExistingNote(existingNote);
+    isNewNoteOrExistingNote(isNewNote);
   } else {
     document.getElementById("note-container")?.remove();
   }
 };
-
-export const openSelectedNote = async (noteId: string) => {};
 
 const createNoteEditor = (): void => {
   let div = document.createElement("div");
@@ -47,18 +46,21 @@ const createNoteEditor = (): void => {
   noteEventListeners();
 };
 
-const isNewNoteOrExistingNote = async (existingNote: Note) => {
-  const sidebarVisible = globalStore.get("sidebarVisible") as boolean;
-  if (existingNote) {
-    renderNoteFields();
-  } else {
+const isNewNoteOrExistingNote = async (isNewNote: Note) => {
+  if (isNewNote) {
+    console.log("da2");
     await noteService.createNewNote(
       fullDate,
       defaultUser.id,
       noteObject.parentId,
       noteObject.id
     );
-    if (sidebarVisible) reRenderAllFolderContainer();
+    noteStore.set("isNewNote", false);
+    console.log(isNewNote);
+  } else {
+    await noteService.getNote(noteObject.id);
+    renderNoteFields();
+    //if (sidebarVisible) reRenderAllFolderContainer();
   }
 };
 
@@ -73,26 +75,23 @@ const noteEventListeners = () => {
   noteTitleElement.addEventListener("input", (e: Event) => {
     const target = e.target as HTMLInputElement;
     noteObjectChanges.setTitle(target.value);
-    console.log(noteObjectChanges.title);
   });
 
   noteTextElement.addEventListener("input", (e: Event) => {
     const target = e.target as HTMLInputElement;
     noteObjectChanges.setText(target.value);
-    console.log(noteObjectChanges.noteText);
   });
 
   window.addEventListener("click", (e: Event): void => {
     const selectedFolderElement = projectStore.get(
       "selectedFolderElement"
     ) as HTMLElement;
-    const parent = selectedFolderElement.parentNode?.parentNode as HTMLElement;
-    console.log(parent);
+
     if (noteObject.title !== noteObjectChanges.title) {
       noteObject.setTitle(noteObjectChanges.title);
       userProjects.saveNewFolderItem(noteObjectChanges.parentId, "note");
-      closeSelectedFolder(parent);
-      openSelectedFolder(parent);
+      closeSelectedFolder(selectedFolderElement);
+      openSelectedFolder(selectedFolderElement);
       noteService.autoSaveNote(
         noteObjectChanges.id,
         noteObjectChanges.title,
@@ -112,22 +111,19 @@ const noteEventListeners = () => {
 };
 
 const renderNoteFields = () => {
-  const noteTitleElement = document.querySelector(
-    ".newNoteInput"
-  ) as HTMLElement;
-  const noteTextElement = document.querySelector(
-    ".newNoteInputText"
-  ) as HTMLElement;
-
-  noteTitleElement.textContent = noteObject.title;
+  document.getElementById("note-container")?.remove();
+  createNoteEditor();
 };
 
 export const fetchSelectedNoteAndNavigateToIt = async (
   sidebarVisible: boolean
 ) => {
+  console.log(noteObject);
   await noteService.getNote(noteObject.id);
-  if (sidebarVisible) router.navigateTo(`/projects/notes/${noteObject.id}`);
-  else router.navigateTo(`/notes/${noteObject.id}`);
+  if (sidebarVisible)
+    router.navigateTo(`/projects/notes?noteId=${noteObject.id}`);
+  else router.navigateTo(`/notes?noteId=${noteObject.id}`);
+  renderNoteFields();
 };
 
 /*const saveTitleAfterClickingOnNoteText = (
@@ -224,6 +220,8 @@ const isNoteBeingDeletedOpen = () => {
 };
 
 export const createNewNote = (folderParentId: string) => {
+  const noteEditor = globalStore.get("noteEditorVisible");
+
   noteObject.setNote("New Note", "", generateRandomId(20), folderParentId);
   noteObjectChanges.setNote(
     noteObject.title,
@@ -231,6 +229,10 @@ export const createNewNote = (folderParentId: string) => {
     noteObject.id,
     noteObject.parentId
   );
-
-  globalStore.set("noteEditorVisible", true);
+  noteStore.set("isNewNote", true);
+  router.navigateTo(`/projects/notes?noteId=${noteObject.id}`);
+  if (noteEditor) {
+    document.getElementById("note-container")?.remove();
+    isNoteEditorVisible();
+  }
 };

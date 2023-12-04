@@ -1,18 +1,28 @@
 import globalStore from "../../Stores/GlobalStore";
+import { noteObject, noteStore } from "../../Stores/NoteStore";
 import { router } from "./Router";
 
 export const setComponentsToTrueOrFalseAccordingly = (
   component: string
 ): void => {
+  const isNewNote = noteStore.get("isNewNote");
   if (component.includes("/projects")) {
-    const regex = /^\/projects\/notes\/([^/]+)/;
-    const match = window.location.pathname.match(regex);
-    if (match) {
-      globalStore.set("noteEditorVisible", true);
-      globalStore.set("todoListVisible", false);
-      globalStore.set("homeVisible", false);
-      globalStore.set("sidebarVisible", true);
-      globalStore.set("activeLink", "note");
+    if (window.location.search) {
+      if (isNewNote) {
+        globalStore.set("noteEditorVisible", true);
+        globalStore.set("todoListVisible", false);
+        globalStore.set("homeVisible", false);
+        globalStore.set("sidebarVisible", true);
+        globalStore.set("activeLink", "note");
+      } else {
+        const noteId = getNoteIdFromUrl();
+        noteObject.setId(noteId);
+        globalStore.set("noteEditorVisible", true);
+        globalStore.set("todoListVisible", false);
+        globalStore.set("homeVisible", false);
+        globalStore.set("sidebarVisible", true);
+        globalStore.set("activeLink", "note");
+      }
     } else if (component === "/projects/dailytodo") {
       globalStore.set("todoListVisible", true);
       globalStore.set("noteEditorVisible", false);
@@ -29,7 +39,7 @@ export const setComponentsToTrueOrFalseAccordingly = (
       router.navigateTo("/projects/home");
     }
   } else {
-    if (component === "/note") {
+    if (window.location.search) {
       globalStore.set("noteEditorVisible", true);
       globalStore.set("todoListVisible", false);
       globalStore.set("homeVisible", false);
@@ -82,4 +92,11 @@ export const isComponentOpen = (): boolean => {
   let isComponentVisible = componentArray.some((item) => item);
 
   return isComponentVisible;
+};
+
+const getNoteIdFromUrl = (): string => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const noteId = queryParams.get("noteId") as string;
+
+  return noteId;
 };
