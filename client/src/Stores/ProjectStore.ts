@@ -4,6 +4,7 @@ import {
   loopThroughArrayAndSaveNewFolderItem,
 } from "../Utils/GeneralFunctions";
 import { Note } from "../Utils/TsTypes";
+import { noteObject, noteObjectChanges } from "./NoteStore";
 
 interface InitialState {
   isCreateNewFolderVisible: boolean;
@@ -130,24 +131,34 @@ class UserProjects {
         this.projects[index] = folderObject.folder;
       }
     } else {
-      console.log(parentId);
       loopThroughArrayAndSaveNewFolderItem(this.projects, parentId, "note");
     }
   }
-  deleteFolder(id: string, folder: FolderInterface) {
-    if (folder.depth > 0) {
+  deleteFolder(id: string, item: FolderInterface | Note) {
+    if ("noteText" in item) {
+      console.log(noteObject);
       loopThroughArrayAndPushOrDeleteFolder(
         this.projects,
-        folderObject.folder.parentId,
-        folder,
+        noteObjectChanges.parentId,
+        item,
         "delete",
-        folderObject.folder.frontendId
+        noteObject.id
       );
     } else {
-      const newProjectArray = this.projects.filter(
-        (folder) => folder.frontendId !== id
-      );
-      this.projects = newProjectArray;
+      if (item.depth > 0) {
+        loopThroughArrayAndPushOrDeleteFolder(
+          this.projects,
+          folderObject.folder.parentId,
+          item,
+          "delete",
+          folderObject.folder.frontendId
+        );
+      } else {
+        const newProjectArray = this.projects.filter(
+          (item) => item.frontendId !== id
+        );
+        this.projects = newProjectArray;
+      }
     }
   }
 }

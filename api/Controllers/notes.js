@@ -57,12 +57,16 @@ export const saveNewNoteTitle = async (req, res) => {
 };*/
 
 export const deleteNote = async (req, res) => {
-  const { noteId } = req.body;
+  const { noteId, folderId } = req.body;
 
   try {
-    await Note.findByIdAndDelete(noteId);
-
-    res.json("ok");
+    const not2e = await Note.findOne({ id: noteId });
+    const parentFolder = await Folder.findOne({ frontendId: folderId });
+    parentFolder.notes = parentFolder.notes.filter(
+      (note) => note.toString() !== not2e._id.toString()
+    );
+    await parentFolder.save();
+    res.json(parentFolder);
   } catch (e) {
     throw e;
   }

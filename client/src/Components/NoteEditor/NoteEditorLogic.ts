@@ -116,14 +116,27 @@ const renderNoteFields = () => {
 };
 
 export const fetchSelectedNoteAndNavigateToIt = async (
-  sidebarVisible: boolean
+  sidebarVisible: boolean,
+  purpose: string
 ) => {
-  console.log(noteObject);
-  await noteService.getNote(noteObject.id);
-  if (sidebarVisible)
-    router.navigateTo(`/projects/notes?noteId=${noteObject.id}`);
-  else router.navigateTo(`/notes?noteId=${noteObject.id}`);
-  renderNoteFields();
+  const selectedFolderElement = projectStore.get(
+    "selectedFolderElement"
+  ) as HTMLElement;
+  const parent = selectedFolderElement.parentNode?.parentNode as HTMLElement;
+  console.log(selectedFolderElement);
+  if (purpose === "delete") {
+    await noteService.getNote(noteObject.id);
+    userProjects.deleteFolder("", noteObject);
+    closeSelectedFolder(parent);
+    openSelectedFolder(parent);
+    noteService.deleteNote(noteObject.id, noteObjectChanges.parentId);
+  } else {
+    await noteService.getNote(noteObject.id);
+    if (sidebarVisible)
+      router.navigateTo(`/projects/notes?noteId=${noteObject.id}`);
+    else router.navigateTo(`/notes?noteId=${noteObject.id}`);
+    renderNoteFields();
+  }
 };
 
 /*const saveTitleAfterClickingOnNoteText = (

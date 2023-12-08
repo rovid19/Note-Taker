@@ -91,7 +91,8 @@ export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
 const selectFolder = (
   allFolders: NodeListOf<Element>,
   isParentFolder: HTMLElement,
-  target: string
+  target: string,
+  noteTarget?: string
 ): HTMLElement => {
   const array = [...allFolders];
   let selectedFolderElement = {} as HTMLElement;
@@ -107,10 +108,14 @@ const selectFolder = (
       });
     }
   } else if (target === "note") {
+    console.log("222");
     const sidebarVisible = globalStore.get("sidebarVisible") as boolean;
     const noteId = isParentFolder.dataset.id as string;
     noteObject.setId(noteId);
-    fetchSelectedNoteAndNavigateToIt(sidebarVisible);
+    if (noteTarget === "rightClick")
+      fetchSelectedNoteAndNavigateToIt(sidebarVisible, "delete");
+    else fetchSelectedNoteAndNavigateToIt(sidebarVisible);
+    console.log(noteObject.id);
   }
 
   return selectedFolderElement;
@@ -264,17 +269,20 @@ const createFolderRightClickMenu = (
       }
 
       folder.appendChild(subMenu);
-      rightClickMenuEventListeners();
+      rightClickMenuEventListeners(allArticles);
     }
   });
 };
 
-const rightClickMenuEventListeners = (): void => {
+const rightClickMenuEventListeners = (
+  allArticles: NodeListOf<Element>
+): void => {
   const submenu = document.querySelector(".subMenu") as HTMLElement;
-
+  console.log(noteObject);
   submenu.addEventListener("click", (e: Event): void => {
     e.stopPropagation();
     const target = e.target as HTMLElement;
+    const isParentFolder = target.closest("[data-id]") as HTMLElement;
     const parentElementAddFolder = target.closest(".addSubFolderLi");
     const parentElementAddNote = target.closest(".addNoteLi");
     const parentElementAddTask = target.closest(".addTaskLi");
@@ -292,14 +300,41 @@ const rightClickMenuEventListeners = (): void => {
       reRenderSubfolder(selectedFolderElement);
     } else if (parentElementAddTask) globalStore.set("todoListVisible", true);
     else {
-      if (folderObject.folder.parentId) {
-        deleteFolder(folderObject.folder, folderObject.folder._id);
-      } else {
-        deleteFolder(folderObject.folder, folderObject.folder._id);
-        reRenderAllFolderContainer();
+      let itemBeingDeleted = isFolderNoteOrTaskBeingDeleted(submenu);
+      console.log(itemBeingDeleted);
+      if (itemBeingDeleted === "folder") deleteFolderFunction();
+      else if (itemBeingDeleted === "note")
+        deleteNoteFunction(allArticles, isParentFolder);
+      else {
       }
     }
   });
+};
+
+const isFolderNoteOrTaskBeingDeleted = (submenu: HTMLElement): string => {
+  const submenuParent = submenu.parentNode as HTMLElement;
+
+  return submenuParent.dataset.type === "folder"
+    ? "folder"
+    : submenuParent.dataset.type === "note"
+    ? "note"
+    : "task";
+};
+
+const deleteFolderFunction = () => {
+  if (folderObject.folder.parentId) {
+    deleteFolder(folderObject.folder, folderObject.folder._id);
+  } else {
+    deleteFolder(folderObject.folder, folderObject.folder._id);
+    reRenderAllFolderContainer();
+  }
+};
+
+const deleteNoteFunction = async (
+  allArticles: NodeListOf<Element>,
+  isParentFolder: HTMLElement
+) => {
+  selectFolder(allArticles, isParentFolder, "note", "rightClick");
 };
 
 /*const findIndexToDeleteNote = (
@@ -344,7 +379,9 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
   } else if (folderObject.folder.content.length > 0) {
     folderObject.folder.content.map((folder: FolderInterface) => {
       menu.innerHTML += `
-          <article class="submenuArticle" id=${folder.type} data-id=${
+          <article class="submenuArticle" data-type=${folder.type} id=${
+        folder.type
+      } data-id=${
         folder.frontendId
       }> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
         folder
@@ -359,10 +396,13 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
 
   if (folderObject.folder.notes) {
     folderObject.folder.notes.map((note: Note) => {
+      console.log(note);
       menu.innerHTML += `
-            <article class="submenuArticle" data-note="" data-id=${
-              note.id
-            } data-type="note"> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
+            <article class="submenuArticle" data-type=${
+              note.type
+            } data-note="" data-id=${
+        note.id
+      } data-type="note"> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
         note
       )}</div> ${
         !note.new
@@ -579,7 +619,7 @@ const saveNewlyAddedFolder = (): void => {
   }
 };
 
-// DELETING FOLDER ***************************************************************
+// DELETING ITEMS ***************************************************************
 // ˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘˘
 
 const deleteFolder = (folder: FolderInterface, folderId: string): void => {

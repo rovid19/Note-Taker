@@ -30,12 +30,13 @@ class ProjectService extends Base {
     globalStore.set("userNotes", allNotes);
   }
 
-  async deleteNote(noteId: string) {
-    await this.delete("/delete-note", { noteId });
+  async deleteNote(noteId: string, folderId: string) {
+    await this.delete("/delete-note", { noteId, folderId });
   }
 
   async getNote(noteId: string) {
     const note = await this.get("/get-specific-note", { noteId });
+    console.log(note);
     noteObject.setNote(note.title, note.noteText, note.id, "note");
     noteObjectChanges.setNote(
       note.title,
@@ -43,6 +44,7 @@ class ProjectService extends Base {
       note.id,
       note.folderParentId
     );
+    console.log(noteObject);
   }
 
   async autoSaveNote(noteId: string, noteTitle: string, noteText: string) {

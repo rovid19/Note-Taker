@@ -19,17 +19,29 @@ export const loopThroughArrayAndPushOrDeleteFolder = (
   purpose: string,
   frontendId?: string
 ): void => {
+  console.log(parentId);
   const foundFolder = loopThroughArray(projects, parentId, "newFolder");
-  if ("content" in folderItem) {
-    foundFolder.content.push(folderItem);
-  } else {
-    foundFolder.notes.push({ ...folderItem });
-  }
   if (purpose === "delete") {
-    const newArray = foundFolder.content.filter(
-      (folder) => folder.frontendId !== frontendId
-    );
-    foundFolder.content = newArray;
+    if ("noteText" in folderItem) {
+      console.log("dadadada", foundFolder);
+      const newNotes = foundFolder.notes.filter(
+        (folderNote) => folderNote.id !== frontendId
+      );
+      console.log(newNotes);
+      foundFolder.notes = newNotes;
+    } else if ("depth" in folderItem) {
+      const newArray = foundFolder.content.filter(
+        (folder) => folder.frontendId !== frontendId
+      );
+      foundFolder.content = newArray;
+    } else {
+    }
+  } else {
+    if ("content" in folderItem) {
+      foundFolder.content.push(folderItem);
+    } else {
+      foundFolder.notes.push({ ...folderItem });
+    }
   }
 };
 

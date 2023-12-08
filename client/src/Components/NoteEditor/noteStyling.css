@@ -29,7 +29,7 @@ body {
 }
 
 .newNoteDiv1 {
-  height: 15%;
+  height: 20%;
   display: flex;
   flex-direction: column;
   background-color: var(--darkB);
@@ -37,7 +37,7 @@ body {
 
 .newNoteDiv2 {
   height: 85%;
-  padding-left: 24px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   background-color: var(--darkB);
@@ -67,11 +67,116 @@ body {
 }
 
 .newNoteInputText {
-  border: none;
+  padding-top: 8px;
+  border-top: 2px solid rgba(184, 184, 184, 0.025);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
   font-size: 16px;
   color: var(--defGray);
   outline: none;
   width: 100%;
   flex-grow: 1;
   background-color: var(--darkB);
+}
+
+.editorButtons {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 20%;
+  display: flex;
+  height: 10%;
+  align-items: center;
+  justify-content: end;
+  gap: 16px;
+  padding-right: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.read {
+  color: var(--defHBlack);
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+.read > h4 {
+  margin: 0;
+  text-align: center;
+}
+
+.readBtn {
+  background-color: transparent;
+  border: none;
+  height: 50px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.readBtn:hover {
+  color: var(--defGray);
+}
+
+.color {
+  color: var(--defHBlack);
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  width: 100px;
+  height: 100%;
+}
+.color > h4 {
+  margin: 0;
+  text-align: center;
+}
+
+.colorBtn {
+  width: 100%;
+  background-color: #00a82d;
+  border: NONE;
+  border-radius: 6px;
+  height: 50px;
+  cursor: pointer;
+  transition: all 0.4s;
+}
+
+.colorBtn:hover {
+  border: 1px solid black;
+}
+
+.fontSize {
+  font-size: 12px;
+  color: var(--defHBlack);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fontSize > h4 {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+.fontBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.fontBtns > button {
+  border: none;
+  border-radius: 6px;
+  background-color: var(--defHBlack);
+  height: 50px;
+  cursor: pointer;
+}
+
+.fontBtns > button:hover {
+  color: var(--defGray);
 }
