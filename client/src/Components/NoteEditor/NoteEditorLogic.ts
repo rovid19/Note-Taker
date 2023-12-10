@@ -11,7 +11,10 @@ import {
   noteObjectChanges,
   noteStore,
 } from "../../Stores/NoteStore";
-import { generateRandomId } from "../../Utils/GeneralFunctions";
+import {
+  generateRandomId,
+  getSelectedTextValue,
+} from "../../Utils/GeneralFunctions";
 import { router } from "../../Utils/Router/Router";
 import { projectStore, userProjects } from "../../Stores/ProjectStore";
 import {
@@ -25,7 +28,6 @@ type NoteArray = {
 };
 
 export const isNoteEditorVisible = async () => {
-  console.log("noteed");
   const noteEditorVisible = globalStore.get("noteEditorVisible");
   const isNewNote = noteStore.get("isNewNote") as unknown as Note;
 
@@ -44,6 +46,7 @@ const createNoteEditor = (): void => {
   document.getElementById("note-container")?.appendChild(generateNewNote());
 
   noteEventListeners();
+  noteEditorButtonsEventListener();
 };
 
 const isNewNoteOrExistingNote = async (isNewNote: Note) => {
@@ -60,6 +63,7 @@ const isNewNoteOrExistingNote = async (isNewNote: Note) => {
   } else {
     await noteService.getNote(noteObject.id);
     renderNoteFields();
+    console.log(noteObjectChanges.noteText);
     //if (sidebarVisible) reRenderAllFolderContainer();
   }
 };
@@ -78,8 +82,8 @@ const noteEventListeners = () => {
   });
 
   noteTextElement.addEventListener("input", (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    noteObjectChanges.setText(target.value);
+    noteObjectChanges.setText(noteTextElement.innerHTML);
+    console.log(noteObjectChanges.noteText, noteObject.noteText);
   });
 
   window.addEventListener("click", (e: Event): void => {
@@ -139,6 +143,26 @@ export const fetchSelectedNoteAndNavigateToIt = async (
   }
 };
 
+const noteEditorButtonsEventListener = () => {
+  const noteEditorButtons = document.querySelector(
+    ".editorButtons"
+  ) as HTMLElement;
+
+  noteEditorButtons.addEventListener("click", (e: Event) => {
+    const target = e.target as HTMLElement;
+    const isReading = target.closest(".read");
+    const isColor = target.closest(".color");
+
+    if (isReading) {
+    } else if (isColor) {
+      const selectColorVisible = globalStore.get("selectColorVisible");
+      getSelectedTextValue();
+      globalStore.set("selectColorVisible", !selectColorVisible);
+    } else {
+    }
+  });
+};
+
 /*const saveTitleAfterClickingOnNoteText = (
   noteTextElement: HTMLElement,
   oldNoteTitle: string
@@ -153,13 +177,13 @@ export const fetchSelectedNoteAndNavigateToIt = async (
     }
   });
 };
-*/
+
 export const deleteNote = async () => {
   const noteIndex = noteStore.get("deleteNote") as number;
   const noteId = noteStore.get("noteId") as string;
 
   if (noteIndex !== -1) {
-    await noteService.deleteNote(noteId);
+    await noteService.deleteNote(noteId, noteObjectChanges.parentId);
     await noteService.fetchAllUserNotes(defaultUser.id);
     reRenderAllFolderContainer();
     noteStore.set("deleteNote", -1);
@@ -173,7 +197,7 @@ export const findNoteIdToDeleteNote = (): void => {
     noteStore.set("noteId", allNotes[noteIndex]._id);
     isNoteBeingDeletedOpen();
   }
-};
+};*/
 
 /*export const fetchExistingNote = async () => {
   const existingNote = globalStore.get("existingNote");
@@ -215,7 +239,7 @@ export const noteTextInput = (): void => {
     const target = e.target as HTMLInputElement;
     defaultNote.setNoteText(target.value);
   });
-};*/
+};
 
 const isNoteBeingDeletedOpen = () => {
   const params = new URLSearchParams(window.location.search);
@@ -230,7 +254,7 @@ const isNoteBeingDeletedOpen = () => {
   } else {
     deleteNote();
   }
-};
+};*/
 
 export const createNewNote = (folderParentId: string) => {
   const noteEditor = globalStore.get("noteEditorVisible");
@@ -248,4 +272,40 @@ export const createNewNote = (folderParentId: string) => {
     document.getElementById("note-container")?.remove();
     isNoteEditorVisible();
   }
+};
+
+export const applyNoteTextEdits = () => {
+  console.log("da");
+  const noteText = document.querySelector(".newNoteInputText")
+    ?.textContent as unknown as string;
+
+  noteObjectChanges.noteEdits.forEach((edit) => {
+    const extractedValue = extractNoteEditValueAtIndex(
+      noteText,
+      edit.startIndex,
+      edit.endIndex
+    );
+    let span = `<span style="color: ${edit.option.slice(
+      6,
+      edit.option.length
+    )}">${extractedValue}</span>`;
+    console.log(span);
+
+    noteText.slice(edit.startIndex, edit.endIndex) +
+      span +
+      noteText.slice(edit.startIndex);
+
+    console.log(noteText);
+  });
+};
+
+const extractNoteEditValueAtIndex = (
+  noteText: string,
+  start: number,
+  end: number
+): string => {
+  let value = "";
+  console.log(start, end, noteText);
+  value = noteText.slice(start, end);
+  return value;
 };

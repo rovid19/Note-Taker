@@ -46,3 +46,9 @@ export type CounterArrItem = {
   id: string;
   subfolders: FolderInterface[];
 };
+
+export type NoteEdits = {
+  option: string;
+  startIndex: number;
+  endIndex: number;
+};

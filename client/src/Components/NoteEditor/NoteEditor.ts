@@ -46,9 +46,7 @@ export const generateNewNote = (): HTMLElement => {
 
 <div class="newNoteDiv2">
   <input class="newNoteInput" placeholder="${noteObject.title}" />
-  <textarea class="newNoteInputText" placeholder="Start your note here">${
-    noteObject.noteText && noteObject.noteText
-  }</textarea>
+  <div class="newNoteInputText" contenteditable="true">${noteObject.noteText} </div>
 </div>
   `;
 

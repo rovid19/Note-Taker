@@ -1,4 +1,4 @@
-import { Note } from "../Utils/TsTypes";
+import { Note, NoteEdits, SelectedText } from "../Utils/TsTypes";
 
 interface InitialState {
   noteTitle: string;
@@ -6,6 +6,7 @@ interface InitialState {
   deleteNote: number | null;
   notesLength: number;
   isNewNote: boolean;
+  selectedText: SelectedText;
   [key: string]: any;
 }
 
@@ -17,6 +18,7 @@ const initialState = {
   notesLength: 0,
   isNewNote: false,
   deleteNote: null,
+  selectedText: { startIndex: 0, endIndex: 0 },
 };
 
 class NoteStore {
@@ -32,14 +34,20 @@ class NoteStore {
     return this.state[key];
   }
 
-  set(key: string, value: string | number | boolean | null | Note): void {
+  set(
+    key: string,
+    value: string | number | boolean | null | Note | SelectedText
+  ): void {
     if (this.state[key] !== value) {
       this.state[key] = value;
       this.notify(key, value);
     }
   }
 
-  notify(key: string, value: string | number | boolean | null | Note): void {
+  notify(
+    key: string,
+    value: string | number | boolean | null | Note | SelectedText
+  ): void {
     if (this.listeners[key]) {
       this.listeners[key].forEach((listener) => listener(key, value));
     }
@@ -60,7 +68,8 @@ class NoteObject {
     public noteText: string = "",
     public id: string = "",
     public type: string = "note",
-    public parentId: string = ""
+    public parentId: string = "",
+    public noteEdits: NoteEdits[] = []
   ) {}
 
   setNote(title: string, noteText: string, id: string, parentId: string) {
@@ -77,6 +86,27 @@ class NoteObject {
   }
   setId(newId: string) {
     this.id = newId;
+  }
+
+  pushEdit(editObject: NoteEdits) {
+    if (this.noteEdits.length > 0) {
+      const isEditAlreadyInside = this.noteEdits.find(
+        (edit) =>
+          edit.startIndex === editObject.startIndex &&
+          edit.endIndex === editObject.endIndex
+      );
+
+      if (isEditAlreadyInside) {
+        const index = this.noteEdits.findIndex(
+          (edit) => edit === isEditAlreadyInside
+        );
+        this.noteEdits[index] = editObject;
+      } else {
+        this.noteEdits.push(editObject);
+      }
+    } else {
+      this.noteEdits.push(editObject);
+    }
   }
 }
 

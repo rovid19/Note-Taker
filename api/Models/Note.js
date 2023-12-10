@@ -7,6 +7,7 @@ const noteSchema = new mongoose.Schema({
   type: String,
   folderParentId: String,
   id: String,
+  noteEdits: [],
 });
 
 const noteModel = mongoose.model("note", noteSchema);

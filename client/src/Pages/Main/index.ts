@@ -1,9 +1,6 @@
 import { generateNavbar } from "../../Components/Navbar/Navbar";
 import { isSidebarVisible } from "../../Components/Sidebar/SidebarLogic";
-import {
-  isNoteEditorVisible,
-  findNoteIdToDeleteNote,
-} from "../../Components/NoteEditor/NoteEditorLogic";
+import { isNoteEditorVisible } from "../../Components/NoteEditor/NoteEditorLogic";
 import { navbarNavigationLogic } from "../../Components/Navbar/NavbarLogic";
 import globalStore from "../../Stores/GlobalStore";
 import { router } from "../../Utils/Router/Router";
@@ -27,6 +24,7 @@ import {
   openSelectedFolder,
 } from "../../Components/Sidebar/SidebarFolderLogic";
 import { projectService } from "../../Services/ProjectService";
+import { isSelectColorVisible } from "../../Components/PopupWindows/SelectColor/SelectColorLogic";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -34,8 +32,9 @@ navbarNavigationLogic();
 globalStore.subscribe("url", router.redirectToRoute);
 globalStore.subscribe("sidebarVisible", isSidebarVisible);
 globalStore.subscribe("noteEditorVisible", isNoteEditorVisible);
-globalStore.subscribe("deleteNote", findNoteIdToDeleteNote);
+//globalStore.subscribe("deleteNote", findNoteIdToDeleteNote);
 //globalStore.subscribe("existingNote", fetchExistingNote);
+globalStore.subscribe("selectColorVisible", isSelectColorVisible);
 globalStore.subscribe("loginVisible", isLoginVisible);
 globalStore.subscribe("todoListVisible", isTodoListVisible);
 globalStore.subscribe("activeLink", setActiveLinkCss);

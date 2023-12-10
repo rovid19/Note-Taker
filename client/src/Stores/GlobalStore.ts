@@ -8,9 +8,9 @@ interface InitialState {
   isProjectOpen: boolean;
   activeLink: string;
   url: string;
-
   loginVisible: boolean;
   loginOrRegister: string;
+  selectColorVisible: boolean;
   [key: string]: any;
 }
 
@@ -63,6 +63,7 @@ const intialState = {
   url: "/da",
   loginVisible: false,
   loginOrRegister: "",
+  selectColorVisible: false,
 };
 
 export default new GlobalStore();
