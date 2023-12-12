@@ -29,8 +29,6 @@ const selectColorEvents = () => {
 
     if (isGreen) {
       setColorEdit("green");
-      console.log("ha");
-      applyNoteTextEdits();
     } else if (isWhite) {
       setColorEdit("white");
     } else if (isYellow) {
@@ -49,10 +47,12 @@ const setColorEdit = (color: string) => {
   const selectedText = noteStore.get("selectedText") as unknown as SelectedText;
   globalStore.set("selectColorVisible", false);
   noteObjectChanges.pushEdit({
-    option: `color/${color}`,
+    option: {
+      color: color,
+      fontSize: "",
+    },
     startIndex: selectedText.startIndex,
     endIndex: selectedText.endIndex,
   });
-
-  console.log(noteObjectChanges.noteEdits);
+  applyNoteTextEdits();
 };

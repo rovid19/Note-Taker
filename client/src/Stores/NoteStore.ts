@@ -7,6 +7,7 @@ interface InitialState {
   notesLength: number;
   isNewNote: boolean;
   selectedText: SelectedText;
+  savingNoteInProgress: boolean;
   [key: string]: any;
 }
 
@@ -18,6 +19,7 @@ const initialState = {
   notesLength: 0,
   isNewNote: false,
   deleteNote: null,
+  savingNoteInProgress: false,
   selectedText: { startIndex: 0, endIndex: 0 },
 };
 
@@ -72,11 +74,18 @@ class NoteObject {
     public noteEdits: NoteEdits[] = []
   ) {}
 
-  setNote(title: string, noteText: string, id: string, parentId: string) {
+  setNote(
+    title: string,
+    noteText: string,
+    id: string,
+    parentId: string,
+    noteEdits: NoteEdits[]
+  ) {
     (this.title = title),
       (this.noteText = noteText),
       (this.id = id),
       (this.parentId = parentId);
+    this.noteEdits = noteEdits;
   }
   setTitle(newTitle: string) {
     this.title = newTitle;
@@ -86,6 +95,9 @@ class NoteObject {
   }
   setId(newId: string) {
     this.id = newId;
+  }
+  setNoteEdit(noteEditArray: NoteEdits[]) {
+    this.noteEdits = noteEditArray;
   }
 
   pushEdit(editObject: NoteEdits) {

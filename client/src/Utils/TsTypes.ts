@@ -48,7 +48,17 @@ export type CounterArrItem = {
 };
 
 export type NoteEdits = {
-  option: string;
+  option: Option;
   startIndex: number;
   endIndex: number;
+};
+
+export type SelectedText = {
+  startIndex: number;
+  endIndex: number;
+};
+
+type Option = {
+  color: string;
+  fontSize: string;
 };

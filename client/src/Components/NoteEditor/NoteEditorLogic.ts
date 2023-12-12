@@ -2,7 +2,7 @@ import globalStore from "../../Stores/GlobalStore";
 import noteService from "../../Services/NoteService";
 import { generateNewNote } from "./NoteEditor";
 import { fullDate } from "../../Utils/Date";
-import { Note } from "../../Utils/TsTypes";
+import { Note, NoteEdits } from "../../Utils/TsTypes";
 import { reRenderAllFolderContainer } from "../Sidebar/SidebarLogic";
 import { createWarning } from "../PopupWindows/WarningMessage/WarningLogic";
 import { defaultUser } from "../../Stores/UserStore";
@@ -12,8 +12,10 @@ import {
   noteStore,
 } from "../../Stores/NoteStore";
 import {
+  autoSaveNote,
   generateRandomId,
-  getSelectedTextValue,
+  getSelectionIndex,
+  replaceCharAtString,
 } from "../../Utils/GeneralFunctions";
 import { router } from "../../Utils/Router/Router";
 import { projectStore, userProjects } from "../../Stores/ProjectStore";
@@ -51,7 +53,6 @@ const createNoteEditor = (): void => {
 
 const isNewNoteOrExistingNote = async (isNewNote: Note) => {
   if (isNewNote) {
-    console.log("da2");
     await noteService.createNewNote(
       fullDate,
       defaultUser.id,
@@ -59,11 +60,11 @@ const isNewNoteOrExistingNote = async (isNewNote: Note) => {
       noteObject.id
     );
     noteStore.set("isNewNote", false);
-    console.log(isNewNote);
   } else {
     await noteService.getNote(noteObject.id);
     renderNoteFields();
-    console.log(noteObjectChanges.noteText);
+    applyNoteTextEdits();
+
     //if (sidebarVisible) reRenderAllFolderContainer();
   }
 };
@@ -75,6 +76,7 @@ const noteEventListeners = () => {
   const noteTextElement = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
+  const savingNoteInProgress = noteStore.get("savingNoteInProgress");
 
   noteTitleElement.addEventListener("input", (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -82,34 +84,53 @@ const noteEventListeners = () => {
   });
 
   noteTextElement.addEventListener("input", (e: Event) => {
-    noteObjectChanges.setText(noteTextElement.innerHTML);
-    console.log(noteObjectChanges.noteText, noteObject.noteText);
+    if (noteTextElement.textContent)
+      noteObjectChanges.setText(noteTextElement.textContent);
   });
 
-  window.addEventListener("click", (e: Event): void => {
+  noteTextElement.addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      getSelectionIndex("enter");
+      const selectionIndex = noteStore.get(
+        "selectedText"
+      ) as unknown as NoteEdits;
+      noteObjectChanges.pushEdit(selectionIndex);
+      console.log(noteObjectChanges.noteEdits, noteObject.noteEdits);
+      applyNoteTextEdits();
+    }
+  });
+
+  window.addEventListener("click", async (e: Event) => {
     const selectedFolderElement = projectStore.get(
       "selectedFolderElement"
     ) as HTMLElement;
-
+    let autoSaveDone = false;
+    console.log("kliknuto");
     if (noteObject.title !== noteObjectChanges.title) {
+      console.log(autoSaveDone);
       noteObject.setTitle(noteObjectChanges.title);
       userProjects.saveNewFolderItem(noteObjectChanges.parentId, "note");
       closeSelectedFolder(selectedFolderElement);
       openSelectedFolder(selectedFolderElement);
-      noteService.autoSaveNote(
-        noteObjectChanges.id,
-        noteObjectChanges.title,
-        noteObjectChanges.noteText
-      );
+      await autoSaveNote();
+      autoSaveDone = true;
     }
 
     if (noteObject.noteText !== noteObjectChanges.noteText) {
-      noteObject.setText(noteObjectChanges.noteText);
-      noteService.autoSaveNote(
-        noteObjectChanges.id,
-        noteObjectChanges.title,
-        noteObjectChanges.noteText
-      );
+      console.log(autoSaveDone);
+      if (!autoSaveDone) {
+        await autoSaveNote();
+        autoSaveDone = true;
+        noteObject.setText(noteObjectChanges.noteText);
+      }
+    }
+    if (noteObject.noteEdits.length !== noteObjectChanges.noteEdits.length) {
+      console.log(autoSaveDone);
+      if (!autoSaveDone) {
+        await autoSaveNote();
+        autoSaveDone = true;
+        noteObject.setNoteEdit([...noteObjectChanges.noteEdits]);
+      }
     }
   });
 };
@@ -127,7 +148,6 @@ export const fetchSelectedNoteAndNavigateToIt = async (
     "selectedFolderElement"
   ) as HTMLElement;
   const parent = selectedFolderElement.parentNode?.parentNode as HTMLElement;
-  console.log(selectedFolderElement);
   if (purpose === "delete") {
     await noteService.getNote(noteObject.id);
     userProjects.deleteFolder("", noteObject);
@@ -156,7 +176,7 @@ const noteEditorButtonsEventListener = () => {
     if (isReading) {
     } else if (isColor) {
       const selectColorVisible = globalStore.get("selectColorVisible");
-      getSelectedTextValue();
+      getSelectionIndex("getSelectionIndex");
       globalStore.set("selectColorVisible", !selectColorVisible);
     } else {
     }
@@ -259,12 +279,13 @@ const isNoteBeingDeletedOpen = () => {
 export const createNewNote = (folderParentId: string) => {
   const noteEditor = globalStore.get("noteEditorVisible");
 
-  noteObject.setNote("New Note", "", generateRandomId(20), folderParentId);
+  noteObject.setNote("New Note", "", generateRandomId(20), folderParentId, []);
   noteObjectChanges.setNote(
     noteObject.title,
     noteObject.noteText,
     noteObject.id,
-    noteObject.parentId
+    noteObject.parentId,
+    []
   );
   noteStore.set("isNewNote", true);
   router.navigateTo(`/projects/notes?noteId=${noteObject.id}`);
@@ -275,28 +296,29 @@ export const createNewNote = (folderParentId: string) => {
 };
 
 export const applyNoteTextEdits = () => {
-  console.log("da");
-  const noteText = document.querySelector(".newNoteInputText")
-    ?.textContent as unknown as string;
+  const noteText = document.querySelector(".newNoteInputText") as HTMLElement;
+  let newText = noteObjectChanges.noteText;
+  const array = sortNoteEditsArrayFromHighestIndexToLowest(
+    noteObjectChanges.noteEdits
+  );
 
-  noteObjectChanges.noteEdits.forEach((edit) => {
+  array.forEach((edit, i) => {
     const extractedValue = extractNoteEditValueAtIndex(
-      noteText,
+      newText,
       edit.startIndex,
       edit.endIndex
     );
-    let span = `<span style="color: ${edit.option.slice(
-      6,
-      edit.option.length
-    )}">${extractedValue}</span>`;
-    console.log(span);
 
-    noteText.slice(edit.startIndex, edit.endIndex) +
-      span +
-      noteText.slice(edit.startIndex);
+    const span = setSpanElementAccordingToNoteEdit(extractedValue, edit);
 
-    console.log(noteText);
+    newText = replaceCharAtString(
+      newText,
+      span,
+      edit.startIndex,
+      edit.endIndex
+    );
   });
+  noteText.innerHTML = newText;
 };
 
 const extractNoteEditValueAtIndex = (
@@ -305,7 +327,29 @@ const extractNoteEditValueAtIndex = (
   end: number
 ): string => {
   let value = "";
-  console.log(start, end, noteText);
   value = noteText.slice(start, end);
   return value;
+};
+
+const sortNoteEditsArrayFromHighestIndexToLowest = (
+  arr: NoteEdits[]
+): NoteEdits[] => {
+  const sortedArray = arr.sort((a, b) => b.startIndex - a.startIndex);
+  return sortedArray;
+};
+
+const setSpanElementAccordingToNoteEdit = (
+  extractedValue: string,
+  edit: NoteEdits
+): string => {
+  let span = "";
+  if (edit.option) {
+    span = `<span style="color: ${
+      edit.option.color ? edit.option.color : ""
+    }">${extractedValue}</span>`;
+  } else {
+    span = "<br></br>";
+  }
+
+  return span;
 };

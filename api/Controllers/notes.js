@@ -80,13 +80,14 @@ export const fetchExistingNote = async (req, res) => {
 };
 
 export const autoSaveNote = async (req, res) => {
-  const { noteId, noteText, noteTitle } = req.body;
+  const { noteId, noteText, noteTitle, noteEdits } = req.body;
 
   const findNote = await Note.findOne({ id: noteId });
   console.log(findNote, noteId);
   findNote.set({
     title: noteTitle,
     noteText: noteText,
+    noteEdits,
   });
 
   await findNote.save();

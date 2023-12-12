@@ -136,7 +136,6 @@ class UserProjects {
   }
   deleteFolder(id: string, item: FolderInterface | Note) {
     if ("noteText" in item) {
-      console.log(noteObject);
       loopThroughArrayAndPushOrDeleteFolder(
         this.projects,
         noteObjectChanges.parentId,

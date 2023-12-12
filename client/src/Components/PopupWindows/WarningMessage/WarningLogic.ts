@@ -1,5 +1,5 @@
 import globalStore from "../../../Stores/GlobalStore";
-import { deleteNote } from "../../NoteEditor/NoteEditorLogic";
+import { noteStore } from "../../../Stores/NoteStore";
 import { generateMessage } from "./GenerateMessage";
 
 export const createWarning = (warningMessage: string) => {
@@ -15,14 +15,14 @@ const warningMessageEventListeners = (div: Element): void => {
   const no = document.querySelector(".warningButton2");
 
   yes?.addEventListener("click", (): void => {
-    deleteNote();
+    //deleteNote();
     div.remove();
-    globalStore.set("deleteNote", -1);
+    noteStore.set("deleteNote", -1);
     globalStore.set("noteEditorVisible", false);
   });
 
   no?.addEventListener("click", (): void => {
     div.remove();
-    globalStore.set("deleteNote", -1);
+    noteStore.set("deleteNote", -1);
   });
 };

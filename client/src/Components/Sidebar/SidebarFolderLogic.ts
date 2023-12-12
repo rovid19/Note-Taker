@@ -108,14 +108,12 @@ const selectFolder = (
       });
     }
   } else if (target === "note") {
-    console.log("222");
     const sidebarVisible = globalStore.get("sidebarVisible") as boolean;
     const noteId = isParentFolder.dataset.id as string;
     noteObject.setId(noteId);
     if (noteTarget === "rightClick")
       fetchSelectedNoteAndNavigateToIt(sidebarVisible, "delete");
-    else fetchSelectedNoteAndNavigateToIt(sidebarVisible);
-    console.log(noteObject.id);
+    else fetchSelectedNoteAndNavigateToIt(sidebarVisible, "");
   }
 
   return selectedFolderElement;
@@ -278,7 +276,6 @@ const rightClickMenuEventListeners = (
   allArticles: NodeListOf<Element>
 ): void => {
   const submenu = document.querySelector(".subMenu") as HTMLElement;
-  console.log(noteObject);
   submenu.addEventListener("click", (e: Event): void => {
     e.stopPropagation();
     const target = e.target as HTMLElement;
@@ -301,7 +298,6 @@ const rightClickMenuEventListeners = (
     } else if (parentElementAddTask) globalStore.set("todoListVisible", true);
     else {
       let itemBeingDeleted = isFolderNoteOrTaskBeingDeleted(submenu);
-      console.log(itemBeingDeleted);
       if (itemBeingDeleted === "folder") deleteFolderFunction();
       else if (itemBeingDeleted === "note")
         deleteNoteFunction(allArticles, isParentFolder);
@@ -396,7 +392,6 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
 
   if (folderObject.folder.notes) {
     folderObject.folder.notes.map((note: Note) => {
-      console.log(note);
       menu.innerHTML += `
             <article class="submenuArticle" data-type=${
               note.type

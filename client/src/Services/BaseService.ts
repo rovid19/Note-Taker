@@ -1,7 +1,8 @@
 import axios from "axios";
+import { NoteEdits } from "../Utils/TsTypes";
 
 type clientData = {
-  [key: string]: string | number | boolean | string[];
+  [key: string]: string | number | boolean | string[] | NoteEdits[];
 };
 
 type params = {

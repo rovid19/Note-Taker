@@ -3,6 +3,7 @@ import { noteObjectChanges } from "../Stores/NoteStore";
 import { folderObject, projectStore } from "../Stores/ProjectStore";
 import { FolderInterface, Item, Note } from "./TsTypes";
 import { noteStore } from "../Stores/NoteStore";
+import noteService from "../Services/NoteService";
 export const generateRandomId = (idLength: number): string => {
   const chars = "ghjsdfgjhasfduiweqrzqwer87238723zugvcxgf1721262gs";
   let results = "";
@@ -19,15 +20,12 @@ export const loopThroughArrayAndPushOrDeleteFolder = (
   purpose: string,
   frontendId?: string
 ): void => {
-  console.log(parentId);
   const foundFolder = loopThroughArray(projects, parentId, "newFolder");
   if (purpose === "delete") {
     if ("noteText" in folderItem) {
-      console.log("dadadada", foundFolder);
       const newNotes = foundFolder.notes.filter(
         (folderNote) => folderNote.id !== frontendId
       );
-      console.log(newNotes);
       foundFolder.notes = newNotes;
     } else if ("depth" in folderItem) {
       const newArray = foundFolder.content.filter(
@@ -63,7 +61,6 @@ export const loopThroughArrayAndSaveNewFolderItem = (
     const index = foundFolder.notes.findIndex(
       (note) => note.id === noteObjectChanges.id
     );
-    console.log(noteObjectChanges, foundFolder.notes, index);
     foundFolder.notes[index].title = noteObjectChanges.title;
   }
 };
@@ -86,30 +83,45 @@ export const addIcon = (folderItem: FolderInterface | Note): string => {
   `;
 };
 
-export const getSelectedTextValue = () => {
-  const textarea = document.querySelector(
+export const getSelectionIndex = (purpose: string) => {
+  const editableDiv = document.querySelector(
     ".newNoteInputText"
-  ) as HTMLDivElement;
+  ) as HTMLElement;
 
-  // Get the selection object
-  var selection = window.getSelection();
-  if (selection)
+  const selection = window.getSelection();
+  if (selection) {
     if (selection.rangeCount > 0) {
-      // Check if there is any selection
-      // Get the first range of the selection
-      var range = selection.getRangeAt(0);
+      //prvobitan selection
+      const range = selection.getRangeAt(0);
+      //dupliciranje prvobitnog selectiona
+      const preSelectionRange = range.cloneRange();
+      //pretvranje cloneRangea da bude text cijelog diva, a ne samo selectana rijec
+      preSelectionRange.selectNodeContents(editableDiv);
+      //cloneRange sad zavrsava tu gdje prvobitan selection pocinje
+      preSelectionRange.setEnd(range.startContainer, range.startOffset);
 
-      // Get the start and end offsets using anchorOffset and focusOffset
-      var startOffset = range.startOffset;
-      var endOffset = range.endOffset;
-
-      // Display the selected text and offsets
-      console.log("Selected Text: ", selection.toString());
-      console.log("Start Offset: ", startOffset);
-      console.log("End Offset: ", endOffset);
+      //izracun start i end indexa
+      const start = preSelectionRange.toString().length;
+      const end = start + range.toString().length;
+      noteStore.set("selectedText", { startIndex: start, endIndex: end });
     }
+  }
+};
 
-  /*if (start && end) {
-    noteStore.set("selectedText", { startIndex: start, endIndex: end });
-  }*/
+export const replaceCharAtString = (
+  string: string,
+  replacement: string,
+  start: number,
+  end: number
+): string => {
+  return string.slice(0, start) + replacement + string.slice(end);
+};
+
+export const autoSaveNote = () => {
+  noteService.autoSaveNote(
+    noteObjectChanges.id,
+    noteObjectChanges.title,
+    noteObjectChanges.noteText,
+    noteObjectChanges.noteEdits
+  );
 };

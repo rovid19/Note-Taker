@@ -1,6 +1,7 @@
 import Base from "./BaseService";
 import globalStore from "../Stores/GlobalStore";
-import { noteObject, noteObjectChanges } from "../Stores/NoteStore";
+import { noteObject, noteObjectChanges, noteStore } from "../Stores/NoteStore";
+import { NoteEdits } from "../Utils/TsTypes";
 
 class ProjectService extends Base {
   constructor() {
@@ -36,23 +37,37 @@ class ProjectService extends Base {
 
   async getNote(noteId: string) {
     const note = await this.get("/get-specific-note", { noteId });
-    console.log(note);
-    noteObject.setNote(note.title, note.noteText, note.id, "note");
+    const diffNoteEdits = [...note.noteEdits];
+    noteObject.setNote(
+      note.title,
+      note.noteText,
+      note.id,
+      "note",
+      note.noteEdits
+    );
     noteObjectChanges.setNote(
       note.title,
       note.noteText,
       note.id,
-      note.folderParentId
+      note.folderParentId,
+      diffNoteEdits
     );
-    console.log(noteObject);
   }
 
-  async autoSaveNote(noteId: string, noteTitle: string, noteText: string) {
+  async autoSaveNote(
+    noteId: string,
+    noteTitle: string,
+    noteText: string,
+    noteEdits: NoteEdits[]
+  ) {
+    noteStore.set("savingNoteInProgress", true);
     const note = await this.put("/auto-save-note", {
       noteId,
       noteTitle,
       noteText,
+      noteEdits,
     });
+    if (note) noteStore.set("savingNoteInProgress", false);
   }
 }
 
