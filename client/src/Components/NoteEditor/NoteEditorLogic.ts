@@ -12,6 +12,9 @@ import {
   noteStore,
 } from "../../Stores/NoteStore";
 import {
+  add1ToEveryIndexStartingAfterSelectionStartIndex,
+  addOneCharAtStartOrEndIndex,
+  addWhiteSpaceForEveryEnter,
   autoSaveNote,
   generateRandomId,
   getSelectionIndex,
@@ -32,10 +35,10 @@ type NoteArray = {
 export const isNoteEditorVisible = async () => {
   const noteEditorVisible = globalStore.get("noteEditorVisible");
   const isNewNote = noteStore.get("isNewNote") as unknown as Note;
-
   if (noteEditorVisible) {
     createNoteEditor();
     isNewNoteOrExistingNote(isNewNote);
+    attachEventListenerToNoteEditor();
   } else {
     document.getElementById("note-container")?.remove();
   }
@@ -46,9 +49,25 @@ const createNoteEditor = (): void => {
   div.id = "note-container";
   document.body.appendChild(div);
   document.getElementById("note-container")?.appendChild(generateNewNote());
+};
 
-  noteEventListeners();
-  noteEditorButtonsEventListener();
+const attachEventListenerToNoteEditor = () => {
+  /*
+  const noteEditor = document.querySelector("#note-container") as HTMLElement;
+  const config = { childList: true };
+  const observer = new MutationObserver((mutationList) => {
+    for (let mutation of mutationList) {
+      if (mutation.type === "childList") {
+  
+      }
+    }
+  });
+  observer.observe(noteEditor, config);
+*/
+  setTimeout(() => {
+    noteEventListeners();
+    noteEditorButtonsEventListener();
+  }, 500);
 };
 
 const isNewNoteOrExistingNote = async (isNewNote: Note) => {
@@ -76,27 +95,33 @@ const noteEventListeners = () => {
   const noteTextElement = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
-  const savingNoteInProgress = noteStore.get("savingNoteInProgress");
 
   noteTitleElement.addEventListener("input", (e: Event) => {
     const target = e.target as HTMLInputElement;
     noteObjectChanges.setTitle(target.value);
   });
 
+  noteTextElement.addEventListener("keydown", (e: KeyboardEvent) => {
+    noteStore.push("addedText", e.key);
+    changeNoteEditIndexesAccordingly();
+  });
+
   noteTextElement.addEventListener("input", (e: Event) => {
+    const target = e.target as HTMLDivElement;
     if (noteTextElement.textContent)
       noteObjectChanges.setText(noteTextElement.textContent);
+    //noteStore.set("addedText", target.value);
   });
 
   noteTextElement.addEventListener("keydown", (e: KeyboardEvent) => {
     if (e.key === "Enter") {
+      document.execCommand("insertText", false, "\u200B");
       getSelectionIndex("enter");
       const selectionIndex = noteStore.get(
         "selectedText"
       ) as unknown as NoteEdits;
-      noteObjectChanges.pushEdit(selectionIndex);
-      console.log(noteObjectChanges.noteEdits, noteObject.noteEdits);
-      applyNoteTextEdits();
+
+      noteObjectChanges.pushEdit({ ...selectionIndex, name: "enter" });
     }
   });
 
@@ -105,31 +130,32 @@ const noteEventListeners = () => {
       "selectedFolderElement"
     ) as HTMLElement;
     let autoSaveDone = false;
-    console.log("kliknuto");
-    if (noteObject.title !== noteObjectChanges.title) {
-      console.log(autoSaveDone);
-      noteObject.setTitle(noteObjectChanges.title);
-      userProjects.saveNewFolderItem(noteObjectChanges.parentId, "note");
-      closeSelectedFolder(selectedFolderElement);
-      openSelectedFolder(selectedFolderElement);
-      await autoSaveNote();
-      autoSaveDone = true;
-    }
+    const savingNoteInProgress = noteStore.get("savingNoteInProgress");
 
-    if (noteObject.noteText !== noteObjectChanges.noteText) {
-      console.log(autoSaveDone);
-      if (!autoSaveDone) {
+    getSelectionIndex("onClick");
+    if (!savingNoteInProgress) {
+      if (noteObject.title !== noteObjectChanges.title) {
+        noteObject.setTitle(noteObjectChanges.title);
+        userProjects.saveNewFolderItem(noteObjectChanges.parentId, "note");
+        closeSelectedFolder(selectedFolderElement);
+        openSelectedFolder(selectedFolderElement);
         await autoSaveNote();
         autoSaveDone = true;
-        noteObject.setText(noteObjectChanges.noteText);
       }
-    }
-    if (noteObject.noteEdits.length !== noteObjectChanges.noteEdits.length) {
-      console.log(autoSaveDone);
-      if (!autoSaveDone) {
-        await autoSaveNote();
-        autoSaveDone = true;
-        noteObject.setNoteEdit([...noteObjectChanges.noteEdits]);
+
+      if (noteObject.noteText !== noteObjectChanges.noteText) {
+        if (!autoSaveDone) {
+          await autoSaveNote();
+          autoSaveDone = true;
+          noteObject.setText(noteObjectChanges.noteText);
+        }
+      }
+      if (noteObject.noteEdits.length !== noteObjectChanges.noteEdits.length) {
+        if (!autoSaveDone) {
+          await autoSaveNote();
+          autoSaveDone = true;
+          noteObject.setNoteEdit([...noteObjectChanges.noteEdits]);
+        }
       }
     }
   });
@@ -155,6 +181,7 @@ export const fetchSelectedNoteAndNavigateToIt = async (
     openSelectedFolder(parent);
     noteService.deleteNote(noteObject.id, noteObjectChanges.parentId);
   } else {
+    globalStore.set("noteEditorVisible", true);
     await noteService.getNote(noteObject.id);
     if (sidebarVisible)
       router.navigateTo(`/projects/notes?noteId=${noteObject.id}`);
@@ -296,29 +323,105 @@ export const createNewNote = (folderParentId: string) => {
 };
 
 export const applyNoteTextEdits = () => {
+  console.log("da");
   const noteText = document.querySelector(".newNoteInputText") as HTMLElement;
-  let newText = noteObjectChanges.noteText;
   const array = sortNoteEditsArrayFromHighestIndexToLowest(
     noteObjectChanges.noteEdits
   );
 
+  let newText = noteObjectChanges.noteText;
   array.forEach((edit, i) => {
-    const extractedValue = extractNoteEditValueAtIndex(
-      newText,
-      edit.startIndex,
-      edit.endIndex
-    );
-
-    const span = setSpanElementAccordingToNoteEdit(extractedValue, edit);
-
-    newText = replaceCharAtString(
-      newText,
-      span,
-      edit.startIndex,
-      edit.endIndex
-    );
+    if (edit.name === "enter") {
+      newText = addOneCharAtStartOrEndIndex(newText, "˛", edit.startIndex);
+    } else if (edit.name === "span") {
+      newText = addOneCharAtStartOrEndIndex(newText, "~", edit.startIndex);
+      newText = addOneCharAtStartOrEndIndex(
+        newText,
+        "¸",
+        (edit.endIndex as number) + 1
+      );
+    }
   });
-  noteText.innerHTML = newText;
+  console.log(newText);
+
+  /*const appliedBreakElementsText = applyNoteBreakElements(noteText);
+  noteText.innerHTML = appliedBreakElementsText;
+  let newText = noteText.textContent as string;
+  array.forEach((edit, i) => {
+    if (edit) {
+      const extractedValue = extractNoteEditValueAtIndex(
+        newText,
+        edit.startIndex,
+        edit.endIndex
+      );
+
+      const span = setSpanElementAccordingToNoteEdit(extractedValue, edit);
+
+      newText = replaceCharAtString(
+        newText,
+        span,
+        edit.startIndex,
+        edit.endIndex
+      );
+    }
+  });*/
+  let textArray = newText.split("") as string[];
+
+  textArray.forEach((char, i) => {
+    if (char === "˛") {
+      textArray[i] = "</br>";
+    } else if (char === "~") {
+      const index = howManyHtmlTagsAreBeforeSpanTag(textArray.slice(0, i));
+      const foundEdit = findEditAndReturnIt(i - index) as unknown as NoteEdits;
+
+      let style = "";
+      if (foundEdit.option && foundEdit.option.color) {
+        style += `color: ${foundEdit.option.color}`;
+      }
+      if (foundEdit.option && foundEdit.option.fontSize) {
+        style += ` fontSize: ${foundEdit.option.fontSize}`;
+      }
+      textArray[i] = `<span style='${style}' >`;
+    } else if (char === "¸") {
+      textArray[i] = "</span>";
+    }
+  });
+  console.log(textArray);
+  const joinedText = textArray.join("");
+  console.log(joinedText);
+  noteText.innerHTML = joinedText;
+};
+
+const findEditAndReturnIt = (startIndex: number): NoteEdits => {
+  let editt = {};
+  noteObjectChanges.noteEdits.forEach((edit) => {
+    if (edit.startIndex === startIndex) {
+      editt = edit;
+    }
+  });
+  return editt as unknown as NoteEdits;
+};
+
+const howManyHtmlTagsAreBeforeSpanTag = (textArray: string[]): number => {
+  const indexes = [];
+  textArray.forEach((char) => {
+    if (char.length > 1) indexes.push(0);
+  });
+  return indexes.length;
+};
+
+/*const applyNoteBreakElements = (noteText: HTMLElement): string => {
+  let textArray = noteText.textContent?.split("");
+  console.log(textArray);
+  textArray?.forEach((char, i) => {
+    if (char === "˛") {
+      console.log(char);
+      if (textArray) textArray[i] = "</br>";
+    }
+  });
+
+  const arrayBackToText = textArray?.join("") as string;
+  return arrayBackToText;
 };
 
 const extractNoteEditValueAtIndex = (
@@ -330,14 +433,6 @@ const extractNoteEditValueAtIndex = (
   value = noteText.slice(start, end);
   return value;
 };
-
-const sortNoteEditsArrayFromHighestIndexToLowest = (
-  arr: NoteEdits[]
-): NoteEdits[] => {
-  const sortedArray = arr.sort((a, b) => b.startIndex - a.startIndex);
-  return sortedArray;
-};
-
 const setSpanElementAccordingToNoteEdit = (
   extractedValue: string,
   edit: NoteEdits
@@ -347,9 +442,29 @@ const setSpanElementAccordingToNoteEdit = (
     span = `<span style="color: ${
       edit.option.color ? edit.option.color : ""
     }">${extractedValue}</span>`;
-  } else {
-    span = "<br></br>";
   }
 
   return span;
+};*/
+
+const sortNoteEditsArrayFromHighestIndexToLowest = (
+  arr: NoteEdits[]
+): NoteEdits[] => {
+  const sortedArray = arr.sort((a, b) => b.startIndex - a.startIndex);
+  return sortedArray;
+};
+
+export const changeNoteEditIndexesAccordingly = () => {
+  if (noteObjectChanges.noteText.length > 0) {
+    const currentCaretIndex = noteStore.get("currentTextIndex") as number;
+    console.log(noteObjectChanges.noteEdits, currentCaretIndex);
+    noteObjectChanges.noteEdits.forEach((edit) => {
+      if (edit.startIndex >= currentCaretIndex) {
+        edit.startIndex = edit.startIndex + 1;
+        if (edit.endIndex) {
+          edit.endIndex = edit.endIndex + 1;
+        }
+      }
+    });
+  }
 };

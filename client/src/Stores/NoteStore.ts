@@ -8,6 +8,8 @@ interface InitialState {
   isNewNote: boolean;
   selectedText: SelectedText;
   savingNoteInProgress: boolean;
+  currentTextIndex: number;
+  addedText: string[];
   [key: string]: any;
 }
 
@@ -21,6 +23,8 @@ const initialState = {
   deleteNote: null,
   savingNoteInProgress: false,
   selectedText: { startIndex: 0, endIndex: 0 },
+  currentTextIndex: 0,
+  addedText: [],
 };
 
 class NoteStore {
@@ -44,6 +48,12 @@ class NoteStore {
       this.state[key] = value;
       this.notify(key, value);
     }
+  }
+  push(
+    key: string,
+    value: string | number | boolean | null | Note | SelectedText
+  ) {
+    this.state[key].push(value);
   }
 
   notify(
@@ -107,14 +117,18 @@ class NoteObject {
           edit.startIndex === editObject.startIndex &&
           edit.endIndex === editObject.endIndex
       );
-
-      if (isEditAlreadyInside) {
-        const index = this.noteEdits.findIndex(
-          (edit) => edit === isEditAlreadyInside
-        );
-        this.noteEdits[index] = editObject;
-      } else {
+      if (editObject.name === "enter") {
+        editObject.startIndex = editObject.startIndex;
         this.noteEdits.push(editObject);
+      } else {
+        if (isEditAlreadyInside) {
+          const index = this.noteEdits.findIndex(
+            (edit) => edit === isEditAlreadyInside
+          );
+          this.noteEdits[index] = editObject;
+        } else {
+          this.noteEdits.push(editObject);
+        }
       }
     } else {
       this.noteEdits.push(editObject);

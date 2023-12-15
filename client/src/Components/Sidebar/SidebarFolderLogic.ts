@@ -110,6 +110,7 @@ const selectFolder = (
   } else if (target === "note") {
     const sidebarVisible = globalStore.get("sidebarVisible") as boolean;
     const noteId = isParentFolder.dataset.id as string;
+    globalStore.set("noteEditorVisible", false);
     noteObject.setId(noteId);
     if (noteTarget === "rightClick")
       fetchSelectedNoteAndNavigateToIt(sidebarVisible, "delete");

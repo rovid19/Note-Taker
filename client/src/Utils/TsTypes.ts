@@ -48,14 +48,16 @@ export type CounterArrItem = {
 };
 
 export type NoteEdits = {
-  option: Option;
+  name: string;
+  option?: Option;
   startIndex: number;
-  endIndex: number;
+  endIndex?: number;
+  indexArray?: number[];
 };
 
 export type SelectedText = {
   startIndex: number;
-  endIndex: number;
+  endIndex?: number;
 };
 
 type Option = {

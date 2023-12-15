@@ -1,6 +1,9 @@
 import { generateNavbar } from "../../Components/Navbar/Navbar";
 import { isSidebarVisible } from "../../Components/Sidebar/SidebarLogic";
-import { isNoteEditorVisible } from "../../Components/NoteEditor/NoteEditorLogic";
+import {
+  changeNoteEditIndexesAccordingly,
+  isNoteEditorVisible,
+} from "../../Components/NoteEditor/NoteEditorLogic";
 import { navbarNavigationLogic } from "../../Components/Navbar/NavbarLogic";
 import globalStore from "../../Stores/GlobalStore";
 import { router } from "../../Utils/Router/Router";
@@ -25,6 +28,7 @@ import {
 } from "../../Components/Sidebar/SidebarFolderLogic";
 import { projectService } from "../../Services/ProjectService";
 import { isSelectColorVisible } from "../../Components/PopupWindows/SelectColor/SelectColorLogic";
+import { noteStore } from "../../Stores/NoteStore";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -41,8 +45,9 @@ globalStore.subscribe("activeLink", setActiveLinkCss);
 globalStore.subscribe("homeVisible", isHomeVisible);
 
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
-
 todoStore.subscribe("todoIndex", deleteTodoItem);
+
+//noteStore.subscribe("currentTextIndex", getNoteTextAfterSelectedIndex);
 
 projectStore.subscribe("isCreateNewFolderVisible", isCreateNewFolderVisible);
 projectStore.subscribe("selectedFolder", openSelectedFolder);

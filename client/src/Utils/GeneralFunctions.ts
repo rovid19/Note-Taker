@@ -1,9 +1,10 @@
 import { loopThroughArray } from "../Components/Sidebar/SidebarFolderLogic";
 import { noteObjectChanges } from "../Stores/NoteStore";
 import { folderObject, projectStore } from "../Stores/ProjectStore";
-import { FolderInterface, Item, Note } from "./TsTypes";
+import { FolderInterface, Item, Note, NoteEdits } from "./TsTypes";
 import { noteStore } from "../Stores/NoteStore";
 import noteService from "../Services/NoteService";
+import { applyNoteTextEdits } from "../Components/NoteEditor/NoteEditorLogic";
 export const generateRandomId = (idLength: number): string => {
   const chars = "ghjsdfgjhasfduiweqrzqwer87238723zugvcxgf1721262gs";
   let results = "";
@@ -103,7 +104,15 @@ export const getSelectionIndex = (purpose: string) => {
       //izracun start i end indexa
       const start = preSelectionRange.toString().length;
       const end = start + range.toString().length;
-      noteStore.set("selectedText", { startIndex: start, endIndex: end });
+      if (purpose === "onClick") {
+        console.log(start);
+        noteStore.set("currentTextIndex", start);
+      } else {
+        if (start === end) {
+          noteStore.set("selectedText", { startIndex: start });
+        } else
+          noteStore.set("selectedText", { startIndex: start, endIndex: end });
+      }
     }
   }
 };
@@ -116,9 +125,16 @@ export const replaceCharAtString = (
 ): string => {
   return string.slice(0, start) + replacement + string.slice(end);
 };
+export const addOneCharAtStartOrEndIndex = (
+  string: string,
+  replacement: string,
+  index: number
+): string => {
+  return string.slice(0, index) + replacement + string.slice(index);
+};
 
-export const autoSaveNote = () => {
-  noteService.autoSaveNote(
+export const autoSaveNote = async () => {
+  await noteService.autoSaveNote(
     noteObjectChanges.id,
     noteObjectChanges.title,
     noteObjectChanges.noteText,

@@ -1,5 +1,6 @@
 import globalStore from "../../../Stores/GlobalStore";
 import { noteObjectChanges, noteStore } from "../../../Stores/NoteStore";
+import { addOneCharAtStartOrEndIndex } from "../../../Utils/GeneralFunctions";
 import { SelectedText } from "../../../Utils/TsTypes";
 import { applyNoteTextEdits } from "../../NoteEditor/NoteEditorLogic";
 import { generateSelectColor } from "./SelectColor";
@@ -45,14 +46,68 @@ const selectColorEvents = () => {
 
 const setColorEdit = (color: string) => {
   const selectedText = noteStore.get("selectedText") as unknown as SelectedText;
+  const isEditOnThatIndex = noteObjectChanges.noteEdits.find(
+    (edit) => edit.startIndex === selectedText.startIndex
+  );
+  if (isEditOnThatIndex) {
+    if (isEditOnThatIndex.name === "enter") {
+      let newText = noteObjectChanges.noteText;
+      newText = addOneCharAtStartOrEndIndex(
+        newText,
+        " ",
+        selectedText.startIndex
+      );
+      pushEditToNoteEditArray(color, selectedText, "onEnter");
+    }
+  } else {
+    pushEditToNoteEditArray(color, selectedText, "");
+  }
+
   globalStore.set("selectColorVisible", false);
-  noteObjectChanges.pushEdit({
-    option: {
-      color: color,
-      fontSize: "",
-    },
-    startIndex: selectedText.startIndex,
-    endIndex: selectedText.endIndex,
-  });
   applyNoteTextEdits();
+};
+
+/*const addSpecialEditCharsToNoteText = (noteText: HTMLElement) => {
+  const selectedText = noteStore.get("selectedText") as unknown as SelectedText;
+  const addOnStartIndex = addOneCharAtStartOrEndIndex(
+    noteText.textContent as string,
+    "~",
+    selectedText.startIndex
+  );
+  const addOnEndIndex = addOneCharAtStartOrEndIndex(
+    addOnStartIndex,
+    "¸",
+    selectedText.endIndex + 1
+  );
+
+  noteObjectChanges.setText(addOnEndIndex);
+  //noteText.textContent = addOnEndIndex;
+};*/
+
+const pushEditToNoteEditArray = (
+  color: string,
+  selectedText: SelectedText,
+  purpose: string
+) => {
+  if (purpose === "onEnter") {
+    noteObjectChanges.pushEdit({
+      name: "span",
+      option: {
+        color: color,
+        fontSize: "",
+      },
+      startIndex: selectedText.startIndex,
+      endIndex: (selectedText.endIndex as number) + 1,
+    });
+  } else {
+    noteObjectChanges.pushEdit({
+      name: "span",
+      option: {
+        color: color,
+        fontSize: "",
+      },
+      startIndex: selectedText.startIndex,
+      endIndex: selectedText.endIndex,
+    });
+  }
 };
