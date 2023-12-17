@@ -4,7 +4,10 @@ import { folderObject, projectStore } from "../Stores/ProjectStore";
 import { FolderInterface, Item, Note, NoteEdits } from "./TsTypes";
 import { noteStore } from "../Stores/NoteStore";
 import noteService from "../Services/NoteService";
-import { applyNoteTextEdits } from "../Components/NoteEditor/NoteEditorLogic";
+import {
+  applyNoteTextEdits,
+  changeNoteEditIndexesAccordingly,
+} from "../Components/NoteEditor/NoteEditorLogic";
 export const generateRandomId = (idLength: number): string => {
   const chars = "ghjsdfgjhasfduiweqrzqwer87238723zugvcxgf1721262gs";
   let results = "";
@@ -88,7 +91,7 @@ export const getSelectionIndex = (purpose: string) => {
   const editableDiv = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
-
+  editableDiv.normalize();
   const selection = window.getSelection();
   if (selection) {
     if (selection.rangeCount > 0) {
@@ -105,11 +108,16 @@ export const getSelectionIndex = (purpose: string) => {
       const start = preSelectionRange.toString().length;
       const end = start + range.toString().length;
       if (purpose === "onClick") {
-        console.log(start);
+        console.log(
+          start,
+          editableDiv.textContent?.length,
+          noteObjectChanges.noteText.length,
+          noteObjectChanges.noteEdits
+        );
         noteStore.set("currentTextIndex", start);
       } else {
         if (start === end) {
-          noteStore.set("selectedText", { startIndex: start });
+          noteStore.set("enterIndex", { startIndex: start });
         } else
           noteStore.set("selectedText", { startIndex: start, endIndex: end });
       }
@@ -140,4 +148,28 @@ export const autoSaveNote = async () => {
     noteObjectChanges.noteText,
     noteObjectChanges.noteEdits
   );
+};
+
+export const setNoteEditIndexesAccordingToNoteTextInput = (
+  e: KeyboardEvent
+) => {
+  noteStore.push("addedText", e.key);
+  getSelectionIndex("onClick");
+  console.log(noteStore.get("addedText"));
+  changeNoteEditIndexesAccordingly();
+};
+
+export const arrayIncludesAll = (arrayA: number[], arrayB: number[]) => {
+  return arrayA.every((number: number) => arrayB.includes(number));
+};
+
+export const arrayIncludes = (arrayA: number[], arrayB: number[]): boolean => {
+  let includes = false;
+  console.log(arrayA, arrayB);
+  arrayA.forEach((number) => {
+    if (arrayB.includes(number)) {
+      includes = true;
+    }
+  });
+  return includes;
 };

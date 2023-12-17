@@ -2,7 +2,10 @@ import globalStore from "../../../Stores/GlobalStore";
 import { noteObjectChanges, noteStore } from "../../../Stores/NoteStore";
 import { addOneCharAtStartOrEndIndex } from "../../../Utils/GeneralFunctions";
 import { SelectedText } from "../../../Utils/TsTypes";
-import { applyNoteTextEdits } from "../../NoteEditor/NoteEditorLogic";
+import {
+  applyNoteTextEdits,
+  returnIndexNumberArrayForEdit,
+} from "../../NoteEditor/NoteEditorLogic";
 import { generateSelectColor } from "./SelectColor";
 
 export const isSelectColorVisible = () => {
@@ -89,25 +92,31 @@ const pushEditToNoteEditArray = (
   selectedText: SelectedText,
   purpose: string
 ) => {
+  const indexNumberArray = returnIndexNumberArrayForEdit(selectedText);
   if (purpose === "onEnter") {
     noteObjectChanges.pushEdit({
       name: "span",
       option: {
         color: color,
-        fontSize: "",
+        fontSize: undefined,
       },
       startIndex: selectedText.startIndex,
       endIndex: (selectedText.endIndex as number) + 1,
+      selected: false,
+      indexArray: indexNumberArray,
     });
   } else {
     noteObjectChanges.pushEdit({
       name: "span",
       option: {
         color: color,
-        fontSize: "",
+        fontSize: undefined,
       },
       startIndex: selectedText.startIndex,
       endIndex: selectedText.endIndex,
+      selected: false,
+      indexArray: indexNumberArray,
     });
   }
+  console.log(noteObjectChanges.noteEdits);
 };

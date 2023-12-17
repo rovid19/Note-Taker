@@ -53,6 +53,7 @@ export type NoteEdits = {
   startIndex: number;
   endIndex?: number;
   indexArray?: number[];
+  selected?: boolean;
 };
 
 export type SelectedText = {
@@ -60,7 +61,11 @@ export type SelectedText = {
   endIndex?: number;
 };
 
-type Option = {
+export type Option = {
   color: string;
-  fontSize: string;
+  fontSize: number | undefined;
+};
+
+export type EnterEdit = {
+  startIndex: number;
 };

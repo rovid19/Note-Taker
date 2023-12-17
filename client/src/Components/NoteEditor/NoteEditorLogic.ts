@@ -2,9 +2,13 @@ import globalStore from "../../Stores/GlobalStore";
 import noteService from "../../Services/NoteService";
 import { generateNewNote } from "./NoteEditor";
 import { fullDate } from "../../Utils/Date";
-import { Note, NoteEdits } from "../../Utils/TsTypes";
-import { reRenderAllFolderContainer } from "../Sidebar/SidebarLogic";
-import { createWarning } from "../PopupWindows/WarningMessage/WarningLogic";
+import {
+  EnterEdit,
+  Note,
+  NoteEdits,
+  Option,
+  SelectedText,
+} from "../../Utils/TsTypes";
 import { defaultUser } from "../../Stores/UserStore";
 import {
   noteObject,
@@ -12,13 +16,13 @@ import {
   noteStore,
 } from "../../Stores/NoteStore";
 import {
-  add1ToEveryIndexStartingAfterSelectionStartIndex,
   addOneCharAtStartOrEndIndex,
-  addWhiteSpaceForEveryEnter,
+  arrayIncludes,
+  arrayIncludesAll,
   autoSaveNote,
   generateRandomId,
   getSelectionIndex,
-  replaceCharAtString,
+  setNoteEditIndexesAccordingToNoteTextInput,
 } from "../../Utils/GeneralFunctions";
 import { router } from "../../Utils/Router/Router";
 import { projectStore, userProjects } from "../../Stores/ProjectStore";
@@ -26,11 +30,6 @@ import {
   closeSelectedFolder,
   openSelectedFolder,
 } from "../Sidebar/SidebarFolderLogic";
-
-type NoteArray = {
-  _id: string;
-  [key: string]: string;
-};
 
 export const isNoteEditorVisible = async () => {
   const noteEditorVisible = globalStore.get("noteEditorVisible");
@@ -102,26 +101,41 @@ const noteEventListeners = () => {
   });
 
   noteTextElement.addEventListener("keydown", (e: KeyboardEvent) => {
-    noteStore.push("addedText", e.key);
-    changeNoteEditIndexesAccordingly();
+    if (
+      e.key === "ArrowLeft" ||
+      e.key === "ArrowRight" ||
+      e.key === "ArrowDown" ||
+      e.key === "ArrowUp"
+    ) {
+      e.preventDefault();
+      //getSelectionIndex("onClick");
+    } else {
+      if (noteObject.noteText.length > 0) {
+        setNoteEditIndexesAccordingToNoteTextInput(e);
+      }
+    }
+
+    //
   });
 
   noteTextElement.addEventListener("input", (e: Event) => {
-    const target = e.target as HTMLDivElement;
     if (noteTextElement.textContent)
       noteObjectChanges.setText(noteTextElement.textContent);
-    //noteStore.set("addedText", target.value);
+    getSelectionIndex("input");
   });
 
   noteTextElement.addEventListener("keydown", (e: KeyboardEvent) => {
     if (e.key === "Enter") {
-      document.execCommand("insertText", false, "\u200B");
       getSelectionIndex("enter");
-      const selectionIndex = noteStore.get(
-        "selectedText"
-      ) as unknown as NoteEdits;
+      document.execCommand("insertText", false, "\u200B");
+      const enterIndex = noteStore.get("enterIndex") as unknown as EnterEdit;
 
-      noteObjectChanges.pushEdit({ ...selectionIndex, name: "enter" });
+      noteObjectChanges.pushEdit({
+        startIndex: enterIndex.startIndex,
+        name: "enter",
+        selected: false,
+      });
+      console.log(noteObjectChanges.noteEdits);
     }
   });
 
@@ -164,6 +178,7 @@ const noteEventListeners = () => {
 const renderNoteFields = () => {
   document.getElementById("note-container")?.remove();
   createNoteEditor();
+  applyNoteTextEdits();
 };
 
 export const fetchSelectedNoteAndNavigateToIt = async (
@@ -197,15 +212,23 @@ const noteEditorButtonsEventListener = () => {
 
   noteEditorButtons.addEventListener("click", (e: Event) => {
     const target = e.target as HTMLElement;
-    const isReading = target.closest(".read");
+    const isReading = target.closest(".removeStylingBtn");
     const isColor = target.closest(".color");
+    const isFontSizeUp = target.closest(".fontSizeUp");
+    const isFontSizeDown = target.closest(".fontSizeDown");
 
     if (isReading) {
+      getSelectionIndex("");
+      const selection = noteStore.get("selectedText") as unknown as NoteEdits;
+      removeStylingFromSelection(selection);
     } else if (isColor) {
       const selectColorVisible = globalStore.get("selectColorVisible");
       getSelectionIndex("getSelectionIndex");
       globalStore.set("selectColorVisible", !selectColorVisible);
-    } else {
+    } else if (isFontSizeUp) {
+      setFontSizeEditToASelection("");
+    } else if (isFontSizeDown) {
+      console.log("down");
     }
   });
 };
@@ -323,12 +346,10 @@ export const createNewNote = (folderParentId: string) => {
 };
 
 export const applyNoteTextEdits = () => {
-  console.log("da");
   const noteText = document.querySelector(".newNoteInputText") as HTMLElement;
   const array = sortNoteEditsArrayFromHighestIndexToLowest(
     noteObjectChanges.noteEdits
   );
-
   let newText = noteObjectChanges.noteText;
   array.forEach((edit, i) => {
     if (edit.name === "enter") {
@@ -342,7 +363,6 @@ export const applyNoteTextEdits = () => {
       );
     }
   });
-  console.log(newText);
 
   /*const appliedBreakElementsText = applyNoteBreakElements(noteText);
   noteText.innerHTML = appliedBreakElementsText;
@@ -379,7 +399,7 @@ export const applyNoteTextEdits = () => {
         style += `color: ${foundEdit.option.color}`;
       }
       if (foundEdit.option && foundEdit.option.fontSize) {
-        style += ` fontSize: ${foundEdit.option.fontSize}`;
+        style += ` font-size: ${foundEdit.option.fontSize * 8}px; `;
       }
       textArray[i] = `<span style='${style}' >`;
     } else if (char === "¸") {
@@ -388,7 +408,6 @@ export const applyNoteTextEdits = () => {
   });
   console.log(textArray);
   const joinedText = textArray.join("");
-  console.log(joinedText);
   noteText.innerHTML = joinedText;
 };
 
@@ -457,9 +476,8 @@ const sortNoteEditsArrayFromHighestIndexToLowest = (
 export const changeNoteEditIndexesAccordingly = () => {
   if (noteObjectChanges.noteText.length > 0) {
     const currentCaretIndex = noteStore.get("currentTextIndex") as number;
-    console.log(noteObjectChanges.noteEdits, currentCaretIndex);
     noteObjectChanges.noteEdits.forEach((edit) => {
-      if (edit.startIndex >= currentCaretIndex) {
+      if (edit.startIndex > currentCaretIndex) {
         edit.startIndex = edit.startIndex + 1;
         if (edit.endIndex) {
           edit.endIndex = edit.endIndex + 1;
@@ -467,4 +485,96 @@ export const changeNoteEditIndexesAccordingly = () => {
       }
     });
   }
+};
+
+const setFontSizeEditToASelection = (purpose: string) => {
+  if (purpose === "up") noteStore.set("fontSize", "up");
+  else noteStore.set("fontSize", "down");
+  getSelectionIndex("getSelectionIndex");
+  const selection = noteStore.get("selectedText") as unknown as NoteEdits;
+  const indexNumberArray = returnIndexNumberArrayForEdit(selection);
+  const editObject = {
+    name: "span",
+    option: { color: "", fontSize: 3 },
+    startIndex: selection.startIndex,
+    endIndex: selection.endIndex,
+    indexArray: [...indexNumberArray],
+    selected: false,
+  };
+  const isFound = isEditAlreadyInside(indexNumberArray, "", editObject.option);
+  console.log(isFound);
+  //noteObjectChanges.pushEdit(editObject);
+  console.log(editObject);
+  //applyNoteTextEdits();
+};
+
+const isEditAlreadyInside = (
+  indexNumberArray: number[],
+  purpose: string,
+  newEditOption: Option
+) => {
+  console.log(indexNumberArray, newEditOption);
+  let foundAndModifiedEdit = {};
+  noteObjectChanges.noteEdits.forEach((edit: NoteEdits) => {
+    if (edit.indexArray) {
+      console.log("1");
+      let value = arrayIncludesAll(
+        edit.indexArray as number[],
+        indexNumberArray
+      );
+      console.log(value);
+      if (value) {
+        if (edit.option) {
+          edit.option.color = newEditOption.color
+            ? newEditOption.color
+            : edit.option?.color;
+        }
+        if (edit.option?.fontSize && newEditOption.fontSize) {
+          const fontSize = noteStore.get("fontSize");
+          if (fontSize === "up")
+            edit.option.fontSize = edit.option.fontSize + 1;
+          else
+            edit.option.fontSize =
+              edit.option.fontSize === 2 ? 2 : edit.option.fontSize - 1;
+        }
+        foundAndModifiedEdit = edit;
+      }
+    }
+  });
+
+  return foundAndModifiedEdit;
+};
+
+export const returnIndexNumberArrayForEdit = (
+  selection: SelectedText
+): number[] => {
+  let selectionIndexArray = new Array(
+    (selection.endIndex as number) - selection.startIndex + 1
+  ).fill(0);
+  selectionIndexArray.forEach((index, i) => {
+    selectionIndexArray[i] = selection.startIndex + i;
+  });
+
+  return selectionIndexArray;
+};
+
+const removeStylingFromSelection = (selection: SelectedText) => {
+  const selectionIndexArray = returnIndexNumberArrayForEdit(selection);
+
+  noteObjectChanges.noteEdits.forEach((edit) => {
+    if (edit.indexArray) {
+      const doesEditArrayIncludesSelectionArrayNumber = arrayIncludes(
+        edit.indexArray as number[],
+        selectionIndexArray
+      );
+      if (doesEditArrayIncludesSelectionArrayNumber) {
+        edit.selected = true;
+        const newEditArray = noteObjectChanges.noteEdits.filter(
+          (edit) => edit.selected !== true
+        );
+        noteObjectChanges.setNoteEdit(newEditArray);
+        applyNoteTextEdits();
+      }
+    }
+  });
 };

@@ -10,6 +10,8 @@ interface InitialState {
   savingNoteInProgress: boolean;
   currentTextIndex: number;
   addedText: string[];
+  enterIndex: number;
+  fontSize: string;
   [key: string]: any;
 }
 
@@ -24,7 +26,9 @@ const initialState = {
   savingNoteInProgress: false,
   selectedText: { startIndex: 0, endIndex: 0 },
   currentTextIndex: 0,
+  enterIndex: 0,
   addedText: [],
+  fontSize: "",
 };
 
 class NoteStore {
@@ -111,6 +115,7 @@ class NoteObject {
   }
 
   pushEdit(editObject: NoteEdits) {
+    console.log(editObject);
     if (this.noteEdits.length > 0) {
       const isEditAlreadyInside = this.noteEdits.find(
         (edit) =>

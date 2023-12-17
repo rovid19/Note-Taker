@@ -27,7 +27,7 @@ import {
   openSelectedFolder,
 } from "../../Components/Sidebar/SidebarFolderLogic";
 import { projectService } from "../../Services/ProjectService";
-import { isSelectColorVisible } from "../../Components/PopupWindows/SelectColor/SelectColorLogic";
+import { isSelectColorVisible } from "../../Components/PopupWindows/EditingButtons/SelectColorLogic";
 import { noteStore } from "../../Stores/NoteStore";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
