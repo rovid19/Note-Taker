@@ -12,6 +12,8 @@ interface InitialState {
   addedText: string[];
   enterIndex: number;
   fontSize: string;
+  editFontSize: number | null;
+  backspaceCount: number;
   [key: string]: any;
 }
 
@@ -29,6 +31,8 @@ const initialState = {
   enterIndex: 0,
   addedText: [],
   fontSize: "",
+  editFontSize: null,
+  backspaceCount: 0,
 };
 
 class NoteStore {
@@ -115,7 +119,6 @@ class NoteObject {
   }
 
   pushEdit(editObject: NoteEdits) {
-    console.log(editObject);
     if (this.noteEdits.length > 0) {
       const isEditAlreadyInside = this.noteEdits.find(
         (edit) =>

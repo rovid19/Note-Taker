@@ -126,6 +126,7 @@
   width: 20%;
   margin-left: auto;
   display: flex;
+  justify-content: end;
 }
 
 .filterSvg:hover {

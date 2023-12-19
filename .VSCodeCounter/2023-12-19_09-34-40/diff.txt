@@ -1,0 +1,53 @@
+Date : 2023-12-19 09:34:40
+Directory : c:\Users\Ljubo\Documents\GitHub\Note-Taker\client
+Total : 15 files,  401 codes, 95 comments, 27 blanks, all 523 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| TypeScript |         14 |        400 |         95 |         27 |        522 |
+| CSS        |          1 |          1 |          0 |          0 |          1 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                             | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                |         15 |        401 |         95 |         27 |        523 |
+| src                                                                                                              |         15 |        401 |         95 |         27 |        523 |
+| src\Components                                                                                                   |          9 |        275 |         88 |         20 |        383 |
+| src\Components\NoteEditor                                                                                        |          3 |        225 |         71 |         16 |        312 |
+| src\Components\PopupWindows                                                                                      |          5 |         49 |         17 |          4 |         70 |
+| src\Components\PopupWindows\EditingButtons                                                                       |          2 |        112 |         16 |         13 |        141 |
+| src\Components\PopupWindows\SelectColor                                                                          |          2 |        -62 |          0 |         -9 |        -71 |
+| src\Components\PopupWindows\WarningMessage                                                                       |          1 |         -1 |          1 |          0 |          0 |
+| src\Components\Sidebar                                                                                           |          1 |          1 |          0 |          0 |          1 |
+| src\Pages                                                                                                        |          1 |          4 |          1 |          0 |          5 |
+| src\Pages\Main                                                                                                   |          1 |          4 |          1 |          0 |          5 |
+| src\Services                                                                                                     |          2 |         18 |          0 |          0 |         18 |
+| src\Stores                                                                                                       |          1 |         33 |          0 |         -1 |         32 |
+| src\Utils                                                                                                        |          2 |         71 |          6 |          8 |         85 |
++------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                         | language   | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\NoteEditor.ts                        | TypeScript |         -1 |          0 |          1 |          0 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\NoteEditorLogic.ts                   | TypeScript |        225 |         71 |         15 |        311 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\NoteEditor\noteStyling.css                      | CSS        |          1 |          0 |          0 |          1 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\EditingButtons\SelectColor.ts      | TypeScript |         13 |          0 |          2 |         15 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\EditingButtons\SelectColorLogic.ts | TypeScript |         99 |         16 |         11 |        126 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\SelectColor\SelectColor.ts         | TypeScript |        -13 |          0 |         -2 |        -15 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\SelectColor\SelectColorLogic.ts    | TypeScript |        -49 |          0 |         -7 |        -56 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\PopupWindows\WarningMessage\WarningLogic.ts     | TypeScript |         -1 |          1 |          0 |          0 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Components\Sidebar\SidebarFolderLogic.ts                   | TypeScript |          1 |          0 |          0 |          1 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Pages\Main\index.ts                                        | TypeScript |          4 |          1 |          0 |          5 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\BaseService.ts                                    | TypeScript |          1 |          0 |          0 |          1 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Services\NoteService.ts                                    | TypeScript |         17 |          0 |          0 |         17 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Stores\NoteStore.ts                                        | TypeScript |         33 |          0 |         -1 |         32 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\GeneralFunctions.ts                                  | TypeScript |         57 |          6 |          5 |         68 |
+| c:\Users\Ljubo\Documents\GitHub\Note-Taker\client\src\Utils\TsTypes.ts                                           | TypeScript |         14 |          0 |          3 |         17 |
+| Total                                                                                                            |            |        401 |         95 |         27 |        523 |
++------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

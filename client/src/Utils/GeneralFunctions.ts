@@ -108,13 +108,15 @@ export const getSelectionIndex = (purpose: string) => {
       const start = preSelectionRange.toString().length;
       const end = start + range.toString().length;
       if (purpose === "onClick") {
-        console.log(
+        /*console.log(
           start,
           editableDiv.textContent?.length,
           noteObjectChanges.noteText.length,
           noteObjectChanges.noteEdits
-        );
+        );*/
+        console.log(start, noteObjectChanges.noteEdits);
         noteStore.set("currentTextIndex", start);
+        noteStore.set("backspaceCount", 0);
       } else {
         if (start === end) {
           noteStore.set("enterIndex", { startIndex: start });
@@ -155,7 +157,6 @@ export const setNoteEditIndexesAccordingToNoteTextInput = (
 ) => {
   noteStore.push("addedText", e.key);
   getSelectionIndex("onClick");
-  console.log(noteStore.get("addedText"));
   changeNoteEditIndexesAccordingly();
 };
 
@@ -163,13 +164,23 @@ export const arrayIncludesAll = (arrayA: number[], arrayB: number[]) => {
   return arrayA.every((number: number) => arrayB.includes(number));
 };
 
-export const arrayIncludes = (arrayA: number[], arrayB: number[]): boolean => {
+export const arrayIncludes = (
+  arrayA: number[],
+  arrayB: number[] | number
+): boolean => {
   let includes = false;
-  console.log(arrayA, arrayB);
-  arrayA.forEach((number) => {
-    if (arrayB.includes(number)) {
-      includes = true;
-    }
-  });
+  if (typeof arrayB === "number") {
+    arrayA.forEach((number) => {
+      if (number === arrayB) {
+        includes = true;
+      }
+    });
+  } else {
+    arrayA.forEach((number) => {
+      if (arrayB.includes(number)) {
+        includes = true;
+      }
+    });
+  }
   return includes;
 };

@@ -1,0 +1,73 @@
+:root {
+  --defBlack: #1a1a1a;
+  --defGray: #f8f8f8;
+  --defGreen: #00a82d;
+  --defHBlack: #404040;
+  --light: #b8b8b8;
+  --ligherdark: #f2f2f2;
+  --lightB: #262626;
+  --darkB: #1e1e1e;
+  --darkBO: rgba(30, 30, 30, 0.5);
+  --lightBO: rgba(38, 38, 38, 0.2);
+}
+
+.newNoteStyles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--darkBO);
+}
+
+.centralDiv {
+  height: 40%;
+  width: 40%;
+  background-color: var(--darkB);
+  color: var(--defGray);
+}
+
+.selectExisting {
+  height: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.selectExisting > h3 {
+  text-align: center;
+  width: 80%;
+}
+.selectExisting > select {
+  height: 30%;
+  width: 80%;
+}
+
+.addNew {
+  height: 50%;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.addNew > h3 {
+  text-align: center;
+  width: 80%;
+}
+
+.input {
+  width: 70%;
+  height: 30%;
+}
+
+.addNew > button {
+  width: 70%;
+  height: 30%;
+  border: none;
+  background-color: var(--ligherdark);
+}
+
+.addNew > button:hover {
+  background-color: var(--defGreen);
+}

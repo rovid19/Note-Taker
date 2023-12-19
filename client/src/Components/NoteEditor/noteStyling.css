@@ -110,7 +110,7 @@ body {
   text-align: center;
 }
 
-.readBtn {
+.removeStylingBtn {
   background-color: transparent;
   border: none;
   height: 50px;
@@ -118,7 +118,7 @@ body {
   cursor: pointer;
 }
 
-.readBtn:hover {
+.removeStylingBtn:hover {
   color: var(--defGray);
 }
 

@@ -29,6 +29,7 @@ import {
 import { projectService } from "../../Services/ProjectService";
 import { isSelectColorVisible } from "../../Components/PopupWindows/EditingButtons/SelectColorLogic";
 import { noteStore } from "../../Stores/NoteStore";
+import { isNewNotePopupVisible } from "../../Components/PopupWindows/NewNotePopup/NewNoteLogic";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -43,6 +44,7 @@ globalStore.subscribe("loginVisible", isLoginVisible);
 globalStore.subscribe("todoListVisible", isTodoListVisible);
 globalStore.subscribe("activeLink", setActiveLinkCss);
 globalStore.subscribe("homeVisible", isHomeVisible);
+globalStore.subscribe("newNotePopupVisible", isNewNotePopupVisible);
 
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 todoStore.subscribe("todoIndex", deleteTodoItem);

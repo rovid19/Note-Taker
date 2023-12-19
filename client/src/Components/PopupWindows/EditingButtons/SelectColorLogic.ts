@@ -1,9 +1,13 @@
 import globalStore from "../../../Stores/GlobalStore";
 import { noteObjectChanges, noteStore } from "../../../Stores/NoteStore";
-import { addOneCharAtStartOrEndIndex } from "../../../Utils/GeneralFunctions";
+import {
+  addOneCharAtStartOrEndIndex,
+  autoSaveNote,
+} from "../../../Utils/GeneralFunctions";
 import { SelectedText } from "../../../Utils/TsTypes";
 import {
   applyNoteTextEdits,
+  isEditAlreadyInside,
   returnIndexNumberArrayForEdit,
 } from "../../NoteEditor/NoteEditorLogic";
 import { generateSelectColor } from "./SelectColor";
@@ -60,7 +64,10 @@ const setColorEdit = (color: string) => {
         " ",
         selectedText.startIndex
       );
+
       pushEditToNoteEditArray(color, selectedText, "onEnter");
+    } else {
+      pushEditToNoteEditArray(color, selectedText, "");
     }
   } else {
     pushEditToNoteEditArray(color, selectedText, "");
@@ -93,30 +100,26 @@ const pushEditToNoteEditArray = (
   purpose: string
 ) => {
   const indexNumberArray = returnIndexNumberArrayForEdit(selectedText);
-  if (purpose === "onEnter") {
-    noteObjectChanges.pushEdit({
-      name: "span",
-      option: {
-        color: color,
-        fontSize: undefined,
-      },
-      startIndex: selectedText.startIndex,
-      endIndex: (selectedText.endIndex as number) + 1,
-      selected: false,
-      indexArray: indexNumberArray,
-    });
+  const edit = {
+    name: "span",
+    option: {
+      color: color,
+      fontSize: undefined,
+    },
+    startIndex: selectedText.startIndex,
+    endIndex:
+      purpose === "onEnter"
+        ? (selectedText.endIndex as number) + 1
+        : selectedText.endIndex,
+    selected: false,
+    indexArray: indexNumberArray,
+  };
+  const isFound = isEditAlreadyInside(edit.indexArray, "", edit.option);
+  if (Object.keys(isFound).length > 0) {
+    applyNoteTextEdits();
+    autoSaveNote();
   } else {
-    noteObjectChanges.pushEdit({
-      name: "span",
-      option: {
-        color: color,
-        fontSize: undefined,
-      },
-      startIndex: selectedText.startIndex,
-      endIndex: selectedText.endIndex,
-      selected: false,
-      indexArray: indexNumberArray,
-    });
+    noteObjectChanges.pushEdit(edit);
+    applyNoteTextEdits();
   }
-  console.log(noteObjectChanges.noteEdits);
 };

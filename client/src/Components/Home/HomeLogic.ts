@@ -1,4 +1,5 @@
 import globalStore from "../../Stores/GlobalStore";
+import { createNewFolderLogic } from "../Sidebar/SidebarLogic";
 import { generateHome } from "./Home";
 
 export const isHomeVisible = (): void => {
@@ -18,13 +19,20 @@ const createHome = (): void => {
 };
 
 const homeEventListeners = (): void => {
+  const sidebarVisible = globalStore.get("sidebarVisible");
   const newProjectBtn = document.querySelector(".newProjectBtn") as HTMLElement;
-  startNewProjectButton(newProjectBtn);
+  newProjectBtn.addEventListener("click", (e: Event) => {
+    if (!sidebarVisible) {
+      globalStore.set("sidebarVisible", true);
+    }
+    createNewFolderLogic(e);
+  });
+  //startNewProjectButton(newProjectBtn);
 };
 
-const startNewProjectButton = (newProjectBtn: HTMLElement): void => {
+/*const startNewProjectButton = (newProjectBtn: HTMLElement): void => {
   const sidebarVisible = globalStore.get("sidebarVisible");
   newProjectBtn.addEventListener("click", (): void => {
     // if (!sidebarVisible) openSidebar();
   });
-};
+};*/
