@@ -9,6 +9,7 @@ import {
   eventDelegationForProjects,
 } from "./SidebarFolderLogic";
 import { projectStore } from "../../Stores/ProjectStore";
+import { noteStore } from "../../Stores/NoteStore";
 
 export const isSidebarVisible = async () => {
   const sidebarVisible = globalStore.state.sidebarVisible;
@@ -36,6 +37,7 @@ export const isSidebarVisible = async () => {
     document.getElementById("sidebar-container")?.remove();
     window.removeEventListener("click", closeRightClickMenuIfOpen);
     removeUrl();
+    noteStore.set("noteIdFromUrl", null);
   }
 };
 

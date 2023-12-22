@@ -9,6 +9,8 @@ import todoRoute from "./Routes/todo.js";
 import projectRoute from "./Routes/projects.js";
 import path from "path";
 import cookieParser from "cookie-parser";
+import { Server } from "socket.io";
+import { createServer } from "http";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -36,5 +38,30 @@ app.use("/api/notes", notesRoute);
 app.use("/api/user", userRoute);
 app.use("/api/todo", todoRoute);
 app.use("/api/projects", projectRoute);
+console.log(port);
+const httpServer = createServer(app);
+httpServer.listen(port);
+export const io = new Server(httpServer, {
+  cors: {
+    credentials: true,
+    origin: ["http://localhost:5173"],
+  },
+});
 
-app.listen(port);
+export const userSockets = {};
+
+io.on("connection", (socket) => {
+  socket.on("register", (userId) => {
+    userSockets[userId] = socket.id;
+  });
+
+  socket.on("disconnect", () => {
+    Object.keys(userSockets).forEach((userId) => {
+      if (userSockets[userId] === socket.id) {
+        delete userSockets[userId];
+      }
+    });
+  });
+});
+
+//app.listen(port);

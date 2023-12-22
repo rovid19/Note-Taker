@@ -1,0 +1,53 @@
+:root {
+  --defBlack: #1a1a1a;
+  --defGray: #f8f8f8;
+  --defGreen: #00a82d;
+  --defHBlack: #404040;
+  --light: #b8b8b8;
+  --ligherdark: #f2f2f2;
+  --lightB: #262626;
+  --darkB: #1e1e1e;
+  --darkBO: rgba(30, 30, 30, 0.5);
+  --lightBO: rgba(38, 38, 38, 0.2);
+}
+
+.loader-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 120;
+}
+
+.loaderMain {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--darkBO);
+}
+
+.loaderMain > h1 {
+  color: var(--defGray);
+}
+
+.loader {
+  width: 50%;
+  height: 10%;
+  border-radius: 10px;
+  border: 4px solid var(--defGreen);
+  position: relative;
+}
+
+.loaderAfter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  transition: 0.2s ease all;
+  background-color: var(--defGreen);
+}

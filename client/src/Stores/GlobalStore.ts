@@ -12,6 +12,7 @@ interface InitialState {
   loginOrRegister: string;
   selectColorVisible: boolean;
   newNotePopupVisible: boolean;
+  loaderVisible: boolean;
   [key: string]: any;
 }
 
@@ -66,6 +67,7 @@ const intialState = {
   loginOrRegister: "",
   selectColorVisible: false,
   newNotePopupVisible: false,
+  loaderVisible: false,
 };
 
 export default new GlobalStore();

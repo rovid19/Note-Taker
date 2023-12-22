@@ -1,4 +1,6 @@
-import { userProjects } from "../Stores/ProjectStore";
+import globalStore from "../Stores/GlobalStore";
+import { projectStore, userProjects } from "../Stores/ProjectStore";
+import { putAllFoldersIntoAnArray } from "../Utils/GeneralFunctions";
 import Base from "./BaseService";
 
 class ProjectService extends Base {
@@ -7,8 +9,15 @@ class ProjectService extends Base {
   }
 
   async fetchAllUserProjects(userId: string) {
-    const projects = await this.get("/fetch-user-projects", { userId });
-    userProjects.setProjects(projects.folder);
+    projectStore.set("fetchingProjects", true);
+    globalStore.set("loaderVisible", true);
+    setTimeout(async () => {
+      const projects = await this.get("/fetch-user-projects", { userId });
+      userProjects.setProjects(projects.folder);
+      putAllFoldersIntoAnArray();
+      projectStore.set("fetchingProjects", false);
+      globalStore.set("loaderVisible", false);
+    }, 100);
   }
 
   async addNewFolder(

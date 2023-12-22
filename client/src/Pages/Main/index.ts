@@ -30,6 +30,9 @@ import { projectService } from "../../Services/ProjectService";
 import { isSelectColorVisible } from "../../Components/PopupWindows/EditingButtons/SelectColorLogic";
 import { noteStore } from "../../Stores/NoteStore";
 import { isNewNotePopupVisible } from "../../Components/PopupWindows/NewNotePopup/NewNoteLogic";
+import { io } from "socket.io-client";
+import { isLoaderVisible } from "../../Components/PopupWindows/Loader/LoaderLogic";
+import { loaderAnimation } from "../../Utils/GeneralFunctions";
 
 document.getElementById("navbar-container")!.appendChild(generateNavbar()); // ovaj usklicnik prije appendchilda je to da ja govorim tsu da taj element nemre biti null jer je ts malo blesav
 navbarNavigationLogic();
@@ -45,6 +48,7 @@ globalStore.subscribe("todoListVisible", isTodoListVisible);
 globalStore.subscribe("activeLink", setActiveLinkCss);
 globalStore.subscribe("homeVisible", isHomeVisible);
 globalStore.subscribe("newNotePopupVisible", isNewNotePopupVisible);
+globalStore.subscribe("loaderVisible", isLoaderVisible);
 
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 todoStore.subscribe("todoIndex", deleteTodoItem);
@@ -64,9 +68,25 @@ projectStore.subscribe("createNewFolder", isCreateNewFolderVisible);
     e.returnValue = "";
   }
 });*/
+const socket = io("http://localhost:3000");
+socket.on("connect", () => {
+  console.log("Connected to the server");
+});
+socket.on("userFolders", (userFoldersLength) => {
+  projectStore.set("userFolders", userFoldersLength);
+});
+socket.on("processedFolder", (folderCount) => {
+  loaderAnimation();
+});
 
 await userApiRequest.getUser();
-if (defaultUser.id.length > 2)
+if (defaultUser.id.length > 2) {
+  socket.emit("register", defaultUser.id);
   await projectService.fetchAllUserProjects(defaultUser.id);
+} else {
+  await userApiRequest.loginUser("DemoAccount", "123123");
+  socket.emit("register", defaultUser.id);
+  await projectService.fetchAllUserProjects(defaultUser.id);
+}
 if (window.location.pathname === "/") router.navigateTo("/home");
 else router.getCurrentUrl();

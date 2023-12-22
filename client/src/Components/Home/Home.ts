@@ -27,3 +27,32 @@ export const generateHome = (): HTMLElement => {
 
   return home;
 };
+
+export const generateHomeLoggedOut = (): HTMLElement => {
+  if (!document.querySelector("homeStyling")) {
+    const link = document.createElement("link");
+    link.id = "homeStyling";
+    link.rel = "stylesheet";
+    link.href = "../../src/Components/Home/homeStyling.css";
+
+    document.head.appendChild(link);
+  }
+
+  const home = document.createElement("div");
+  home.className = "homeMainDiv";
+  home.innerHTML = `
+   <div class="homeDiv1"><h1>You're currently not logged in</h1> </div>
+   <div class="homeDiv2">
+   <button class="newProjectBtn"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" width="50">
+   <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+ </svg>
+ 
+  Log in </button>
+  
+   
+   </div>
+   <div class="homeDiv3"> </div>
+    `;
+
+  return home;
+};

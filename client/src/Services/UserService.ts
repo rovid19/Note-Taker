@@ -2,6 +2,7 @@ import Base from "./BaseService";
 import { defaultUser, userStore } from "../Stores/UserStore";
 import { redirectAfterLogin } from "../Components/UserAuth/UserAuthLogic";
 import { todoService } from "./TodoService";
+import { userProjects } from "../Stores/ProjectStore";
 
 class UserService extends Base {
   constructor() {
@@ -19,6 +20,7 @@ class UserService extends Base {
 
   async loginUser(email: string, password: string) {
     const user = await this.post("/login-user", { email, password });
+
     defaultUser.setUser(user.email, user.username, "", "", user._id);
     redirectAfterLogin();
   }

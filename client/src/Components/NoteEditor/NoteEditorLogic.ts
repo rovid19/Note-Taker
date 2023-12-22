@@ -22,6 +22,7 @@ import {
   autoSaveNote,
   generateRandomId,
   getSelectionIndex,
+  ifNoteEditorActiveExtractNoteIdFromUrl,
   setNoteEditIndexesAccordingToNoteTextInput,
 } from "../../Utils/GeneralFunctions";
 import { router } from "../../Utils/Router/Router";
@@ -38,7 +39,7 @@ export const isNoteEditorVisible = async () => {
     createNoteEditor();
     isNewNoteOrExistingNote(isNewNote);
     attachEventListenerToNoteEditor();
-    console.log(noteObjectChanges.noteText);
+    ifNoteEditorActiveExtractNoteIdFromUrl();
   } else {
     document.getElementById("note-container")?.remove();
   }
@@ -140,7 +141,6 @@ const noteEventListeners = () => {
         name: "enter",
         selected: false,
       });
-      console.log(noteObjectChanges.noteEdits);
     }
   });
 
@@ -201,6 +201,7 @@ export const fetchSelectedNoteAndNavigateToIt = async (
     openSelectedFolder(parent);
     noteService.deleteNote(noteObject.id, noteObjectChanges.parentId);
     router.navigateTo("/projects/home");
+    noteStore.set("noteIdFromUrl", null);
   } else {
     globalStore.set("noteEditorVisible", true);
     await noteService.getNote(noteObject.id);
@@ -208,6 +209,7 @@ export const fetchSelectedNoteAndNavigateToIt = async (
       router.navigateTo(`/projects/notes?noteId=${noteObject.id}`);
     else router.navigateTo(`/notes?noteId=${noteObject.id}`);
     renderNoteFields();
+    ifNoteEditorActiveExtractNoteIdFromUrl();
   }
 };
 
@@ -509,13 +511,12 @@ const setFontSizeEditToASelection = (purpose: string) => {
   const isFound = isEditAlreadyInside(indexNumberArray, "", editObject.option);
   const editFontSize = noteStore.get("editFontSize");
   if (editFontSize) {
-    console.log(editFontSize, purpose);
     editObject.option.fontSize =
       purpose === "up"
         ? editObject.option.fontSize + 1
         : editObject.option.fontSize - 1;
   }
-  console.log(isFound);
+
   if (Object.keys(isFound).length > 0) {
     applyNoteTextEdits();
     autoSaveNote();
@@ -540,7 +541,6 @@ export const isEditAlreadyInside = (
       );
       if (value) {
         ifArrayIncludesAllIndexs(edit, newEditOption, foundAndModifiedEdit);
-        console.log(foundAndModifiedEdit);
       } else {
         let value = arrayIncludes(
           edit.indexArray as number[],
@@ -570,10 +570,8 @@ const ifArrayIncludesAllIndexs = (
   }
   if (edit.option?.fontSize && newEditOption.fontSize) {
     const fontSize = noteStore.get("fontSize");
-    console.log(fontSize);
     if (fontSize === "up") edit.option.fontSize = edit.option.fontSize + 1;
     else {
-      console.log("tusam", edit.option.fontSize);
       edit.option.fontSize =
         edit.option.fontSize === 2 ? 2 : edit.option.fontSize - 1;
     }
@@ -582,7 +580,6 @@ const ifArrayIncludesAllIndexs = (
       edit.option.fontSize = newEditOption.fontSize;
     }
   }
-  console.log(edit);
   Object.assign(foundAndModifiedEdit, edit);
 };
 
@@ -624,7 +621,7 @@ const removeNoteEditsOnCurrentIndex = () => {
   const currentCursorIndex = noteStore.get("currentTextIndex") as number;
   const backspaceCount = noteStore.get("backspaceCount") as number;
   const deleteIndex = currentCursorIndex - backspaceCount;
-  console.log(currentCursorIndex, backspaceCount, deleteIndex);
+
   noteObjectChanges.noteEdits.forEach((edit) => {
     if (edit.name === "enter") {
       if (edit.startIndex === deleteIndex) {
@@ -642,5 +639,4 @@ const removeNoteEditsOnCurrentIndex = () => {
   );
 
   noteObjectChanges.setNoteEdit(array);
-  console.log(noteObjectChanges.noteEdits);
 };

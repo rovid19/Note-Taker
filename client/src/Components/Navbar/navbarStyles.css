@@ -12,6 +12,7 @@
   width: 100%;
   background-color: var(--lightB);
   color: white;
+  z-index: 100;
 }
 
 .navbarTopContainer {

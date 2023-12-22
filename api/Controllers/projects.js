@@ -1,6 +1,8 @@
 import User from "../Models/User.js";
 import Folder from "../Models/Folder.js";
 import Note from "../Models/Note.js";
+import { deleteNote } from "./notes.js";
+import { io, userSockets } from "../index.js";
 
 /*export const fetchAllUserFolders = async (req, res) => {
   const { userId } = req.query;
@@ -18,10 +20,18 @@ import Note from "../Models/Note.js";
 export const fetchAllUserFolders = async (req, res) => {
   try {
     const { userId } = req.query;
+    const socketId = userSockets[userId];
+    const socket = io.sockets.sockets.get(socketId);
 
     const user = await User.findById(userId).populate("folder");
+    const userFolders = user.folder.length;
+
+    socket.emit("userFolders", userFolders);
+    let processedFolders = 0;
     const populateProjects = async (array) => {
       for (let i = 0; i < array.length; i++) {
+        processedFolders++;
+        socket.emit("processedFolder", processedFolders);
         const folderItem = array[i];
         const popFolder = await Folder.findById(folderItem._id).populate(
           "content"
@@ -107,9 +117,12 @@ export const deleteFolder = async (req, res) => {
 
   const folder = await Folder.findOne({ frontendId: frontendFolderId });
   const deleteArray = [folder._id];
+  const deleteNotes = [];
+  folder.notes.forEach((note) => deleteNotes.push(note));
   const recursivePopulate = async (content) => {
     for (let folder of content) {
       const foundFolder = await Folder.findById(folder._id).populate("content");
+      foundFolder.notes.forEach((note) => deleteNotes.push(note));
       deleteArray.push(foundFolder._id);
       if (foundFolder.content.length > 0) {
         await recursivePopulate(foundFolder.content);
@@ -117,9 +130,11 @@ export const deleteFolder = async (req, res) => {
     }
   };
   await recursivePopulate(folder.content);
-  deleteArray.forEach(
+  deleteArray.map(
     async (folderId) => await Folder.deleteOne({ _id: folderId })
   );
+  console.log(deleteNotes);
+  deleteNotes.map(async (noteId) => await Note.deleteOne({ _id: noteId }));
 
   if (folder.parentId) {
     const parentFolder = await Folder.findOne({ frontendId: folder.parentId });

@@ -576,7 +576,7 @@ export const createNewFolder = (): void => {
 const removableCreateFolderListener = (e: Event): void => {
   const target = e.target as HTMLElement;
   const isTargetNewFolder = target.closest("[newFolder]");
-
+  console.log(folderObject);
   if (isTargetNewFolder) {
   } else {
     if (defaultFolder.folderName === "New Folder") {
@@ -584,7 +584,9 @@ const removableCreateFolderListener = (e: Event): void => {
       //ifSubfolderSetFolderObjectWithItsParentFolder();
       saveNewlyAddedFolder();
       projectStore.set("createNewFolder", false);
+      defaultUser.pushUserFolder(folderObject.folder);
       window.removeEventListener("click", removableCreateFolderListener);
+      console.log(defaultUser.userFolders);
     }
   }
 };
@@ -645,7 +647,7 @@ const deleteFolder = (folder: FolderInterface, folderId: string): void => {
   }
 };
 
-const reRenderSubfolder = (selectedFolderElement: HTMLElement) => {
+export const reRenderSubfolder = (selectedFolderElement: HTMLElement) => {
   closeSelectedFolder(selectedFolderElement);
   openSelectedFolder(selectedFolderElement);
 };

@@ -16,6 +16,9 @@ interface InitialState {
   selectedFolderElement: HTMLElement;
   createMainFolder: boolean;
   subfolderFolderObject: FolderInterface;
+  fetchingProjects: boolean;
+  userFolders: number;
+  currentwidth: number;
 }
 
 type Listener = (key: any, value: any) => void;
@@ -30,6 +33,9 @@ const initialState = {
   selectedFolderElement: <HTMLElement>{},
   createMainFolder: false,
   subfolderFolderObject: {},
+  fetchingProjects: false,
+  userFolders: 0,
+  currentWidth: 0,
 };
 
 class ProjectStore {

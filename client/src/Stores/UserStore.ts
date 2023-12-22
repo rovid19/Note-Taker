@@ -1,3 +1,5 @@
+import { FolderInterface } from "../Utils/TsTypes";
+
 interface InitialState {
   isUserLoggedIn: boolean;
   [key: string]: any;
@@ -50,19 +52,22 @@ class User {
   password: string;
   confirmedPassword: string;
   id: string;
+  userFolders: FolderInterface[];
 
   constructor(
     email: string,
     username: string,
     password: string,
     confirmedPassword: string,
-    id: string
+    id: string,
+    userFolders: FolderInterface[] = []
   ) {
     (this.email = email),
       (this.username = username),
       (this.password = password);
     this.confirmedPassword = confirmedPassword;
     this.id = id;
+    this.userFolders = userFolders;
   }
 
   setUser(
@@ -89,6 +94,12 @@ class User {
   }
   setConfirmedPassword(confirmedPassword: string) {
     this.confirmedPassword = confirmedPassword;
+  }
+  setUserFolder(userFolders: FolderInterface[]) {
+    this.userFolders = userFolders;
+  }
+  pushUserFolder(folder: FolderInterface) {
+    this.userFolders.push(folder);
   }
 }
 

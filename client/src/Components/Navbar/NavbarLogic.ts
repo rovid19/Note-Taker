@@ -1,5 +1,6 @@
 import { userApiRequest } from "../../Services/UserService";
 import globalStore from "../../Stores/GlobalStore";
+import { noteStore } from "../../Stores/NoteStore";
 import { defaultUser, userStore } from "../../Stores/UserStore";
 import { router } from "../../Utils/Router/Router";
 //import { autoSaveNote } from "../NoteEditor/NoteEditorLogic";
@@ -14,50 +15,68 @@ export const navbarNavigationLogic = (): void => {
   ) as HTMLElement;
 
   toggleSidebar(allNotesLi);
-  openNoteEditor(newNoteLi);
+  //openNoteEditor(newNoteLi);
   openTodoList(todoListLi);
   openHome(homeLi);
   openNewNotePopup(newNotePopup);
+
   toggleLogin();
 };
 
 const toggleSidebar = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (): void => {
-    const url = window.location.pathname;
-    if (url.includes("/projects")) {
-    } else router.navigateTo("/projects");
+    if (!defaultUser.email) {
+      alert("you must login first");
+    } else {
+      const url = window.location.pathname;
+      if (url.includes("/projects")) {
+      } else router.navigateTo("/projects");
+    }
+
     //autoSaveNote();
   });
 };
 
-const openNoteEditor = (liItem: HTMLElement): void => {
+/*const openNoteEditor = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (e: Event): void => {
     e.preventDefault();
     router.navigateTo("/note");
     //autoSaveNote();
   });
-};
+};*/
 
 const openNewNotePopup = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (e: Event): void => {
-    globalStore.set("newNotePopupVisible", true);
+    if (!defaultUser.email) {
+      alert("you must login first");
+    } else globalStore.set("newNotePopupVisible", true);
   });
 };
 
 const openHome = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (): void => {
-    const sidebarVisible = globalStore.get("sidebarVisible");
-    if (sidebarVisible) router.navigateTo("/projects/home");
-    else router.navigateTo("/home ");
+    if (!defaultUser.email) {
+      alert("you must login first");
+    } else {
+      const sidebarVisible = globalStore.get("sidebarVisible");
+      if (sidebarVisible) router.navigateTo("/projects/home");
+      else router.navigateTo("/home ");
+    }
+
     //autoSaveNote();
   });
 };
 
 const openTodoList = (liItem: HTMLElement): void => {
   liItem.addEventListener("click", (e: Event): void => {
-    const sidebarVisible = globalStore.get("sidebarVisible");
-    if (sidebarVisible) router.navigateTo("/projects/dailytodo");
-    else router.navigateTo("/dailytodo");
+    if (!defaultUser.email) {
+      alert("you must login first");
+    } else {
+      const sidebarVisible = globalStore.get("sidebarVisible");
+      if (sidebarVisible) router.navigateTo("/projects/dailytodo");
+      else router.navigateTo("/dailytodo");
+    }
+
     //autoSaveNote();
   });
 };
@@ -88,8 +107,11 @@ const handleLogin = (): void => {
   //autoSaveNote();
 };
 
-const handleLogout = (): void => {
-  userApiRequest.logoutUser();
+const handleLogout = async () => {
+  await userApiRequest.logoutUser();
   globalStore.set("loginVisible", false);
+  noteStore.set("noteIdFromUrl", null);
+  router.navigateTo("/home");
+
   //autoSaveNote();
 };

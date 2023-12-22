@@ -14,6 +14,7 @@ interface InitialState {
   fontSize: string;
   editFontSize: number | null;
   backspaceCount: number;
+  noteIdFromUrl: string | null;
   [key: string]: any;
 }
 
@@ -33,6 +34,7 @@ const initialState = {
   fontSize: "",
   editFontSize: null,
   backspaceCount: 0,
+  noteIdFromUrl: "",
 };
 
 class NoteStore {

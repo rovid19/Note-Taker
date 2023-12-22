@@ -6,57 +6,35 @@ export const setComponentsToTrueOrFalseAccordingly = (
   component: string
 ): void => {
   const isNewNote = noteStore.get("isNewNote");
+  const noteIdFromUrl = noteStore.get("noteIdFromUrl");
   if (component.includes("/projects")) {
     if (window.location.search) {
       if (isNewNote) {
-        globalStore.set("noteEditorVisible", true);
-        globalStore.set("todoListVisible", false);
-        globalStore.set("homeVisible", false);
-        globalStore.set("sidebarVisible", true);
-        globalStore.set("activeLink", "note");
+        setAppComponentsOnOff(true, false, false, true, "note");
       } else {
         const noteId = getNoteIdFromUrl();
         noteObject.setId(noteId);
-        globalStore.set("noteEditorVisible", true);
-        globalStore.set("todoListVisible", false);
-        globalStore.set("homeVisible", false);
-        globalStore.set("sidebarVisible", true);
-        globalStore.set("activeLink", "note");
+        setAppComponentsOnOff(true, false, false, true, "note");
       }
     } else if (component === "/projects/dailytodo") {
-      globalStore.set("todoListVisible", true);
-      globalStore.set("noteEditorVisible", false);
-      globalStore.set("homeVisible", false);
-      globalStore.set("sidebarVisible", true);
-      globalStore.set("activeLink", "todo");
+      setAppComponentsOnOff(false, true, false, true, "todo");
     } else if (component === "/projects/home") {
-      globalStore.set("homeVisible", true);
-      globalStore.set("noteEditorVisible", false);
-      globalStore.set("todoListVisible", false);
-      globalStore.set("sidebarVisible", true);
-      globalStore.set("activeLink", "home");
+      setAppComponentsOnOff(false, false, true, true, "home");
     } else {
       router.navigateTo("/projects/home");
     }
   } else {
-    if (window.location.search) {
-      globalStore.set("noteEditorVisible", true);
-      globalStore.set("todoListVisible", false);
-      globalStore.set("homeVisible", false);
-      globalStore.set("sidebarVisible", false);
-      globalStore.set("activeLink", "note");
+    if (window.location.search || noteIdFromUrl) {
+      console.log(window.location.search, noteIdFromUrl);
+      if (noteIdFromUrl) {
+        setAppComponentsOnOff(true, false, false, false, "note");
+      }
+      setAppComponentsOnOff(true, false, false, false, "note");
     } else if (component === "/dailytodo") {
-      globalStore.set("todoListVisible", true);
-      globalStore.set("noteEditorVisible", false);
-      globalStore.set("homeVisible", false);
-      globalStore.set("sidebarVisible", false);
-      globalStore.set("activeLink", "todo");
+      setAppComponentsOnOff(false, true, false, false, "todo");
     } else if (component === "/home") {
-      globalStore.set("homeVisible", true);
-      globalStore.set("noteEditorVisible", false);
-      globalStore.set("todoListVisible", false);
-      globalStore.set("sidebarVisible", false);
-      globalStore.set("activeLink", "home");
+      console.log("clearlythis");
+      setAppComponentsOnOff(false, false, true, false, "home");
     }
   }
 };
@@ -99,4 +77,18 @@ const getNoteIdFromUrl = (): string => {
   const noteId = queryParams.get("noteId") as string;
 
   return noteId;
+};
+
+const setAppComponentsOnOff = (
+  note: boolean,
+  todo: boolean,
+  home: boolean,
+  sidebar: boolean,
+  activeLink: string
+) => {
+  globalStore.set("noteEditorVisible", note);
+  globalStore.set("todoListVisible", todo);
+  globalStore.set("homeVisible", home);
+  globalStore.set("sidebarVisible", sidebar);
+  globalStore.set("activeLink", activeLink);
 };

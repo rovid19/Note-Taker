@@ -1,4 +1,5 @@
 import globalStore from "../../Stores/GlobalStore";
+import { ifNoteEditorActiveExtractNoteIdFromUrl } from "../GeneralFunctions";
 import {
   isComponentOpen,
   setComponentsToTrueOrFalseAccordingly,
@@ -21,7 +22,6 @@ class Router {
   }
 
   navigateTo(pathname: string) {
-    console.log("1");
     if (pathname === "/projects") {
       const componentVisible = isComponentOpen();
       const url = window.location.pathname;

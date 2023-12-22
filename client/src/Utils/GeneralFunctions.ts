@@ -1,6 +1,10 @@
 import { loopThroughArray } from "../Components/Sidebar/SidebarFolderLogic";
 import { noteObjectChanges } from "../Stores/NoteStore";
-import { folderObject, projectStore } from "../Stores/ProjectStore";
+import {
+  folderObject,
+  projectStore,
+  userProjects,
+} from "../Stores/ProjectStore";
 import { FolderInterface, Item, Note, NoteEdits } from "./TsTypes";
 import { noteStore } from "../Stores/NoteStore";
 import noteService from "../Services/NoteService";
@@ -8,6 +12,8 @@ import {
   applyNoteTextEdits,
   changeNoteEditIndexesAccordingly,
 } from "../Components/NoteEditor/NoteEditorLogic";
+import { defaultUser } from "../Stores/UserStore";
+import globalStore from "../Stores/GlobalStore";
 export const generateRandomId = (idLength: number): string => {
   const chars = "ghjsdfgjhasfduiweqrzqwer87238723zugvcxgf1721262gs";
   let results = "";
@@ -91,7 +97,6 @@ export const getSelectionIndex = (purpose: string) => {
   const editableDiv = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
-  editableDiv.normalize();
   const selection = window.getSelection();
   if (selection) {
     if (selection.rangeCount > 0) {
@@ -183,4 +188,39 @@ export const arrayIncludes = (
     });
   }
   return includes;
+};
+
+export const putAllFoldersIntoAnArray = (): void => {
+  const newArray = [] as FolderInterface[];
+
+  const recursivePopulate = (projectArray: FolderInterface[]) => {
+    for (let folder of projectArray) {
+      newArray.push(folder);
+      if (folder.content.length > 0) {
+        recursivePopulate(folder.content as FolderInterface[]);
+      }
+    }
+  };
+
+  recursivePopulate(userProjects.projects);
+
+  defaultUser.setUserFolder(newArray);
+};
+
+export const ifNoteEditorActiveExtractNoteIdFromUrl = () => {
+  const url = window.location.href.replace(
+    "http://localhost:5173/projects/",
+    ""
+  );
+  noteStore.set("noteIdFromUrl", url);
+};
+
+export const loaderAnimation = (): void => {
+  const userFolders = projectStore.get("userFolders") as number;
+  const currentWidth = projectStore.get("currentWidth") as number;
+  const loader = document.querySelector(".loaderAfter") as HTMLElement;
+  const count = 100 / userFolders;
+  const increaseBy = currentWidth + count;
+  loader.style.width = `${increaseBy}%`;
+  projectStore.set("currentWidth", increaseBy);
 };
