@@ -3,6 +3,7 @@ export const generateCreateNewFolder = (): HTMLElement => {
     const link = document.createElement("link");
     link.id = "createNewFolderStyling";
     link.rel = "stylesheet";
+    link.type = "text/css";
     link.href =
       "../../src/Components/PopupWindows/CreateNewFolder/newFolderStyling.css";
 

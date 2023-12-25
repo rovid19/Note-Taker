@@ -5,6 +5,7 @@ export const generateNewNote = (): HTMLElement => {
     const link = document.createElement("link");
     link.id = "noteStyling";
     link.rel = "stylesheet";
+    link.type = "text/css";
     link.href = "../../src/Components/NoteEditor/noteStyling.css";
 
     document.head.appendChild(link);

@@ -3,6 +3,7 @@ export const generateNewNotePopup = (): HTMLElement => {
     const link = document.createElement("link");
     link.id = "newNoteStyling";
     link.rel = "stylesheet";
+    link.type = "text/css";
     link.href =
       "../../src/Components/PopupWindows/NewNotePopup/newNoteStyling.css";
 

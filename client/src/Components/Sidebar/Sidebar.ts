@@ -5,6 +5,7 @@ export const generateSidebar = (): HTMLElement => {
     const link = document.createElement("link");
     link.id = "sidebarStyling";
     link.rel = "stylesheet";
+    link.type = "text/css";
     link.href = "../../src/Components/Sidebar/sidebarStyling.css";
 
     document.head.appendChild(link);

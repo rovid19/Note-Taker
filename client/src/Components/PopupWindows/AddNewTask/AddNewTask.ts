@@ -3,6 +3,7 @@ export const generateAddNewTask = (): HTMLElement => {
     const link = document.createElement("link");
     link.id = "addNewTaskStyles";
     link.rel = "stylesheet";
+    link.type = "text/css";
     link.href =
       "../../src/Components/PopupWindows/AddNewTask/addNewTaskStyling.css";
 

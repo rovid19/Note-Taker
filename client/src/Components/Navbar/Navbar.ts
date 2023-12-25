@@ -4,6 +4,7 @@ export const generateNavbar = (): HTMLElement => {
     const styleLink = document.createElement("link");
     styleLink.id = "navbarStylesLink";
     styleLink.rel = "stylesheet";
+    styleLink.type = "text/css";
     styleLink.href = "../../src/Components/Navbar/navbarStyles.css";
 
     document.head.appendChild(styleLink);

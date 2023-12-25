@@ -3,6 +3,7 @@ export const generateLoader = (): HTMLElement => {
     const link = document.createElement("link");
     link.id = "loaderStyling";
     link.rel = "stylesheet";
+    link.type = "text/css";
     link.href = "../../src/Components/PopupWindows/Loader/loaderStyling.css";
 
     document.head.appendChild(link);
