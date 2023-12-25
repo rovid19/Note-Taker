@@ -1,3 +1,5 @@
+import { TodoItem } from "../Utils/TsTypes";
+
 interface InitialState {
   [key: string]: any;
 }
@@ -6,6 +8,7 @@ type Listener = (key: any, value: any) => void;
 
 const initialState = {
   todoIndex: null,
+  todoSave: false,
 };
 
 class TodoStore {
@@ -45,11 +48,13 @@ class TodoStore {
 
 class Todo {
   todoList;
-  constructor(todoList: string[]) {
+  constructor(todoList: TodoItem[]) {
     this.todoList = todoList;
   }
-
-  addItem(item: string) {
+  setTodo(todoList: TodoItem[]) {
+    this.todoList = todoList;
+  }
+  addItem(item: TodoItem) {
     this.todoList.push(item);
   }
   deleteTodoItem(index: number) {

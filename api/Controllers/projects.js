@@ -3,6 +3,7 @@ import Folder from "../Models/Folder.js";
 import Note from "../Models/Note.js";
 import { deleteNote } from "./notes.js";
 import { io, userSockets } from "../index.js";
+import TodoItemModel from "../Models/TodoItem.js";
 
 /*export const fetchAllUserFolders = async (req, res) => {
   const { userId } = req.query;
@@ -23,7 +24,8 @@ export const fetchAllUserFolders = async (req, res) => {
     const socketId = userSockets[userId];
     const socket = io.sockets.sockets.get(socketId);
 
-    const user = await User.findById(userId).populate("folder");
+    const user = await User.findById(userId).populate("folder todoList");
+
     const userFolders = user.folder.length;
 
     socket.emit("userFolders", userFolders);
@@ -133,7 +135,6 @@ export const deleteFolder = async (req, res) => {
   deleteArray.map(
     async (folderId) => await Folder.deleteOne({ _id: folderId })
   );
-  console.log(deleteNotes);
   deleteNotes.map(async (noteId) => await Note.deleteOne({ _id: noteId }));
 
   if (folder.parentId) {

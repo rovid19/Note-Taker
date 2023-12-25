@@ -1,5 +1,8 @@
+import { isSidebarVisible } from "../Components/Sidebar/SidebarLogic";
+import { mapOverTodoItems } from "../Components/TodoList/TodoListLogic";
 import globalStore from "../Stores/GlobalStore";
 import { projectStore, userProjects } from "../Stores/ProjectStore";
+import { todoList } from "../Stores/TodoStore";
 import { putAllFoldersIntoAnArray } from "../Utils/GeneralFunctions";
 import Base from "./BaseService";
 
@@ -15,9 +18,16 @@ class ProjectService extends Base {
       const projects = await this.get("/fetch-user-projects", { userId });
       userProjects.setProjects(projects.folder);
       putAllFoldersIntoAnArray();
+      todoList.setTodo(projects.todoList);
       projectStore.set("fetchingProjects", false);
       globalStore.set("loaderVisible", false);
-    }, 100);
+      const todoVisible = globalStore.get("todoListVisible");
+      if (todoVisible) {
+        mapOverTodoItems();
+      }
+      document.getElementById("sidebar-container")?.remove();
+      isSidebarVisible();
+    }, 0);
   }
 
   async addNewFolder(

@@ -77,23 +77,6 @@ const setColorEdit = (color: string) => {
   applyNoteTextEdits();
 };
 
-/*const addSpecialEditCharsToNoteText = (noteText: HTMLElement) => {
-  const selectedText = noteStore.get("selectedText") as unknown as SelectedText;
-  const addOnStartIndex = addOneCharAtStartOrEndIndex(
-    noteText.textContent as string,
-    "~",
-    selectedText.startIndex
-  );
-  const addOnEndIndex = addOneCharAtStartOrEndIndex(
-    addOnStartIndex,
-    "¸",
-    selectedText.endIndex + 1
-  );
-
-  noteObjectChanges.setText(addOnEndIndex);
-  //noteText.textContent = addOnEndIndex;
-};*/
-
 const pushEditToNoteEditArray = (
   color: string,
   selectedText: SelectedText,

@@ -1,10 +1,10 @@
 import { generateNavbar } from "../../Components/Navbar/Navbar";
 import { isSidebarVisible } from "../../Components/Sidebar/SidebarLogic";
+import { isNoteEditorVisible } from "../../Components/NoteEditor/NoteEditorLogic";
 import {
-  changeNoteEditIndexesAccordingly,
-  isNoteEditorVisible,
-} from "../../Components/NoteEditor/NoteEditorLogic";
-import { navbarNavigationLogic } from "../../Components/Navbar/NavbarLogic";
+  navbarNavigationLogic,
+  setSearchActiveAccordingToSearchInput,
+} from "../../Components/Navbar/NavbarLogic";
 import globalStore from "../../Stores/GlobalStore";
 import { router } from "../../Utils/Router/Router";
 
@@ -28,7 +28,6 @@ import {
 } from "../../Components/Sidebar/SidebarFolderLogic";
 import { projectService } from "../../Services/ProjectService";
 import { isSelectColorVisible } from "../../Components/PopupWindows/EditingButtons/SelectColorLogic";
-import { noteStore } from "../../Stores/NoteStore";
 import { isNewNotePopupVisible } from "../../Components/PopupWindows/NewNotePopup/NewNoteLogic";
 import { io } from "socket.io-client";
 import { isLoaderVisible } from "../../Components/PopupWindows/Loader/LoaderLogic";
@@ -40,8 +39,6 @@ navbarNavigationLogic();
 globalStore.subscribe("url", router.redirectToRoute);
 globalStore.subscribe("sidebarVisible", isSidebarVisible);
 globalStore.subscribe("noteEditorVisible", isNoteEditorVisible);
-//globalStore.subscribe("deleteNote", findNoteIdToDeleteNote);
-//globalStore.subscribe("existingNote", fetchExistingNote);
 globalStore.subscribe("selectColorVisible", isSelectColorVisible);
 globalStore.subscribe("loginVisible", isLoginVisible);
 globalStore.subscribe("todoListVisible", isTodoListVisible);
@@ -53,11 +50,10 @@ globalStore.subscribe("loaderVisible", isLoaderVisible);
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 todoStore.subscribe("todoIndex", deleteTodoItem);
 
-//noteStore.subscribe("currentTextIndex", getNoteTextAfterSelectedIndex);
-
 projectStore.subscribe("isCreateNewFolderVisible", isCreateNewFolderVisible);
 projectStore.subscribe("selectedFolder", openSelectedFolder);
 projectStore.subscribe("createNewFolder", isCreateNewFolderVisible);
+projectStore.subscribe("searchInput", setSearchActiveAccordingToSearchInput);
 
 /*window.addEventListener("beforeunload", function (e) {
   if (
@@ -68,6 +64,7 @@ projectStore.subscribe("createNewFolder", isCreateNewFolderVisible);
     e.returnValue = "";
   }
 });*/
+
 const socket = io("http://localhost:3000");
 socket.on("connect", () => {
   console.log("Connected to the server");

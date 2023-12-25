@@ -1,4 +1,5 @@
 import { todoList, todoStore } from "../Stores/TodoStore";
+import { TodoItem } from "../Utils/TsTypes";
 import Base from "./BaseService";
 
 class Todo extends Base {
@@ -8,15 +9,21 @@ class Todo extends Base {
 
   async fetchTodo(userId: string) {
     const todo = await this.get("/fetch-user-todo", { userId });
-    todo.forEach((item) => todoList.addItem(item));
+    todo.forEach((item: TodoItem) => todoList.addItem(item));
   }
 
-  async saveItem(userId: string, todoItem: string) {
-    await this.put("/save-todo", { userId, todoItem });
+  async createItem(userId: string, todoItem: TodoItem) {
+    await this.put("/create-todo-item", { userId, todoItem });
   }
 
-  async deleteTask(userId: string, index: number) {
-    await this.put("/delete-task", { userId, index });
+  async saveItem(todoItem: TodoItem) {
+    todoStore.set("todoSave", true);
+    await this.put("/save-item", { todoItem });
+    todoStore.set("todoSave", false);
+  }
+
+  async deleteTask(todoItemId: string) {
+    await this.put("/delete-task", { todoItemId });
   }
 }
 

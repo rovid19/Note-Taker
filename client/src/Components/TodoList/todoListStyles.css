@@ -126,10 +126,15 @@
   background-color: var(--lightB);
   color: var(--defGray);
   border: none;
-  width: 5 0%;
+  width: 50%;
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.1s ease;
+}
+.btnFiller {
+  height: 70%;
+  width: 50%;
+  opacity: 0;
 }
 
 .todoButtonDelete:hover {
@@ -139,4 +144,10 @@
 
 .todoButtonDone:hover {
   color: white;
+}
+
+#done {
+  transition: 0.3s ease all;
+  background-color: var(--defGreen);
+  z-index: 10;
 }

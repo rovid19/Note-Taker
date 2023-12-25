@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   password: String,
   folder: [{ type: mongoose.Schema.Types.ObjectId, ref: "folder" }],
-  todoList: [{ type: mongoose.Schema.Types.ObjectId, ref: "todo" }],
+  todoList: [{ type: mongoose.Schema.Types.ObjectId, ref: "todoItem" }],
 });
 
 const userModel = mongoose.model("user", userSchema);

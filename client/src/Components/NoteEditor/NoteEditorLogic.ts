@@ -53,18 +53,6 @@ const createNoteEditor = (): void => {
 };
 
 const attachEventListenerToNoteEditor = () => {
-  /*
-  const noteEditor = document.querySelector("#note-container") as HTMLElement;
-  const config = { childList: true };
-  const observer = new MutationObserver((mutationList) => {
-    for (let mutation of mutationList) {
-      if (mutation.type === "childList") {
-  
-      }
-    }
-  });
-  observer.observe(noteEditor, config);
-*/
   setTimeout(() => {
     noteEventListeners();
     noteEditorButtonsEventListener();
@@ -84,8 +72,6 @@ const isNewNoteOrExistingNote = async (isNewNote: Note) => {
     await noteService.getNote(noteObject.id);
     renderNoteFields();
     applyNoteTextEdits();
-
-    //if (sidebarVisible) reRenderAllFolderContainer();
   }
 };
 
@@ -110,7 +96,6 @@ const noteEventListeners = () => {
       e.key === "ArrowUp"
     ) {
       e.preventDefault();
-      //getSelectionIndex("onClick");
     } else if (e.key === "Backspace") {
       const backspaceCount = noteStore.get("backspaceCount") as number;
       noteStore.set("backspaceCount", backspaceCount + 1);
@@ -120,14 +105,11 @@ const noteEventListeners = () => {
         setNoteEditIndexesAccordingToNoteTextInput(e);
       }
     }
-
-    //
   });
 
-  noteTextElement.addEventListener("input", (e: Event) => {
+  noteTextElement.addEventListener("input", () => {
     if (noteTextElement.textContent)
       noteObjectChanges.setText(noteTextElement.textContent);
-    //getSelectionIndex("input");
   });
 
   noteTextElement.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -144,7 +126,7 @@ const noteEventListeners = () => {
     }
   });
 
-  window.addEventListener("click", async (e: Event) => {
+  window.addEventListener("click", async () => {
     const selectedFolderElement = projectStore.get(
       "selectedFolderElement"
     ) as HTMLElement;
@@ -241,99 +223,6 @@ const noteEditorButtonsEventListener = () => {
   });
 };
 
-/*const saveTitleAfterClickingOnNoteText = (
-  noteTextElement: HTMLElement,
-  oldNoteTitle: string
-) => {
-  noteTextElement.addEventListener("click", async () => {
-    const newNoteTitle = defaultNote.noteTitle;
-    if (oldNoteTitle !== newNoteTitle) {
-      await noteService.saveNewNoteTitle(newNoteTitle, defaultNote.id);
-      await noteService.fetchAllUserNotes(defaultUser.id);
-      reRenderAllFolderContainer();
-      oldNoteTitle = newNoteTitle;
-    }
-  });
-};
-
-export const deleteNote = async () => {
-  const noteIndex = noteStore.get("deleteNote") as number;
-  const noteId = noteStore.get("noteId") as string;
-
-  if (noteIndex !== -1) {
-    await noteService.deleteNote(noteId, noteObjectChanges.parentId);
-    await noteService.fetchAllUserNotes(defaultUser.id);
-    reRenderAllFolderContainer();
-    noteStore.set("deleteNote", -1);
-  }
-};
-
-export const findNoteIdToDeleteNote = (): void => {
-  const allNotes = noteStore.get("userNotes") as unknown as NoteArray[];
-  const noteIndex = noteStore.get("deleteNote") as number;
-  if (noteIndex !== -1) {
-    noteStore.set("noteId", allNotes[noteIndex]._id);
-    isNoteBeingDeletedOpen();
-  }
-};*/
-
-/*export const fetchExistingNote = async () => {
-  const existingNote = globalStore.get("existingNote");
-  if (existingNote) {
-    await noteService.getNote();
-    noteStore.set("existingNote", false);
-    reRenderNoteFields();
-  }
-};
-
-export const reRenderNoteFields = (): void => {
-  const title = document.querySelector(".newNoteInput") as HTMLInputElement;
-  const noteText = document.querySelector(
-    ".newNoteInputText"
-  ) as HTMLInputElement;
-  title.value = defaultNote.noteTitle;
-  noteText.value = defaultNote.noteText;
-};
-
-export const autoSaveNote = async () => {
-  if (
-    defaultNote.fetchedNoteText !== defaultNote.noteText ||
-    defaultNote.fetchedNoteTitle !== defaultNote.noteTitle
-  ) {
-    await noteService.autoSaveNote(
-      defaultNote.id,
-      defaultNote.noteTitle,
-      defaultNote.noteText
-    );
-    await noteService.fetchAllUserNotes(defaultUser.id);
-    reRenderAllFolderContainer();
-  }
-};
-
-export const noteTextInput = (): void => {
-  const noteText = document.querySelector(".newNoteInputText") as HTMLElement;
-
-  noteText.addEventListener("input", (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    defaultNote.setNoteText(target.value);
-  });
-};
-
-const isNoteBeingDeletedOpen = () => {
-  const params = new URLSearchParams(window.location.search);
-  const currentNoteId = params.get("noteId");
-  const deletingNoteId = noteStore.get("noteId");
-
-  if (currentNoteId === deletingNoteId) {
-    createWarning(
-      `Note you're currently trying to delete is open. Do you wish to continue?`
-    );
-    //globalStore.set("warningMessage", true);
-  } else {
-    deleteNote();
-  }
-};*/
-
 export const createNewNote = (folderParentId: string) => {
   const noteEditor = globalStore.get("noteEditorVisible");
 
@@ -359,7 +248,7 @@ export const applyNoteTextEdits = () => {
     noteObjectChanges.noteEdits
   );
   let newText = noteObjectChanges.noteText;
-  array.forEach((edit, i) => {
+  array.forEach((edit) => {
     if (edit.name === "enter") {
       newText = addOneCharAtStartOrEndIndex(newText, "˛", edit.startIndex);
     } else if (edit.name === "span") {
@@ -372,27 +261,6 @@ export const applyNoteTextEdits = () => {
     }
   });
 
-  /*const appliedBreakElementsText = applyNoteBreakElements(noteText);
-  noteText.innerHTML = appliedBreakElementsText;
-  let newText = noteText.textContent as string;
-  array.forEach((edit, i) => {
-    if (edit) {
-      const extractedValue = extractNoteEditValueAtIndex(
-        newText,
-        edit.startIndex,
-        edit.endIndex
-      );
-
-      const span = setSpanElementAccordingToNoteEdit(extractedValue, edit);
-
-      newText = replaceCharAtString(
-        newText,
-        span,
-        edit.startIndex,
-        edit.endIndex
-      );
-    }
-  });*/
   let textArray = newText.split("") as string[];
 
   textArray.forEach((char, i) => {
@@ -436,43 +304,6 @@ const howManyHtmlTagsAreBeforeSpanTag = (textArray: string[]): number => {
   return indexes.length;
 };
 
-/*const applyNoteBreakElements = (noteText: HTMLElement): string => {
-  let textArray = noteText.textContent?.split("");
- 
-  textArray?.forEach((char, i) => {
-    if (char === "˛") {
-    
-      if (textArray) textArray[i] = "</br>";
-    }
-  });
-
-  const arrayBackToText = textArray?.join("") as string;
-  return arrayBackToText;
-};
-
-const extractNoteEditValueAtIndex = (
-  noteText: string,
-  start: number,
-  end: number
-): string => {
-  let value = "";
-  value = noteText.slice(start, end);
-  return value;
-};
-const setSpanElementAccordingToNoteEdit = (
-  extractedValue: string,
-  edit: NoteEdits
-): string => {
-  let span = "";
-  if (edit.option) {
-    span = `<span style="color: ${
-      edit.option.color ? edit.option.color : ""
-    }">${extractedValue}</span>`;
-  }
-
-  return span;
-};*/
-
 const sortNoteEditsArrayFromHighestIndexToLowest = (
   arr: NoteEdits[]
 ): NoteEdits[] => {
@@ -484,7 +315,7 @@ export const changeNoteEditIndexesAccordingly = () => {
   if (noteObjectChanges.noteText.length > 0) {
     const currentCaretIndex = noteStore.get("currentTextIndex") as number;
     noteObjectChanges.noteEdits.forEach((edit) => {
-      if (edit.startIndex > currentCaretIndex) {
+      if (edit.startIndex >= currentCaretIndex) {
         edit.startIndex = edit.startIndex + 1;
         if (edit.endIndex) {
           edit.endIndex = edit.endIndex + 1;

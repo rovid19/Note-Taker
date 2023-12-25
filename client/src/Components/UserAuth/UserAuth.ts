@@ -52,7 +52,7 @@ export const generateRegister = (): HTMLElement => {
           <h5 class="userAuthH4"> Already a user? <span class="span">click here!</span> </h5>
           </div>
           <fieldset class="userAuthFieldset">
-              <input class="userAuthInput" id="email" placeholder="Email"/>
+              <input class="userAuthInput" type="email" id="email" placeholder="Email"/>
               <input class="userAuthInput" id="username" placeholder="Username"/>
               <input type="password" class="userAuthInput" id="password"  placeholder="Password"/>
               <input type="password" class="userAuthInput" id="password2"  placeholder="Confirm password"/>

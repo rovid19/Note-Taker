@@ -17,6 +17,7 @@ export const setComponentsToTrueOrFalseAccordingly = (
         setAppComponentsOnOff(true, false, false, true, "note");
       }
     } else if (component === "/projects/dailytodo") {
+      console.log("dada");
       setAppComponentsOnOff(false, true, false, true, "todo");
     } else if (component === "/projects/home") {
       setAppComponentsOnOff(false, false, true, true, "home");
@@ -86,6 +87,7 @@ const setAppComponentsOnOff = (
   sidebar: boolean,
   activeLink: string
 ) => {
+  console.log(todo);
   globalStore.set("noteEditorVisible", note);
   globalStore.set("todoListVisible", todo);
   globalStore.set("homeVisible", home);

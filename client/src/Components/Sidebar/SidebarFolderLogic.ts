@@ -16,13 +16,7 @@ import {
   createNewNote,
   fetchSelectedNoteAndNavigateToIt,
 } from "../NoteEditor/NoteEditorLogic";
-import {
-  noteObject,
-  noteObjectChanges,
-  noteStore,
-} from "../../Stores/NoteStore";
-import { router } from "../../Utils/Router/Router";
-import noteService from "../../Services/NoteService";
+import { noteObject, noteObjectChanges } from "../../Stores/NoteStore";
 
 export const eventDelegationForProjects = (sidebarDiv2: HTMLElement): void => {
   const allArticles = document.querySelectorAll(".sidebarArticle");
@@ -222,7 +216,7 @@ const setSelectedFolder = (folder: FolderInterface): void => {
     "",
     folder.frontendId,
     folder.depth,
-    folder.content
+    folder.content as FolderInterface[]
   );
   folderObject.setSelectedFolder(folder);
 };
@@ -374,19 +368,21 @@ const createSelectedFolderSubmenu = (selectedFolder: HTMLElement): void => {
   menu.className = "folderSubmenu";
   if (folderObject.folder.content === undefined) {
   } else if (folderObject.folder.content.length > 0) {
-    folderObject.folder.content.map((folder: FolderInterface) => {
-      menu.innerHTML += `
+    folderObject.folder.content.map((folder: string | FolderInterface) => {
+      if (typeof folder === "string") {
+      } else
+        menu.innerHTML += `
           <article class="submenuArticle" data-type=${folder.type} id=${
-        folder.type
-      } data-id=${
-        folder.frontendId
-      }> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
-        folder
-      )}</div> ${
-        !folder.new
-          ? `<h2 class="articleTitle2" > ${folder.name} </h2>`
-          : `<input class="addNewFolderInput" newFolder="new" placeholder="Enter new folder name"/>`
-      } </article></div>
+          folder.type
+        } data-id=${
+          folder.frontendId
+        }> <div class="articleInnerDiv1"> <div class="svgHolder">${addIcon(
+          folder
+        )}</div> ${
+          !folder.new
+            ? `<h2 class="articleTitle2" > ${folder.name} </h2>`
+            : `<input class="addNewFolderInput" newFolder="new" placeholder="Enter new folder name"/>`
+        } </article></div>
         `;
     });
   }
@@ -531,7 +527,7 @@ const saveFolderToDatabase = (): void => {
       defaultUser.id,
       folderObject.folder.name,
       folderObject.folder.frontendId,
-      folderObject.folder.parentId,
+      folderObject.folder.parentId as string,
       fullDate,
       createMainFolder
     );
@@ -540,7 +536,7 @@ const saveFolderToDatabase = (): void => {
       defaultUser.id,
       subfolderFolderObject.name,
       subfolderFolderObject.frontendId,
-      subfolderFolderObject.parentId,
+      subfolderFolderObject.parentId as string,
       fullDate,
       createMainFolder
     );
@@ -576,7 +572,6 @@ export const createNewFolder = (): void => {
 const removableCreateFolderListener = (e: Event): void => {
   const target = e.target as HTMLElement;
   const isTargetNewFolder = target.closest("[newFolder]");
-  console.log(folderObject);
   if (isTargetNewFolder) {
   } else {
     if (defaultFolder.folderName === "New Folder") {
@@ -586,7 +581,6 @@ const removableCreateFolderListener = (e: Event): void => {
       projectStore.set("createNewFolder", false);
       defaultUser.pushUserFolder(folderObject.folder);
       window.removeEventListener("click", removableCreateFolderListener);
-      console.log(defaultUser.userFolders);
     }
   }
 };
@@ -607,10 +601,16 @@ const saveNewlyAddedFolder = (): void => {
 
   if (createNewFolder) {
     if (createMainFolder) {
-      userProjects.saveNewFolderItem(folderObject.folder.parentId, "folder");
+      userProjects.saveNewFolderItem(
+        folderObject.folder.parentId as string,
+        "folder"
+      );
       reRenderAllFolderContainer();
     } else {
-      userProjects.saveNewFolderItem(folderObject.folder.parentId, "folder");
+      userProjects.saveNewFolderItem(
+        folderObject.folder.parentId as string,
+        "folder"
+      );
       closeSelectedFolder(parent);
       openSelectedFolder(parent);
     }
@@ -634,7 +634,16 @@ const deleteFolder = (folder: FolderInterface, folderId: string): void => {
       folderObject.folder.depth
     );
     renderTotalNumberOfUserProjects();
-    folderObject.setSelectedFolder({});
+    folderObject.setSelectedFolder({
+      name: "",
+      dateCreated: "",
+      content: [],
+      notes: [],
+      type: "",
+      depth: 0,
+      _id: "",
+      frontendId: "",
+    });
     if (subfolderVisible) {
       closeSelectedFolder(parent);
       openSelectedFolder(parent);

@@ -2,8 +2,12 @@ import globalStore from "../../Stores/GlobalStore";
 import { generateSidebar } from "./Sidebar";
 import { router } from "../../Utils/Router/Router";
 import { extractProjectFromUrl } from "../../Utils/Router/RouterLogic";
-import { folderObject, userProjects } from "../../Stores/ProjectStore";
-import { FolderInterface } from "../../Utils/TsTypes";
+import {
+  folderObject,
+  searchArray,
+  userProjects,
+} from "../../Stores/ProjectStore";
+import { FolderInterface, Note } from "../../Utils/TsTypes";
 import {
   closeRightClickMenuIfOpen,
   eventDelegationForProjects,
@@ -31,7 +35,7 @@ export const isSidebarVisible = async () => {
     );
     sidebarEventListeners();
     renderTotalNumberOfUserProjects();
-    createAllFolderContainer();
+    createAllFolderContainer("");
     sidebarNavigationLogic();
   } else {
     document.getElementById("sidebar-container")?.remove();
@@ -71,11 +75,14 @@ export const sidebarNavigationLogic = (): void => {
   });
 };
 
-export const createAllFolderContainer = (): void => {
+export const createAllFolderContainer = (purpose: string): void => {
   const div = document.createElement("div");
   div.className = "sidebarDiv2";
   const sidebarStyles = document.querySelector(".sidebarStyles") as HTMLElement;
-  mapOverAllUserProjects(userProjects.projects, div);
+
+  if (purpose === "search") mapOverAllUserProjects(searchArray.projects, div);
+  else mapOverAllUserProjects(userProjects.projects, div);
+
   sidebarStyles.appendChild(div);
   const sidebarDiv2 = document.querySelector(".sidebarDiv2") as HTMLElement;
 
@@ -84,18 +91,33 @@ export const createAllFolderContainer = (): void => {
 
 export const reRenderAllFolderContainer = () => {
   document.querySelector(".sidebarDiv2")?.remove();
-  createAllFolderContainer();
+  createAllFolderContainer("");
 };
 
-const mapOverAllUserProjects = (
-  userFolders: FolderInterface[],
+export const mapOverAllUserProjects = (
+  userFolders: (FolderInterface | Note)[],
   div: HTMLElement
 ): void => {
-  if (userFolders.length === 0) {
-    createNewFolderButton(div);
+  const searchActive = projectStore.get("searchActive");
+  if (searchActive && searchArray.projects.length === 0) {
+    console.log("ayo");
+    const div2 = document.createElement("div");
+    div2.className = "noFolderDisplayDiv";
+    div2.innerHTML = `<h4 class="noDisplayH1"> No folders have been found </h4> `;
+    div.appendChild(div2);
   } else {
-    userFolders.map((folder) => {
-      return (div.innerHTML += `
+    if (userFolders.length === 0) {
+      createNewFolderButton(div);
+      const noFolderDisplay = document.body.querySelector(
+        ".noFolderDisplayDiv"
+      ) as HTMLElement;
+      if (noFolderDisplay) {
+        document.body.querySelector(".noFolderDisplayDiv")?.remove();
+      }
+    } else {
+      userFolders.map((folder) => {
+        if ("content" in folder)
+          return (div.innerHTML += `
       <article class="sidebarArticle" data-id=${
         folder.frontendId
       } data-mainfolder=${folder._id} data-type="folder">  
@@ -114,7 +136,9 @@ const mapOverAllUserProjects = (
         </div>
           
       </article>`);
-    });
+      });
+      document.body.querySelector(".noFolderDisplayDiv")?.remove();
+    }
   }
 };
 
@@ -163,7 +187,16 @@ export const sidebarEventListeners = (): void => {
 
 export const createNewFolderLogic = (e: Event) => {
   e.stopPropagation();
-  folderObject.setSelectedFolder({});
+  folderObject.setSelectedFolder({
+    name: "",
+    dateCreated: "",
+    content: [],
+    notes: [],
+    type: "",
+    depth: 0,
+    _id: "",
+    frontendId: "",
+  });
   projectStore.set("createMainFolder", true);
   projectStore.set("createNewFolder", true);
 };

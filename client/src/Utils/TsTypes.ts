@@ -1,12 +1,15 @@
-export type todoItem = {
+export type TodoItem = {
   name: string;
   isDone: boolean;
+  timeSpent: number;
+  frontendId?: string;
+  _id?: string;
 };
 
 export type todo = {
   name: string;
   dateCreated: string;
-  todoItems: todoItem[];
+  todoItems: TodoItem[];
   type: string;
 };
 
@@ -32,7 +35,7 @@ export type Note = {
   title: string;
   id: string;
   noteText: string;
-  dateCreated: string;
+  dateCreated?: string;
   type: string;
   new?: boolean;
   frontendId?: string;

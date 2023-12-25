@@ -1,4 +1,4 @@
-import { FolderInterface } from "../Components/Sidebar/SidebarLogic";
+import { FolderInterface } from "../Utils/TsTypes";
 import {
   loopThroughArrayAndPushOrDeleteFolder,
   loopThroughArrayAndSaveNewFolderItem,
@@ -18,7 +18,10 @@ interface InitialState {
   subfolderFolderObject: FolderInterface;
   fetchingProjects: boolean;
   userFolders: number;
-  currentwidth: number;
+  currentWidth: number;
+  searchActive: boolean;
+  searchInput: string;
+  searchArray: FolderInterface | Note[] | null;
 }
 
 type Listener = (key: any, value: any) => void;
@@ -32,10 +35,22 @@ const initialState = {
   subfolderVisible: false,
   selectedFolderElement: <HTMLElement>{},
   createMainFolder: false,
-  subfolderFolderObject: {},
+  subfolderFolderObject: {
+    name: "",
+    dateCreated: "",
+    content: [],
+    notes: [],
+    type: "",
+    depth: 0,
+    _id: "",
+    frontendId: "",
+  },
   fetchingProjects: false,
   userFolders: 0,
   currentWidth: 0,
+  searchActive: false,
+  searchInput: "",
+  searchArray: [],
 };
 
 class ProjectStore {
@@ -51,16 +66,28 @@ class ProjectStore {
     return this.state[key];
   }
 
-  set(key: string, value: string | number | boolean | null | Element): void {
+  set(
+    key: string,
+    value: string | number | boolean | null | Element | never[]
+  ): void {
     if (this.state[key] !== value) {
       this.state[key] = value;
       this.notify(key, value);
     }
   }
-  notify(key: string, value: string | number | boolean | null | Element): void {
+  notify(
+    key: string,
+    value: string | number | boolean | null | Element | never[]
+  ): void {
     if (this.listeners[key]) {
       this.listeners[key].forEach((listener) => listener(key, value));
     }
+  }
+  push(
+    key: string,
+    value: string | number | boolean | null | FolderInterface | Note
+  ) {
+    this.state[key].push(value);
   }
 
   subscribe(key: string, func: Listener) {
@@ -106,7 +133,7 @@ class Folder {
 }
 
 class UserProjects {
-  constructor(public projects: FolderInterface[] = []) {}
+  constructor(public projects: (FolderInterface | Note)[] = []) {}
 
   setProjects(projects: FolderInterface[]) {
     this.projects = projects;
@@ -127,6 +154,7 @@ class UserProjects {
 
   saveNewFolderItem(parentId: string, purpose: string) {
     if (purpose === "folder") {
+      console;
       delete folderObject.folder.new;
       if (parentId.length > 0) {
         loopThroughArrayAndSaveNewFolderItem(this.projects, parentId, "folder");
@@ -153,7 +181,7 @@ class UserProjects {
       if (item.depth > 0) {
         loopThroughArrayAndPushOrDeleteFolder(
           this.projects,
-          folderObject.folder.parentId,
+          folderObject.folder.parentId as string,
           item,
           "delete",
           folderObject.folder.frontendId
@@ -169,7 +197,18 @@ class UserProjects {
 }
 
 class FolderObject {
-  constructor(public folder: FolderInterface = {}) {}
+  constructor(
+    public folder: FolderInterface = {
+      name: "",
+      dateCreated: "",
+      content: [],
+      notes: [],
+      type: "",
+      depth: 0,
+      _id: "",
+      frontendId: "",
+    }
+  ) {}
 
   setSelectedFolder(folder: FolderInterface) {
     this.folder = folder;
@@ -180,7 +219,19 @@ class FolderObject {
   }
 }
 
+class SearchArray {
+  constructor(public projects: FolderInterface[] = []) {}
+
+  replaceArray(newArr: FolderInterface[]) {
+    this.projects = newArr;
+  }
+  push(folder: FolderInterface) {
+    this.projects.push(folder);
+  }
+}
+
 export const folderObject = new FolderObject();
 export const defaultFolder = new Folder();
 export const userProjects = new UserProjects();
 export const projectStore = new ProjectStore();
+export const searchArray = new SearchArray();

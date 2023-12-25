@@ -5,6 +5,10 @@
   --defHBlack: #404040;
   --light: #b8b8b8;
   --ligherdark: #f2f2f2;
+  --lightB: #262626;
+  --darkB: #1e1e1e;
+  --darkBO: rgba(30, 30, 30, 0.8);
+  --lightBO: rgba(38, 38, 38, 0.2);
 }
 
 .user-auth-container {
@@ -16,7 +20,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(26, 26, 26, 0.2);
+  background-color: var(--darkBO);
 }
 
 .userAuthMainDiv {
@@ -31,7 +35,7 @@
   display: flex;
   flex-direction: column;
   border: none;
-  background-color: var(--defBlack);
+  background-color: var(--lightB);
   border-radius: 6px;
   padding: 16px;
   position: relative;
@@ -83,11 +87,11 @@
 
 .userAuthButton {
   border: none;
-  background-color: var(--light);
+  background-color: var(--defHBlack);
   padding: 8px;
   width: 30%;
   border-radius: 6px;
-  color: var(--defBlack);
+  color: var(--defGray);
   cursor: pointer;
   height: 40px;
 }

@@ -5,15 +5,11 @@ import {
   projectStore,
   userProjects,
 } from "../Stores/ProjectStore";
-import { FolderInterface, Item, Note, NoteEdits } from "./TsTypes";
+import { FolderInterface, Note } from "./TsTypes";
 import { noteStore } from "../Stores/NoteStore";
 import noteService from "../Services/NoteService";
-import {
-  applyNoteTextEdits,
-  changeNoteEditIndexesAccordingly,
-} from "../Components/NoteEditor/NoteEditorLogic";
+import { changeNoteEditIndexesAccordingly } from "../Components/NoteEditor/NoteEditorLogic";
 import { defaultUser } from "../Stores/UserStore";
-import globalStore from "../Stores/GlobalStore";
 export const generateRandomId = (idLength: number): string => {
   const chars = "ghjsdfgjhasfduiweqrzqwer87238723zugvcxgf1721262gs";
   let results = "";
@@ -24,7 +20,7 @@ export const generateRandomId = (idLength: number): string => {
 };
 
 export const loopThroughArrayAndPushOrDeleteFolder = (
-  projects: FolderInterface[],
+  projects: (FolderInterface | Note)[],
   parentId: string,
   folderItem: FolderInterface | Note,
   purpose: string,
@@ -54,7 +50,7 @@ export const loopThroughArrayAndPushOrDeleteFolder = (
 };
 
 export const loopThroughArrayAndSaveNewFolderItem = (
-  projects: Item[],
+  projects: (FolderInterface | Note)[],
   parentId: string,
   purpose: string
 ): void => {
@@ -102,6 +98,7 @@ export const getSelectionIndex = (purpose: string) => {
     if (selection.rangeCount > 0) {
       //prvobitan selection
       const range = selection.getRangeAt(0);
+      console.log(range);
       //dupliciranje prvobitnog selectiona
       const preSelectionRange = range.cloneRange();
       //pretvranje cloneRangea da bude text cijelog diva, a ne samo selectana rijec
@@ -218,9 +215,11 @@ export const ifNoteEditorActiveExtractNoteIdFromUrl = () => {
 export const loaderAnimation = (): void => {
   const userFolders = projectStore.get("userFolders") as number;
   const currentWidth = projectStore.get("currentWidth") as number;
+
   const loader = document.querySelector(".loaderAfter") as HTMLElement;
   const count = 100 / userFolders;
-  const increaseBy = currentWidth + count;
+  let increaseBy = currentWidth + count;
+  if (increaseBy > 100) increaseBy = 100;
   loader.style.width = `${increaseBy}%`;
   projectStore.set("currentWidth", increaseBy);
 };

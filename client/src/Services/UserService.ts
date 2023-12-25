@@ -2,7 +2,6 @@ import Base from "./BaseService";
 import { defaultUser, userStore } from "../Stores/UserStore";
 import { redirectAfterLogin } from "../Components/UserAuth/UserAuthLogic";
 import { todoService } from "./TodoService";
-import { userProjects } from "../Stores/ProjectStore";
 
 class UserService extends Base {
   constructor() {

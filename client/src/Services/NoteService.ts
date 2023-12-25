@@ -13,7 +13,7 @@ class ProjectService extends Base {
     folderId: string,
     frontendNoteId: string
   ) {
-    const newNote = await this.post("/create-new-note", {
+    await this.post("/create-new-note", {
       fullDate,
       userId,
       folderId,

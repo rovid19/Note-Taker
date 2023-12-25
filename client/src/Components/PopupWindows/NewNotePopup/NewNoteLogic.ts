@@ -1,10 +1,6 @@
 import globalStore from "../../../Stores/GlobalStore";
 import { noteObjectChanges } from "../../../Stores/NoteStore";
-import {
-  defaultFolder,
-  folderObject,
-  userProjects,
-} from "../../../Stores/ProjectStore";
+import { folderObject, userProjects } from "../../../Stores/ProjectStore";
 import { defaultUser } from "../../../Stores/UserStore";
 import { createNewNote } from "../../NoteEditor/NoteEditorLogic";
 import { generateNewNotePopup } from "./NewNote";
@@ -54,7 +50,6 @@ const mapAllUserFolderToSelect = () => {
 };
 
 const folderSelectEventListener = (folderSelect: HTMLElement) => {
-  console.log(folderObject);
   if (defaultUser.userFolders.length === 1) {
     folderObject.setSelectedFolder(defaultUser.userFolders[0]);
   }
