@@ -72,7 +72,7 @@ socket.on("connect", () => {
 socket.on("userFolders", (userFoldersLength) => {
   projectStore.set("userFolders", userFoldersLength);
 });
-socket.on("processedFolder", (folderCount) => {
+socket.on("processedFolder", (_) => {
   loaderAnimation();
 });
 

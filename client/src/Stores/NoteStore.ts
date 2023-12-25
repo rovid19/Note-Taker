@@ -91,6 +91,7 @@ class NoteObject {
     public id: string = "",
     public type: string = "note",
     public parentId: string = "",
+    public frontendId: string = "",
     public noteEdits: NoteEdits[] = []
   ) {}
 

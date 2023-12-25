@@ -49,7 +49,7 @@ const search = (liItem: HTMLElement): void => {
 };
 
 const openNewNotePopup = (liItem: HTMLElement): void => {
-  liItem.addEventListener("click", (e: Event): void => {
+  liItem.addEventListener("click", (): void => {
     if (!defaultUser.email) {
       alert("you must login first");
     } else globalStore.set("newNotePopupVisible", true);
@@ -69,7 +69,7 @@ const openHome = (liItem: HTMLElement): void => {
 };
 
 const openTodoList = (liItem: HTMLElement): void => {
-  liItem.addEventListener("click", (e: Event): void => {
+  liItem.addEventListener("click", (): void => {
     if (!defaultUser.email) {
       alert("you must login first");
     } else {

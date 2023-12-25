@@ -85,14 +85,13 @@ export const switchEventListeners = (): void => {
 
 const mutationObserverForChangesInUserAuth = (div: HTMLElement): void => {
   const config = { childList: true };
-  const observer = new MutationObserver((mutationsList, observer) => {
+  new MutationObserver((mutationsList) => {
     for (let mutation of mutationsList) {
       if (mutation.type === "childList") {
         switchEventListeners();
       }
     }
-  });
-  observer.observe(div, config);
+  }).observe(div, config);
 };
 
 const loginInputData = (): void => {

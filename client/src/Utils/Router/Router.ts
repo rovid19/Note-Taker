@@ -1,5 +1,4 @@
 import globalStore from "../../Stores/GlobalStore";
-import { ifNoteEditorActiveExtractNoteIdFromUrl } from "../GeneralFunctions";
 import {
   isComponentOpen,
   setComponentsToTrueOrFalseAccordingly,

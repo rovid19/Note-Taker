@@ -97,7 +97,7 @@ const pushEditToNoteEditArray = (
     selected: false,
     indexArray: indexNumberArray,
   };
-  const isFound = isEditAlreadyInside(edit.indexArray, "", edit.option);
+  const isFound = isEditAlreadyInside(edit.indexArray, edit.option);
   if (Object.keys(isFound).length > 0) {
     applyNoteTextEdits();
     autoSaveNote();

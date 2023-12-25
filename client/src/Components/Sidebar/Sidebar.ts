@@ -1,4 +1,3 @@
-import globalStore from "../../Stores/GlobalStore";
 import { monthYear } from "../../Utils/Date";
 
 export const generateSidebar = (): HTMLElement => {

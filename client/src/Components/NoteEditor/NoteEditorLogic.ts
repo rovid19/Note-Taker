@@ -339,7 +339,7 @@ const setFontSizeEditToASelection = (purpose: string) => {
     indexArray: [...indexNumberArray],
     selected: false,
   };
-  const isFound = isEditAlreadyInside(indexNumberArray, "", editObject.option);
+  const isFound = isEditAlreadyInside(indexNumberArray, editObject.option);
   const editFontSize = noteStore.get("editFontSize");
   if (editFontSize) {
     editObject.option.fontSize =
@@ -360,7 +360,6 @@ const setFontSizeEditToASelection = (purpose: string) => {
 
 export const isEditAlreadyInside = (
   indexNumberArray: number[],
-  purpose: string,
   newEditOption: Option
 ) => {
   let foundAndModifiedEdit = {} as NoteEdits;
@@ -420,7 +419,7 @@ export const returnIndexNumberArrayForEdit = (
   let selectionIndexArray = new Array(
     (selection.endIndex as number) - selection.startIndex + 1
   ).fill(0);
-  selectionIndexArray.forEach((index, i) => {
+  selectionIndexArray.forEach((_, i) => {
     selectionIndexArray[i] = selection.startIndex + i;
   });
 
