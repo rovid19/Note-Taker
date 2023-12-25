@@ -30,7 +30,10 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "http://note-editor-client.up.railway.app",
+    ],
   })
 );
 
@@ -44,7 +47,10 @@ httpServer.listen(port);
 export const io = new Server(httpServer, {
   cors: {
     credentials: true,
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "http://note-editor-client.up.railway.app",
+    ],
   },
 });
 
