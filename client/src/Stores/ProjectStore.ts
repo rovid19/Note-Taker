@@ -68,7 +68,14 @@ class ProjectStore {
 
   set(
     key: string,
-    value: string | number | boolean | null | Element | never[]
+    value:
+      | string
+      | number
+      | boolean
+      | null
+      | Element
+      | FolderInterface
+      | never[]
   ): void {
     if (this.state[key] !== value) {
       this.state[key] = value;
@@ -77,7 +84,14 @@ class ProjectStore {
   }
   notify(
     key: string,
-    value: string | number | boolean | null | Element | never[]
+    value:
+      | string
+      | number
+      | boolean
+      | null
+      | Element
+      | FolderInterface
+      | never[]
   ): void {
     if (this.listeners[key]) {
       this.listeners[key].forEach((listener) => listener(key, value));

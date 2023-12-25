@@ -38,7 +38,7 @@ export type Note = {
   dateCreated?: string;
   type: string;
   new?: boolean;
-  frontendId?: string;
+  frontendId: string;
 };
 
 export type Item = todo & FolderInterface & Note;

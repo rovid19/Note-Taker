@@ -35,7 +35,7 @@ export const loopThroughArrayAndPushOrDeleteFolder = (
       foundFolder.notes = newNotes;
     } else if ("depth" in folderItem) {
       const newArray = foundFolder.content.filter(
-        (folder) => folder.frontendId !== frontendId
+        (folder) => (folder as FolderInterface).frontendId !== frontendId
       );
       foundFolder.content = newArray;
     } else {
@@ -57,7 +57,7 @@ export const loopThroughArrayAndSaveNewFolderItem = (
   if (purpose === "folder") {
     const foundFolder = loopThroughArray(projects, parentId, "newFolder");
     const index = foundFolder.content.findIndex((folder) => {
-      folder.frontendId === folderObject.folder.frontendId;
+      (folder as FolderInterface).frontendId === folderObject.folder.frontendId;
     });
     foundFolder.content[index] = folderObject.folder;
     projectStore.set("subfolderFolderObject", folderObject.folder);
@@ -199,7 +199,7 @@ export const putAllFoldersIntoAnArray = (): void => {
     }
   };
 
-  recursivePopulate(userProjects.projects);
+  recursivePopulate(userProjects.projects as FolderInterface[]);
 
   defaultUser.setUserFolder(newArray);
 };

@@ -1,4 +1,4 @@
-import { projectService } from "../../../Services/ProjectService";
+/*import { projectService } from "../../../Services/ProjectService";
 import { defaultFolder, projectStore } from "../../../Stores/ProjectStore";
 import { defaultUser } from "../../../Stores/UserStore";
 import { fullDate } from "../../../Utils/Date";
@@ -57,3 +57,4 @@ const newFolderEventListeners = (): void => {
     projectStore.set("newFolderTitle", target.value);
   });
 };
+*/
