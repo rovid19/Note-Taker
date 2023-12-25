@@ -5,7 +5,7 @@ import { NoteEdits } from "../Utils/TsTypes";
 
 class ProjectService extends Base {
   constructor() {
-    super("http://localhost:3000/api/notes");
+    super("http://note-editor-client.up.railway.app/notes");
   }
   async createNewNote(
     fullDate: string,

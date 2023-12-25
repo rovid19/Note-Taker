@@ -4,7 +4,7 @@ import Base from "./BaseService";
 
 class Todo extends Base {
   constructor() {
-    super("http://localhost:3000/api/todo");
+    super("http://note-editor-client.up.railway.app/api/todo");
   }
 
   async fetchTodo(userId: string) {

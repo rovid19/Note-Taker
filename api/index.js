@@ -30,7 +30,10 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: ["http://note-editor-client.up.railway.app"],
+    origin: [
+      "http://localhost:5173",
+      "http://note-editor-client.up.railway.app/",
+    ],
   })
 );
 
@@ -44,13 +47,17 @@ httpServer.listen(port);
 export const io = new Server(httpServer, {
   cors: {
     credentials: true,
-    origin: ["http://note-editor-client.up.railway.app"],
+    origin: [
+      "http://localhost:5173",
+      "http://note-editor-client.up.railway.app/",
+    ],
   },
 });
 
 export const userSockets = {};
 
 io.on("connection", (socket) => {
+  console.log("connected");
   socket.on("register", (userId) => {
     userSockets[userId] = socket.id;
   });
