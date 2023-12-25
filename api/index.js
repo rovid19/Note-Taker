@@ -32,7 +32,7 @@ app.use(
     credentials: true,
     origin: [
       "http://localhost:5173",
-      "https://note-editor-client.up.railway.app/",
+      "https://note-editor-client.up.railway.app",
     ],
   })
 );
@@ -49,11 +49,10 @@ export const io = new Server(httpServer, {
     credentials: true,
     origin: [
       "http://localhost:5173",
-      "https://note-editor-client.up.railway.app/",
+      "https://note-editor-client.up.railway.app",
     ],
   },
 });
-
 export const userSockets = {};
 
 io.on("connection", (socket) => {

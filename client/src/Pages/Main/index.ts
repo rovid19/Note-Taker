@@ -65,7 +65,9 @@ projectStore.subscribe("searchInput", setSearchActiveAccordingToSearchInput);
   }
 });*/
 //const socket = io("http://localhost:3000");
-const socket = io("http://note-editor-api.up.railway.app");
+const socket = io("https://note-editor-api.up.railway.app", {
+  withCredentials: true,
+});
 socket.on("connect", () => {
   console.log("Connected to the server");
 });
