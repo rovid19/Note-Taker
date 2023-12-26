@@ -25,11 +25,7 @@ mongoose.connect(
     useUnifiedTopology: true,
   }
 );
-mongoose.connection.on("connected", () => {
-  console.log("Mongoose connected successfully.");
-});
-const httpServer = createServer(app);
-httpServer.listen(port);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -47,6 +43,8 @@ app.use("/api/user", userRoute);
 app.use("/api/todo", todoRoute);
 app.use("/api/projects", projectRoute);
 console.log(port);
+const httpServer = createServer(app);
+httpServer.listen(port);
 
 export const io = new Server(httpServer, {
   cors: {
