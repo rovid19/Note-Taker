@@ -86,7 +86,7 @@ const loginUser = async () => {
   await userApiRequest.loginUser("DemoAccount", "123123");
 };
 getUser();
-await userApiRequest.getUser();
+
 if (defaultUser.id.length > 2) {
   socket.emit("register", defaultUser.id);
   fetchProjects();
