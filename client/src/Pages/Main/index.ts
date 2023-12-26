@@ -46,7 +46,6 @@ globalStore.subscribe("activeLink", setActiveLinkCss);
 globalStore.subscribe("homeVisible", isHomeVisible);
 globalStore.subscribe("newNotePopupVisible", isNewNotePopupVisible);
 globalStore.subscribe("loaderVisible", isLoaderVisible);
-globalStore.subscribe("socketConnected", afterSocketConnection);
 
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 todoStore.subscribe("todoIndex", deleteTodoItem);
@@ -71,7 +70,6 @@ const socket = io("https://note-editor-api.up.railway.app", {
 });
 socket.on("connect", () => {
   console.log("Connected to the server");
-  globalStore.set("socketConnected", true);
 });
 socket.on("userFolders", (userFoldersLength) => {
   projectStore.set("userFolders", userFoldersLength);
@@ -90,20 +88,15 @@ const loginUser = async () => {
   await userApiRequest.loginUser("DemoAccount", "123123");
 };
 
+getUser();
+if (defaultUser.id.length > 2) {
+  socket.emit("register", defaultUser.id);
+  fetchProjects();
+} else {
+  loginUser();
+  socket.emit("register", defaultUser.id);
+  fetchProjects();
+}
+
 if (window.location.pathname === "/") router.navigateTo("/home");
 else router.getCurrentUrl();
-
-function afterSocketConnection() {
-  const socketConnected = globalStore.get("socketConnected");
-  if (socketConnected) {
-    getUser();
-    if (defaultUser.id.length > 2) {
-      socket.emit("register", defaultUser.id);
-      fetchProjects();
-    } else {
-      loginUser();
-      socket.emit("register", defaultUser.id);
-      fetchProjects();
-    }
-  }
-}

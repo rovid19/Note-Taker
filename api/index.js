@@ -18,13 +18,12 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-mongoose.connect(
-  "mongodb+srv://Rock:rocketrocket@cluster0.7m0vxlq.mongodb.net/",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+mongoose.connect(process.env.MONGOOSE_CONNECT, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+const httpServer = createServer(app);
+httpServer.listen(port);
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -42,8 +41,7 @@ app.use("/api/user", userRoute);
 app.use("/api/todo", todoRoute);
 app.use("/api/projects", projectRoute);
 console.log(port);
-const httpServer = createServer(app);
-httpServer.listen(port);
+
 export const io = new Server(httpServer, {
   cors: {
     credentials: true,
