@@ -13,7 +13,7 @@ import {
   isUserLoggedIn,
 } from "../../Components/UserAuth/UserAuthLogic";
 import { defaultUser, userStore } from "../../Stores/UserStore";
-import { userApiRequest } from "../../Services/UserService";
+//import { userApiRequest } from "../../Services/UserService";
 import {
   deleteTodoItem,
   isTodoListVisible,
@@ -26,7 +26,7 @@ import {
   isCreateNewFolderVisible,
   openSelectedFolder,
 } from "../../Components/Sidebar/SidebarFolderLogic";
-import { projectService } from "../../Services/ProjectService";
+//import { projectService } from "../../Services/ProjectService";
 import { isSelectColorVisible } from "../../Components/PopupWindows/EditingButtons/SelectColorLogic";
 import { isNewNotePopupVisible } from "../../Components/PopupWindows/NewNotePopup/NewNoteLogic";
 import { io } from "socket.io-client";
