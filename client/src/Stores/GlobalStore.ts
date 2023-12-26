@@ -13,6 +13,7 @@ interface InitialState {
   selectColorVisible: boolean;
   newNotePopupVisible: boolean;
   loaderVisible: boolean;
+  socketConnected: boolean;
   [key: string]: any;
 }
 
@@ -68,6 +69,7 @@ const intialState = {
   selectColorVisible: false,
   newNotePopupVisible: false,
   loaderVisible: false,
+  socketConnected: true,
 };
 
 export default new GlobalStore();

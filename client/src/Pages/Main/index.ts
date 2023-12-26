@@ -13,7 +13,7 @@ import {
   isUserLoggedIn,
 } from "../../Components/UserAuth/UserAuthLogic";
 import { defaultUser, userStore } from "../../Stores/UserStore";
-//import { userApiRequest } from "../../Services/UserService";
+import { userApiRequest } from "../../Services/UserService";
 import {
   deleteTodoItem,
   isTodoListVisible,
@@ -26,7 +26,7 @@ import {
   isCreateNewFolderVisible,
   openSelectedFolder,
 } from "../../Components/Sidebar/SidebarFolderLogic";
-//import { projectService } from "../../Services/ProjectService";
+import { projectService } from "../../Services/ProjectService";
 import { isSelectColorVisible } from "../../Components/PopupWindows/EditingButtons/SelectColorLogic";
 import { isNewNotePopupVisible } from "../../Components/PopupWindows/NewNotePopup/NewNoteLogic";
 import { io } from "socket.io-client";
@@ -46,6 +46,7 @@ globalStore.subscribe("activeLink", setActiveLinkCss);
 globalStore.subscribe("homeVisible", isHomeVisible);
 globalStore.subscribe("newNotePopupVisible", isNewNotePopupVisible);
 globalStore.subscribe("loaderVisible", isLoaderVisible);
+globalStore.subscribe("socketConnected", afterSocketConnection);
 
 userStore.subscribe("isUserLoggedIn", isUserLoggedIn);
 todoStore.subscribe("todoIndex", deleteTodoItem);
@@ -70,6 +71,7 @@ const socket = io("https://note-editor-api.up.railway.app", {
 });
 socket.on("connect", () => {
   console.log("Connected to the server");
+  globalStore.set("socketConnected", true);
 });
 socket.on("userFolders", (userFoldersLength) => {
   projectStore.set("userFolders", userFoldersLength);
@@ -78,22 +80,30 @@ socket.on("processedFolder", () => {
   loaderAnimation();
 });
 
-/*const getUser = async () => {};
+const getUser = async () => {
+  await userApiRequest.getUser();
+};
 const fetchProjects = async () => {
   await projectService.fetchAllUserProjects(defaultUser.id);
 };
 const loginUser = async () => {
   await userApiRequest.loginUser("DemoAccount", "123123");
 };
-//getUser();*/
 
-if (defaultUser.id.length > 2) {
-  socket.emit("register", defaultUser.id);
-  //fetchProjects();
-} else {
-  //loginUser();
-  socket.emit("register", defaultUser.id);
-  //fetchProjects();
-}
 if (window.location.pathname === "/") router.navigateTo("/home");
 else router.getCurrentUrl();
+
+function afterSocketConnection() {
+  const socketConnected = globalStore.get("socketConnected");
+  if (socketConnected) {
+    getUser();
+    if (defaultUser.id.length > 2) {
+      socket.emit("register", defaultUser.id);
+      fetchProjects();
+    } else {
+      loginUser();
+      socket.emit("register", defaultUser.id);
+      fetchProjects();
+    }
+  }
+}
