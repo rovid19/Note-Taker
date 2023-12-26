@@ -80,6 +80,7 @@ socket.on("processedFolder", () => {
 
 const getUser = async () => {
   await userApiRequest.getUser();
+  console.log(defaultUser);
 };
 const fetchProjects = async () => {
   await projectService.fetchAllUserProjects(defaultUser.id);
@@ -88,14 +89,15 @@ const loginUser = async () => {
   await userApiRequest.loginUser("DemoAccount", "123123");
 };
 
-getUser();
+await getUser();
 if (defaultUser.id.length > 2) {
   socket.emit("register", defaultUser.id);
-  fetchProjects();
+
+  await fetchProjects();
 } else {
-  loginUser();
+  await loginUser();
   socket.emit("register", defaultUser.id);
-  fetchProjects();
+  await fetchProjects();
 }
 
 if (window.location.pathname === "/") router.navigateTo("/home");

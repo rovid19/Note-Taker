@@ -18,9 +18,15 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-mongoose.connect(process.env.MONGOOSE_CONNECT, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+mongoose.connect(
+  "mongodb+srv://Rock:rocketrocket@cluster0.7m0vxlq.mongodb.net/",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
+mongoose.connection.on("connected", () => {
+  console.log("Mongoose connected successfully.");
 });
 const httpServer = createServer(app);
 httpServer.listen(port);
@@ -54,7 +60,6 @@ export const io = new Server(httpServer, {
 export const userSockets = {};
 
 io.on("connection", (socket) => {
-  console.log("connected");
   socket.on("register", (userId) => {
     userSockets[userId] = socket.id;
     console.log(userId, socket.id);

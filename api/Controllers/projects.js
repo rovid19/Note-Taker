@@ -24,7 +24,7 @@ export const fetchAllUserFolders = async (req, res) => {
     const { userId } = req.query;
     const socketId = userSockets[userId];
     const socket = io.sockets.sockets.get(socketId);
-
+    console.log(socket);
     const user = await User.findById(userId).populate("folder todoList");
 
     const userFolders = user.folder.length;

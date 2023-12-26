@@ -147,7 +147,7 @@ const registerInputData = (): void => {
 export const redirectAfterLogin = (): void => {
   const userAuthDiv = document.querySelector(".user-auth-container");
   userAuthDiv?.remove();
-  projectService.fetchAllUserProjects(defaultUser.id);
+  //projectService.fetchAllUserProjects(defaultUser.id);
   userStore.set("isUserLoggedIn", true);
 };
 

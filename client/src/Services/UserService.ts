@@ -5,7 +5,7 @@ import { todoService } from "./TodoService";
 
 class UserService extends Base {
   constructor() {
-    super(`https://note-editor-api.up.railway.app/api/user`);
+    super(`https://note-editor-client.up.railway.app/api/user`);
   }
 
   async registerUser(email: string, username: string, password: string) {
