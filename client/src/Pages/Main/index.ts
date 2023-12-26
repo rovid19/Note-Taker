@@ -78,22 +78,22 @@ socket.on("processedFolder", () => {
   loaderAnimation();
 });
 
-const getUser = async () => {};
+/*const getUser = async () => {};
 const fetchProjects = async () => {
   await projectService.fetchAllUserProjects(defaultUser.id);
 };
 const loginUser = async () => {
   await userApiRequest.loginUser("DemoAccount", "123123");
 };
-getUser();
+//getUser();*/
 
 if (defaultUser.id.length > 2) {
   socket.emit("register", defaultUser.id);
-  fetchProjects();
+  //fetchProjects();
 } else {
-  loginUser();
+  //loginUser();
   socket.emit("register", defaultUser.id);
-  fetchProjects();
+  //fetchProjects();
 }
 if (window.location.pathname === "/") router.navigateTo("/home");
 else router.getCurrentUrl();
