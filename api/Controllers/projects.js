@@ -19,6 +19,7 @@ import TodoItemModel from "../Models/TodoItem.js";
 };*/
 
 export const fetchAllUserFolders = async (req, res) => {
+  console.log("dadsada");
   try {
     const { userId } = req.query;
     const socketId = userSockets[userId];

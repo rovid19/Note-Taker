@@ -59,6 +59,7 @@ io.on("connection", (socket) => {
   console.log("connected");
   socket.on("register", (userId) => {
     userSockets[userId] = socket.id;
+    console.log(userId, socket.id);
   });
 
   socket.on("disconnect", () => {
@@ -69,5 +70,3 @@ io.on("connection", (socket) => {
     });
   });
 });
-
-//app.listen(port);

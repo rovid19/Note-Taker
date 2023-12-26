@@ -223,3 +223,6 @@ export const loaderAnimation = (): void => {
   loader.style.width = `${increaseBy}%`;
   projectStore.set("currentWidth", increaseBy);
 };
+
+export const apiUrl = "https://note-editor-api.up.railway.app/";
+export const apiLocalUrl = "http://localhost:3000/";

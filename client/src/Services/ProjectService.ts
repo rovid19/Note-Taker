@@ -8,7 +8,7 @@ import Base from "./BaseService";
 
 class ProjectService extends Base {
   constructor() {
-    super("https://note-editor-api.up.railway.app/api/projects");
+    super(`https://note-editor-api.up.railway.app/api/projects`);
   }
 
   async fetchAllUserProjects(userId: string) {
