@@ -1,12 +1,4 @@
 export const generateTodoList = (): HTMLElement => {
-  if (!document.querySelector("todoListStyling")) {
-    const link = document.createElement("link");
-    (link.id = "todoListStyling"), (link.type = "text/css");
-    link.rel = "stylesheet";
-    link.href = "../../src/Components/TodoList/todoListStyles.css";
-    document.head.appendChild(link);
-  }
-
   const div = document.createElement("div");
   div.className = "todoMainDiv";
   div.innerHTML = `

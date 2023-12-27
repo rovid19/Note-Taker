@@ -1,15 +1,4 @@
 export const generateNewNotePopup = (): HTMLElement => {
-  if (!document.getElementById("newNoteStyling")) {
-    const link = document.createElement("link");
-    link.id = "newNoteStyling";
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href =
-      "../../src/Components/PopupWindows/NewNotePopup/newNoteStyling.css";
-
-    document.head.appendChild(link);
-  }
-
   const mainDiv = document.createElement("div");
 
   mainDiv.className = "newNotePopupStyles";

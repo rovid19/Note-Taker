@@ -1,16 +1,6 @@
 import { monthYear } from "../../Utils/Date";
 
 export const generateSidebar = (): HTMLElement => {
-  if (!document.getElementById("sidebarStyling")) {
-    const link = document.createElement("link");
-    link.id = "sidebarStyling";
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = "../../src/Components/Sidebar/sidebarStyling.css";
-
-    document.head.appendChild(link);
-  }
-
   const sidebar = document.createElement("div");
 
   sidebar.className = "sidebarStyles";

@@ -1,16 +1,6 @@
 import globalStore from "../../Stores/GlobalStore";
 
 export const generateLogin = (): HTMLElement => {
-  if (!document.getElementById("userAuthStylesLink")) {
-    const link = document.createElement("link");
-    link.id = "userAuthStylesLink";
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = "../../src/Components/UserAuth/userAuthStyles.css";
-
-    document.head.appendChild(link);
-  }
-
   const div = document.createElement("div");
   div.className = "userAuthMainDiv";
   div.innerHTML = `

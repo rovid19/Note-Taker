@@ -1,15 +1,6 @@
 import { noteObject } from "../../Stores/NoteStore";
 
 export const generateNewNote = (): HTMLElement => {
-  if (!document.querySelector("noteStyling")) {
-    const link = document.createElement("link");
-    link.id = "noteStyling";
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = "../../src/Components/NoteEditor/noteStyling.css";
-
-    document.head.appendChild(link);
-  }
   const noteEditor = document.createElement("div");
   noteEditor.className = "newNoteStyles";
   noteEditor.innerHTML = `

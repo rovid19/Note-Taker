@@ -1,14 +1,4 @@
 export const generateLoader = (): HTMLElement => {
-  if (!document.querySelector("loaderStyling")) {
-    const link = document.createElement("link");
-    link.id = "loaderStyling";
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = "../../src/Components/PopupWindows/Loader/loaderStyling.css";
-
-    document.head.appendChild(link);
-  }
-
   const div = document.createElement("div");
   div.className = "loaderMain";
   div.innerHTML = `

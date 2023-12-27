@@ -1,15 +1,4 @@
 export const generateAddNewTask = (): HTMLElement => {
-  if (!document.querySelector("addNewTaskStyles")) {
-    const link = document.createElement("link");
-    link.id = "addNewTaskStyles";
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href =
-      "../../src/Components/PopupWindows/AddNewTask/addNewTaskStyling.css";
-
-    document.head.appendChild(link);
-  }
-
   const div = document.createElement("div");
   div.className = "addNewTaskDivMain";
   div.innerHTML = `

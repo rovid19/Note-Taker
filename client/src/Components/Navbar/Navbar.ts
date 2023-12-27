@@ -1,15 +1,4 @@
 export const generateNavbar = (): HTMLElement => {
-  // If current HTML file doesn't have any elemnt with ID of navbarStyles
-  if (!document.querySelector("#navbarStylesLink")) {
-    const styleLink = document.createElement("link");
-    styleLink.id = "navbarStylesLink";
-    styleLink.rel = "stylesheet";
-    styleLink.type = "text/css";
-    styleLink.href = "../../src/Components/Navbar/navbarStyles.css";
-
-    document.head.appendChild(styleLink);
-  }
-
   const navbar = document.createElement("header");
 
   navbar.className = "navbarStyles";
