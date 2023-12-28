@@ -26,7 +26,14 @@ export const loopThroughArrayAndPushOrDeleteFolder = (
   purpose: string,
   frontendId?: string
 ): void => {
-  const foundFolder = loopThroughArray(projects, parentId, "newFolder");
+  let foundFolder = {} as FolderInterface;
+  if (!parentId) {
+    foundFolder = loopThroughArray(projects, frontendId as string, "newFolder");
+  } else {
+    foundFolder = loopThroughArray(projects, parentId, "newFolder");
+  }
+  console.log(foundFolder);
+
   if (purpose === "delete") {
     if ("noteText" in folderItem) {
       const newNotes = foundFolder.notes.filter(
@@ -34,10 +41,17 @@ export const loopThroughArrayAndPushOrDeleteFolder = (
       );
       foundFolder.notes = newNotes;
     } else if ("depth" in folderItem) {
-      const newArray = foundFolder.content.filter(
-        (folder) => (folder as FolderInterface).frontendId !== frontendId
-      );
-      foundFolder.content = newArray;
+      if (!parentId) {
+        const newArray = projects.filter(
+          (folder) => folder.frontendId !== foundFolder.frontendId
+        );
+        userProjects.setProjects(newArray as FolderInterface[]);
+      } else {
+        const newArray = foundFolder.content.filter(
+          (folder) => (folder as FolderInterface).frontendId !== frontendId
+        );
+        foundFolder.content = newArray;
+      }
     } else {
     }
   } else {
@@ -223,6 +237,3 @@ export const loaderAnimation = (): void => {
   loader.style.width = `${increaseBy}%`;
   projectStore.set("currentWidth", increaseBy);
 };
-
-export const apiUrl = "https://note-editor-api.up.railway.app/";
-export const apiLocalUrl = "http://localhost:3000/";

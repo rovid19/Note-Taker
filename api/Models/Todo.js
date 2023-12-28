@@ -5,6 +5,7 @@ const todoSchema = new mongoose.Schema({
   dateCreated: String,
   todoItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "todoItem" }],
   type: String,
+  
 });
 
 const todoModel = mongoose.model("todo", todoSchema);

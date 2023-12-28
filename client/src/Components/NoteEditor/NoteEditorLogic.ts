@@ -36,6 +36,7 @@ export const isNoteEditorVisible = async () => {
   const noteEditorVisible = globalStore.get("noteEditorVisible");
   const isNewNote = noteStore.get("isNewNote") as unknown as Note;
   if (noteEditorVisible) {
+    console.log("dada");
     createNoteEditor();
     isNewNoteOrExistingNote(isNewNote);
     attachEventListenerToNoteEditor();
@@ -56,7 +57,7 @@ const attachEventListenerToNoteEditor = () => {
   setTimeout(() => {
     noteEventListeners();
     noteEditorButtonsEventListener();
-  }, 500);
+  }, 1000);
 };
 
 const isNewNoteOrExistingNote = async (isNewNote: Note) => {
