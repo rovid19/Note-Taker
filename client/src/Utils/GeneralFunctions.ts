@@ -112,7 +112,6 @@ export const getSelectionIndex = (purpose: string) => {
     if (selection.rangeCount > 0) {
       //prvobitan selection
       const range = selection.getRangeAt(0);
-      console.log(range);
       //dupliciranje prvobitnog selectiona
       const preSelectionRange = range.cloneRange();
       //pretvranje cloneRangea da bude text cijelog diva, a ne samo selectana rijec

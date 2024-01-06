@@ -97,14 +97,17 @@ const noteEventListeners = () => {
       e.key === "ArrowUp"
     ) {
       e.preventDefault();
+      noteStore.set("backspaceCount", 0);
     } else if (e.key === "Backspace") {
       const backspaceCount = noteStore.get("backspaceCount") as number;
       noteStore.set("backspaceCount", backspaceCount + 1);
       removeNoteEditsOnCurrentIndex();
     } else {
+      noteStore.set("backspaceCount", 0);
       if (noteObject.noteText.length > 0) {
         setNoteEditIndexesAccordingToNoteTextInput(e);
       }
+      returnCursorAfterApplyingNoteEdits("");
     }
   });
 
@@ -133,7 +136,7 @@ const noteEventListeners = () => {
     ) as HTMLElement;
     let autoSaveDone = false;
     const savingNoteInProgress = noteStore.get("savingNoteInProgress");
-
+    noteStore.set("backspaceCount", 0);
     getSelectionIndex("onClick");
     if (!savingNoteInProgress) {
       if (noteObject.title !== noteObjectChanges.title) {
@@ -451,8 +454,13 @@ const removeStylingFromSelection = (selection: SelectedText) => {
 const removeNoteEditsOnCurrentIndex = () => {
   const currentCursorIndex = noteStore.get("currentTextIndex") as number;
   const backspaceCount = noteStore.get("backspaceCount") as number;
-  const deleteIndex = currentCursorIndex - backspaceCount;
+  let deleteIndex = currentCursorIndex;
 
+  if (backspaceCount > 1) {
+    console.log("cursor", currentCursorIndex);
+    deleteIndex = currentCursorIndex - backspaceCount + 1;
+  }
+  console.log("deleteindex", deleteIndex);
   noteObjectChanges.noteEdits.forEach((edit) => {
     if (edit.name === "enter") {
       if (edit.startIndex === deleteIndex) {
@@ -465,9 +473,63 @@ const removeNoteEditsOnCurrentIndex = () => {
       }
     }
   });
+
+  noteObjectChanges.noteEdits.forEach((edit) => {
+    if (edit.selected) {
+      console.log(edit);
+    }
+  });
+  console.log(noteObjectChanges.noteEdits);
   const array = noteObjectChanges.noteEdits.filter(
     (edit) => edit.selected !== true
   );
+  if (noteObjectChanges.noteEdits.length !== array.length) {
+    noteObjectChanges.setNoteEdit(array);
+    applyNoteTextEdits();
+  }
+  returnCursorAfterApplyingNoteEdits("");
+};
 
-  noteObjectChanges.setNoteEdit(array);
+const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
+  const editableDiv = document.querySelector(
+    ".newNoteInputText"
+  ) as HTMLElement;
+  //const selection = window.getSelection();
+  const currentCaretIndex = noteStore.get("currentTextIndex") as number;
+
+  let currentNode = editableDiv.firstChild;
+
+  let indexCounter = 0;
+
+  while (currentNode) {
+    if (currentNode.nodeType === Node.TEXT_NODE) {
+      indexCounter += currentNode.nodeValue?.length as number;
+
+      if (indexCounter >= currentCaretIndex) {
+        console.log(currentNode);
+        const array = returnArrayOfIndexesForThatCurrentNode(
+          indexCounter + (currentNode.nodeValue?.length as number),
+          currentCaretIndex
+        );
+        console.log(currentNode);
+        break;
+      }
+    }
+
+    currentNode = currentNode.nextSibling as ChildNode;
+  }
+};
+
+const returnArrayOfIndexesForThatCurrentNode = (
+  indexes: number,
+  caret: number
+): number[] => {
+  const newArray = Array.from({ length: indexes }, (_, i) => i).reverse();
+  console.log(indexes, caret);
+  const indexArray = [];
+  for (let i = 0; i < caret; i++) {
+    indexArray.push(newArray[i]);
+  }
+  console.log(indexArray);
+  return indexArray;
 };
