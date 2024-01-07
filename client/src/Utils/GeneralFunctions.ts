@@ -32,7 +32,6 @@ export const loopThroughArrayAndPushOrDeleteFolder = (
   } else {
     foundFolder = loopThroughArray(projects, parentId, "newFolder");
   }
-  console.log(foundFolder);
 
   if (purpose === "delete") {
     if ("noteText" in folderItem) {
@@ -129,7 +128,7 @@ export const getSelectionIndex = (purpose: string) => {
           noteObjectChanges.noteText.length,
           noteObjectChanges.noteEdits
         );*/
-        console.log(start, noteObjectChanges.noteEdits);
+        console.log(start);
         noteStore.set("currentTextIndex", start);
         noteStore.set("backspaceCount", 0);
       } else {

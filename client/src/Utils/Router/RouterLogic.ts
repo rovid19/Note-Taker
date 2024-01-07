@@ -17,7 +17,6 @@ export const setComponentsToTrueOrFalseAccordingly = (
         setAppComponentsOnOff(true, false, false, true, "note");
       }
     } else if (component === "/projects/dailytodo") {
-      console.log("dada");
       setAppComponentsOnOff(false, true, false, true, "todo");
     } else if (component === "/projects/home") {
       setAppComponentsOnOff(false, false, true, true, "home");
@@ -26,7 +25,6 @@ export const setComponentsToTrueOrFalseAccordingly = (
     }
   } else {
     if (window.location.search || noteIdFromUrl) {
-      console.log(window.location.search, noteIdFromUrl);
       if (noteIdFromUrl) {
         setAppComponentsOnOff(true, false, false, false, "note");
       }
@@ -34,7 +32,6 @@ export const setComponentsToTrueOrFalseAccordingly = (
     } else if (component === "/dailytodo") {
       setAppComponentsOnOff(false, true, false, false, "todo");
     } else if (component === "/home") {
-      console.log("clearlythis");
       setAppComponentsOnOff(false, false, true, false, "home");
     }
   }
@@ -87,7 +84,6 @@ const setAppComponentsOnOff = (
   sidebar: boolean,
   activeLink: string
 ) => {
-  console.log(todo);
   globalStore.set("noteEditorVisible", note);
   globalStore.set("todoListVisible", todo);
   globalStore.set("homeVisible", home);

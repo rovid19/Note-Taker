@@ -36,7 +36,6 @@ export const isNoteEditorVisible = async () => {
   const noteEditorVisible = globalStore.get("noteEditorVisible");
   const isNewNote = noteStore.get("isNewNote") as unknown as Note;
   if (noteEditorVisible) {
-    console.log("dada");
     createNoteEditor();
     isNewNoteOrExistingNote(isNewNote);
     attachEventListenerToNoteEditor();
@@ -457,10 +456,8 @@ const removeNoteEditsOnCurrentIndex = () => {
   let deleteIndex = currentCursorIndex;
 
   if (backspaceCount > 1) {
-    console.log("cursor", currentCursorIndex);
     deleteIndex = currentCursorIndex - backspaceCount + 1;
   }
-  console.log("deleteindex", deleteIndex);
   noteObjectChanges.noteEdits.forEach((edit) => {
     if (edit.name === "enter") {
       if (edit.startIndex === deleteIndex) {
@@ -476,10 +473,9 @@ const removeNoteEditsOnCurrentIndex = () => {
 
   noteObjectChanges.noteEdits.forEach((edit) => {
     if (edit.selected) {
-      console.log(edit);
     }
   });
-  console.log(noteObjectChanges.noteEdits);
+
   const array = noteObjectChanges.noteEdits.filter(
     (edit) => edit.selected !== true
   );
@@ -503,15 +499,31 @@ const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
 
   while (currentNode) {
     if (currentNode.nodeType === Node.TEXT_NODE) {
-      indexCounter += currentNode.nodeValue?.length as number;
+      const stringArr = currentNode.nodeValue?.split("") as string[];
+      indexCounter += stringArr?.length as number;
 
       if (indexCounter >= currentCaretIndex) {
-        console.log(currentNode);
+        console.log(indexCounter, currentNode);
+
         const array = returnArrayOfIndexesForThatCurrentNode(
-          indexCounter + (currentNode.nodeValue?.length as number),
-          currentCaretIndex
+          indexCounter,
+          currentCaretIndex,
+          stringArr
         );
-        console.log(currentNode);
+        const isUnicodeCharAtThisIndex = containsUnicodeChar(
+          currentNode.nodeValue as string,
+          array.caretIndex
+        );
+        if (isUnicodeCharAtThisIndex) {
+          console.log(stringArr);
+          stringArr.splice(array.caretIndex, 1);
+          console.log(stringArr);
+          const joinedStringArray = stringArr.join("");
+          currentNode.textContent = joinedStringArray;
+        } else {
+          console.log("jao jao");
+        }
+
         break;
       }
     }
@@ -522,14 +534,28 @@ const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
 
 const returnArrayOfIndexesForThatCurrentNode = (
   indexes: number,
-  caret: number
-): number[] => {
+  caret: number,
+  stringArr: string[]
+): { array: number[]; caretIndex: number } => {
+  console.log(indexes, "caret", caret);
   const newArray = Array.from({ length: indexes }, (_, i) => i).reverse();
-  console.log(indexes, caret);
   const indexArray = [];
-  for (let i = 0; i < caret; i++) {
+  for (let i = 0; i < stringArr.length; i++) {
     indexArray.push(newArray[i]);
   }
-  console.log(indexArray);
-  return indexArray;
+  indexArray.reverse();
+  const caretIndexInArray = indexArray.findIndex((index) => index === caret);
+  console.log(caretIndexInArray);
+
+  return { array: indexArray, caretIndex: caretIndexInArray };
 };
+
+const containsUnicodeChar = (currentNode: string, index: number) => {
+  const stringArr = currentNode.split("");
+  console.log(stringArr, index);
+  return /[^\x00-\x7F]/.test(stringArr[index]);
+};
+
+/*const arrayOfStringsToString = (stringArr: string[]): string => {
+const string = stringArr.join("")
+}*/
