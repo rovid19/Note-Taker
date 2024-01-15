@@ -8,7 +8,11 @@ import {
 import { FolderInterface, Note } from "./TsTypes";
 import { noteStore } from "../Stores/NoteStore";
 import noteService from "../Services/NoteService";
-import { changeNoteEditIndexesAccordingly } from "../Components/NoteEditor/NoteEditorLogic";
+import {
+  changeNoteEditIndexesAccordingly,
+  displayOnClickStringArray,
+  returnCursorAfterApplyingNoteEdits,
+} from "../Components/NoteEditor/NoteEditorLogic";
 import { defaultUser } from "../Stores/UserStore";
 export const generateRandomId = (idLength: number): string => {
   const chars = "ghjsdfgjhasfduiweqrzqwer87238723zugvcxgf1721262gs";
@@ -129,8 +133,10 @@ export const getSelectionIndex = (purpose: string) => {
           noteObjectChanges.noteEdits
         );*/
         console.log(start);
+
         noteStore.set("currentTextIndex", start);
         noteStore.set("backspaceCount", 0);
+        displayOnClickStringArray("");
       } else {
         if (start === end) {
           noteStore.set("enterIndex", { startIndex: start });

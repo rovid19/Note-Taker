@@ -126,6 +126,7 @@ const noteEventListeners = () => {
         name: "enter",
         selected: false,
       });
+      //applyNoteTextEdits();
     }
   });
 
@@ -479,6 +480,7 @@ const removeNoteEditsOnCurrentIndex = () => {
   const array = noteObjectChanges.noteEdits.filter(
     (edit) => edit.selected !== true
   );
+
   if (noteObjectChanges.noteEdits.length !== array.length) {
     noteObjectChanges.setNoteEdit(array);
     applyNoteTextEdits();
@@ -486,7 +488,7 @@ const removeNoteEditsOnCurrentIndex = () => {
   returnCursorAfterApplyingNoteEdits("");
 };
 
-const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
+export const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
   const editableDiv = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
@@ -503,25 +505,29 @@ const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
       indexCounter += stringArr?.length as number;
 
       if (indexCounter >= currentCaretIndex) {
-        console.log(indexCounter, currentNode);
+        console.log(indexCounter, currentNode, stringArr);
 
         const array = returnArrayOfIndexesForThatCurrentNode(
           indexCounter,
           currentCaretIndex,
           stringArr
         );
-        const isUnicodeCharAtThisIndex = containsUnicodeChar(
+        const isUnionAtCharacter = noteStore.get("isUnionAtCharacter");
+        /*const isUnicodeCharAtThisIndex = containsUnicodeChar(
           currentNode.nodeValue as string,
           array.caretIndex
         );
         if (isUnicodeCharAtThisIndex) {
-          console.log(stringArr);
-          stringArr.splice(array.caretIndex, 1);
-          console.log(stringArr);
+          stringArr.splice(array.caretIndex - 1, 2);
           const joinedStringArray = stringArr.join("");
           currentNode.textContent = joinedStringArray;
         } else {
           console.log("jao jao");
+        }*/
+        if (isUnionAtCharacter) {
+          stringArr.splice(0, 1);
+          const joinedStringArray = stringArr.join("");
+          currentNode.textContent = joinedStringArray;
         }
 
         break;
@@ -537,7 +543,6 @@ const returnArrayOfIndexesForThatCurrentNode = (
   caret: number,
   stringArr: string[]
 ): { array: number[]; caretIndex: number } => {
-  console.log(indexes, "caret", caret);
   const newArray = Array.from({ length: indexes }, (_, i) => i).reverse();
   const indexArray = [];
   for (let i = 0; i < stringArr.length; i++) {
@@ -545,17 +550,59 @@ const returnArrayOfIndexesForThatCurrentNode = (
   }
   indexArray.reverse();
   const caretIndexInArray = indexArray.findIndex((index) => index === caret);
-  console.log(caretIndexInArray);
 
   return { array: indexArray, caretIndex: caretIndexInArray };
 };
 
 const containsUnicodeChar = (currentNode: string, index: number) => {
   const stringArr = currentNode.split("");
-  console.log(stringArr, index);
-  return /[^\x00-\x7F]/.test(stringArr[index]);
+  console.log(stringArr);
+  let state = false;
+  state = /[^\x00-\x7F]/.test(stringArr[index]);
+  if (!state) state = /[^\x00-\x7F]/.test(stringArr[index - 1]);
+  return state;
 };
 
 /*const arrayOfStringsToString = (stringArr: string[]): string => {
 const string = stringArr.join("")
 }*/
+
+export const displayOnClickStringArray = (purpose: string) => {
+  const editableDiv = document.querySelector(
+    ".newNoteInputText"
+  ) as HTMLElement;
+  //const selection = window.getSelection();
+  const currentCaretIndex = noteStore.get("currentTextIndex") as number;
+
+  let currentNode = editableDiv.firstChild;
+
+  let indexCounter = 0;
+
+  while (currentNode) {
+    if (currentNode.nodeType === Node.TEXT_NODE) {
+      const stringArr = currentNode.nodeValue?.split("") as string[];
+      indexCounter += stringArr?.length as number;
+
+      if (indexCounter >= currentCaretIndex) {
+        const selection = window.getSelection();
+        const range = selection?.getRangeAt(0);
+
+        const isCaretAtUnicode = containsUnicodeChar(
+          currentNode.nodeValue as string,
+          range?.startOffset === 1 ? 0 : (range?.startOffset as number)
+        );
+        if (isCaretAtUnicode) {
+          noteStore.set("isUnionAtCharacter", true);
+          console.log("union");
+        } else {
+          noteStore.set("isUnionAtCharacter", false);
+        }
+        break;
+      }
+    }
+
+    currentNode = currentNode.nextSibling as ChildNode;
+  }
+};
+
+const deleteTwoCharactersIfUnicodeExistsOnDeleteIndex = () => {};

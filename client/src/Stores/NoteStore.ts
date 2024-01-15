@@ -15,6 +15,7 @@ interface InitialState {
   editFontSize: number | null;
   backspaceCount: number;
   noteIdFromUrl: string | null;
+  isUnionAtCharacter: boolean;
   [key: string]: any;
 }
 
@@ -35,6 +36,7 @@ const initialState = {
   editFontSize: null,
   backspaceCount: 0,
   noteIdFromUrl: "",
+  isUnionAtCharacter: false,
 };
 
 class NoteStore {
