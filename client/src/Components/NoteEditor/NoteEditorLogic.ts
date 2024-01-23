@@ -126,7 +126,6 @@ const noteEventListeners = () => {
         name: "enter",
         selected: false,
       });
-      //applyNoteTextEdits();
     }
   });
 
@@ -266,8 +265,10 @@ export const applyNoteTextEdits = () => {
   });
 
   let textArray = newText.split("") as string[];
-
   textArray.forEach((char, i) => {
+    /*if (char === "c") {
+      textArray[i] = "\u200B";
+    }*/
     if (char === "˛") {
       textArray[i] = "</br>";
     } else if (char === "~") {
@@ -285,7 +286,7 @@ export const applyNoteTextEdits = () => {
       textArray[i] = "</span>";
     }
   });
-
+  console.log(textArray);
   const joinedText = textArray.join("");
   noteText.innerHTML = joinedText;
 };
@@ -605,4 +606,25 @@ export const displayOnClickStringArray = (purpose: string) => {
   }
 };
 
-const deleteTwoCharactersIfUnicodeExistsOnDeleteIndex = () => {};
+/*const loopThroughTextNodesAndDeleteSpaceCharacters = () => {
+  const editableDiv = document.querySelector(
+    ".newNoteInputText"
+  ) as HTMLElement;
+  let currentNode = editableDiv.firstChild;
+  //const nodesToRemove = [];
+
+  while (currentNode) {
+    if (currentNode.nodeType === Node.TEXT_NODE) {
+      const regex = /\u00A0/;
+      const match = regex.test(currentNode.nodeValue as string);
+      console.log(regex);
+      if (match) {
+        console.log("1");
+        console.log(currentNode);
+        //nodesToRemove.push(currentNode);
+      }
+    }
+    currentNode = currentNode.nextSibling as ChildNode;
+  }
+  //nodesToRemove.forEach((node) => editableDiv.removeChild(node));
+};*/
