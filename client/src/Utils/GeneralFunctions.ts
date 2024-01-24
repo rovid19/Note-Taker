@@ -11,7 +11,6 @@ import noteService from "../Services/NoteService";
 import {
   changeNoteEditIndexesAccordingly,
   displayOnClickStringArray,
-  returnCursorAfterApplyingNoteEdits,
 } from "../Components/NoteEditor/NoteEditorLogic";
 import { defaultUser } from "../Stores/UserStore";
 export const generateRandomId = (idLength: number): string => {
@@ -136,7 +135,7 @@ export const getSelectionIndex = (purpose: string) => {
 
         noteStore.set("currentTextIndex", start);
         noteStore.set("backspaceCount", 0);
-        displayOnClickStringArray("");
+        displayOnClickStringArray();
       } else {
         if (start === end) {
           noteStore.set("enterIndex", { startIndex: start });
