@@ -15,7 +15,6 @@ const warningMessageEventListeners = (div: Element): void => {
   const no = document.querySelector(".warningButton2");
 
   yes?.addEventListener("click", (): void => {
-    //deleteNote();
     div.remove();
     noteStore.set("deleteNote", -1);
     globalStore.set("noteEditorVisible", false);
