@@ -106,7 +106,7 @@ const noteEventListeners = () => {
       if (noteObject.noteText.length > 0) {
         setNoteEditIndexesAccordingToNoteTextInput(e);
       }
-      returnCursorAfterApplyingNoteEdits("");
+      returnCursorAfterApplyingNoteEdits();
     }
   });
 
@@ -486,10 +486,10 @@ const removeNoteEditsOnCurrentIndex = () => {
     noteObjectChanges.setNoteEdit(array);
     applyNoteTextEdits();
   }
-  returnCursorAfterApplyingNoteEdits("");
+  returnCursorAfterApplyingNoteEdits();
 };
 
-export const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
+export const returnCursorAfterApplyingNoteEdits = () => {
   const editableDiv = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
@@ -508,11 +508,11 @@ export const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
       if (indexCounter >= currentCaretIndex) {
         console.log(indexCounter, currentNode, stringArr);
 
-        const array = returnArrayOfIndexesForThatCurrentNode(
+        /*const array = returnArrayOfIndexesForThatCurrentNode(
           indexCounter,
           currentCaretIndex,
           stringArr
-        );
+        );*/
         const isUnionAtCharacter = noteStore.get("isUnionAtCharacter");
         /*const isUnicodeCharAtThisIndex = containsUnicodeChar(
           currentNode.nodeValue as string,
@@ -539,7 +539,7 @@ export const returnCursorAfterApplyingNoteEdits = (purpose: string) => {
   }
 };
 
-const returnArrayOfIndexesForThatCurrentNode = (
+/*const returnArrayOfIndexesForThatCurrentNode = (
   indexes: number,
   caret: number,
   stringArr: string[]
@@ -553,7 +553,7 @@ const returnArrayOfIndexesForThatCurrentNode = (
   const caretIndexInArray = indexArray.findIndex((index) => index === caret);
 
   return { array: indexArray, caretIndex: caretIndexInArray };
-};
+};*/
 
 const containsUnicodeChar = (currentNode: string, index: number) => {
   const stringArr = currentNode.split("");
@@ -568,7 +568,7 @@ const containsUnicodeChar = (currentNode: string, index: number) => {
 const string = stringArr.join("")
 }*/
 
-export const displayOnClickStringArray = (purpose: string) => {
+export const displayOnClickStringArray = () => {
   const editableDiv = document.querySelector(
     ".newNoteInputText"
   ) as HTMLElement;
